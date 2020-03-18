@@ -3,6 +3,7 @@
 ## 参考文档
 
 * [Your First Extension](https://code.visualstudio.com/api/get-started/your-first-extension)
+* [vscode-extension-samples](https://github.com/microsoft/vscode-extension-samples)
 
 ## Install
 

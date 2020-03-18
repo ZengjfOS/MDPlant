@@ -26,6 +26,11 @@ export function activate(context: vscode.ExtensionContext) {
 			const selections = activeEditor.selections;
 			var range = new vscode.Range(new vscode.Position(line, 0), new vscode.Position(line + 1, 0))
 			vscode.window.showInformationMessage(activeEditor.document.getText(range));
+
+			var editor = vscode.window.activeTextEditor;
+			if (editor != undefined) {
+				editor.edit(edit => edit.replace(range, "changed text"));
+			}
 		}
 	});
 
