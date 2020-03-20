@@ -1,9 +1,8 @@
-# README
+# vscode Plugin
 
 ## 参考文档
 
 * [Your First Extension](https://code.visualstudio.com/api/get-started/your-first-extension)
-* [vscode-extension-samples](https://github.com/microsoft/vscode-extension-samples)
 
 ## Install
 
@@ -89,6 +88,9 @@
   ```
 * code ./mdplant
   会自动打开vscode，并进入调试模式；
+* cd mdplant 
+* 生成离线工具：vsce package
+* code --install-extension mdplant-0.0.1.vsix
 
 ## 修改
 
@@ -139,3 +141,14 @@
   // this method is called when your extension is deactivated
   export function deactivate() {}
   ```
+
+
+## Test Code
+
+```plantuml
+@startsalt
+* zengjf
+  * zengjf
+    * zengjf
+@endsalt
+```

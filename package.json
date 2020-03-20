@@ -1,4 +1,5 @@
 {
+	"publisher": "zengjf",
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "convert markdown list to plantuml",
