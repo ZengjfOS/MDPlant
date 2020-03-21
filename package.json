@@ -12,6 +12,7 @@
 	],
 	"activationEvents": [
 		"onCommand:extension.mdplant",
+		"onCommand:extension.mdsalt",
 		"onCommand:extension.mdlist"
 	],
 	"main": "./out/extension.js",
@@ -20,6 +21,10 @@
 			{
 				"command": "extension.mdplant",
 				"title": "mdplant"
+			},
+			{
+				"command": "extension.mdsalt",
+				"title": "mdsalt"
 			},
 			{
 				"command": "extension.mdlist",

@@ -24,6 +24,68 @@ function findBoundary(editor: vscode.TextEditor, index: number, direction: numbe
 	return -1;
 }
 
+function doSalt(activeEditor: vscode.TextEditor)
+{
+	var line = activeEditor.selection.active.line;
+
+	let startLine = findBoundary(activeEditor, line, MDP_UP);
+	let endLine = findBoundary(activeEditor, line, MDP_DOWN);
+
+	vscode.window.showInformationMessage("start: " + startLine + ", end: " + endLine);
+
+	if (startLine >= 0 && endLine >= 0) {
+		var editor = vscode.window.activeTextEditor;
+		if (editor != undefined) {
+			editor.edit(edit => {
+				let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(startLine).range.end)
+				let lineText = activeEditor.document.getText(range);
+				edit.replace(range, lineText + "\n{\n{T");
+
+				for (var i = (startLine + 1); i < endLine; i++) {
+					let range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
+					let lineText = activeEditor.document.getText(range);
+					
+					let outString = "";
+					for (var j = 0; j < lineText.indexOf("*") + 1; j++) {
+						outString += "+";
+					}
+					outString += lineText.substring(lineText.indexOf("*") + 1, lineText.length);
+
+					edit.replace(range, outString);
+				}
+
+				range = new vscode.Range(activeEditor.document.lineAt(endLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+				lineText = activeEditor.document.getText(range);
+				edit.replace(range, "}\n}\n" + lineText);
+
+			});
+		}
+	} else {
+		vscode.window.showInformationMessage("Please check data format.");
+	}
+
+}
+
+function doList(activeEditor: vscode.TextEditor)
+{
+	var line = activeEditor.selection.active.line;
+
+	var editor = vscode.window.activeTextEditor;
+	if (editor != undefined) {
+		editor.edit(edit => {
+			let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+			let lineText = activeEditor.document.getText(range).trim();
+			let subfix = lineText.substring(lineText.lastIndexOf(".") + 1, lineText.length).toLowerCase();
+
+			vscode.window.showInformationMessage("Please check data format: " + subfix);
+			if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
+				edit.replace(range, "* ![" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+			else
+				edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+
+		});
+	}
+}
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -43,46 +105,36 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		// vscode.window.showInformationMessage('MDPlant Work Well!');
 
+		var inputString = vscode.window.showInputBox(
+        	{ // 这个对象中所有参数都是可选参数
+                password:false, 				// 输入内容是否是密码
+                ignoreFocusOut:true, 			// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+                placeHolder:'input cmd：', 		// 在输入框内的提示信息
+				prompt:'salt/list', 			// 在输入框下方的提示信息
+            }).then( msg => {
+				const activeEditor = vscode.window.activeTextEditor;
+				if (activeEditor) {
+
+					if (msg) {
+						if (msg.toLowerCase() == "salt") {
+							doSalt(activeEditor);
+						} else if (msg.toLowerCase() == "list") {
+							doList(activeEditor);
+						}
+					}
+				}
+			}
+		);
+
+	});
+
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.mdsalt', () => {
 
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
-			var line = activeEditor.selection.active.line;
-
-			let startLine = findBoundary(activeEditor, line, MDP_UP);
-			let endLine = findBoundary(activeEditor, line, MDP_DOWN);
-
-			vscode.window.showInformationMessage("start: " + startLine + ", end: " + endLine);
-
-			if (startLine >= 0 && endLine >= 0) {
-				var editor = vscode.window.activeTextEditor;
-				if (editor != undefined) {
-					editor.edit(edit => {
-						let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(startLine).range.end)
-						let lineText = activeEditor.document.getText(range);
-						edit.replace(range, lineText + "\n{\n{T");
-
-						for (var i = (startLine + 1); i < endLine; i++) {
-							let range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
-							let lineText = activeEditor.document.getText(range);
-							
-							let outString = "";
-							for (var j = 0; j < lineText.indexOf("*") + 1; j++) {
-								outString += "+";
-							}
-							outString += lineText.substring(lineText.indexOf("*") + 1, lineText.length - 1);
-
-							edit.replace(range, outString);
-						}
-
-						range = new vscode.Range(activeEditor.document.lineAt(endLine).range.start, activeEditor.document.lineAt(endLine).range.end)
-						lineText = activeEditor.document.getText(range);
-						edit.replace(range, "}\n}\n" + lineText);
-
-					});
-				}
-			} else {
-				vscode.window.showInformationMessage("Please check data format.");
-			}
+			doSalt(activeEditor);
 		}
 	});
 
@@ -92,17 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
-			var line = activeEditor.selection.active.line;
-
-			var editor = vscode.window.activeTextEditor;
-			if (editor != undefined) {
-				editor.edit(edit => {
-					let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-					let lineText = activeEditor.document.getText(range);
-					edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
-
-				});
-			}
+			doList(activeEditor);
 		}
 	});
 
