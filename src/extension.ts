@@ -87,6 +87,26 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.mdlist', () => {
+
+		const activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor) {
+			var line = activeEditor.selection.active.line;
+
+			var editor = vscode.window.activeTextEditor;
+			if (editor != undefined) {
+				editor.edit(edit => {
+					let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+					let lineText = activeEditor.document.getText(range);
+					edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+
+				});
+			}
+		}
+	});
+
+	context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated

@@ -11,7 +11,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.mdplant"
+		"onCommand:extension.mdplant",
+		"onCommand:extension.mdlist"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -19,6 +20,10 @@
 			{
 				"command": "extension.mdplant",
 				"title": "mdplant"
+			},
+			{
+				"command": "extension.mdlist",
+				"title": "mdlist"
 			}
 		]
 	},
