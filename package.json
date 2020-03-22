@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "convert markdown list to plantuml",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -30,7 +30,26 @@
 				"command": "extension.mdlist",
 				"title": "mdlist"
 			}
-		]
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "editorFocus",
+					"command": "extension.mdplant",
+					"group": "navigation"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.mdlist",
+					"group": "navigation"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.mdsalt",
+					"group": "navigation"
+				}
+			]
+    	}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -52,5 +71,9 @@
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",
 		"vscode-test": "^1.3.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ZengjfOS/MDPlant"
 	}
 }

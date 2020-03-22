@@ -6,6 +6,8 @@ import { EOF } from 'dns';
 let MDP_UP = -1;
 let MDP_DOWN = 1;
 
+let cmds = ["list", "salt"];
+
 function findBoundary(editor: vscode.TextEditor, index: number, direction: number) {
 	let line =index;
 
@@ -77,11 +79,12 @@ function doList(activeEditor: vscode.TextEditor)
 			let lineText = activeEditor.document.getText(range).trim();
 			let subfix = lineText.substring(lineText.lastIndexOf(".") + 1, lineText.length).toLowerCase();
 
-			vscode.window.showInformationMessage("Please check data format: " + subfix);
 			if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
 				edit.replace(range, "* ![" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
 			else
 				edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+
+			vscode.window.showInformationMessage("convert txt: " + lineText);
 
 		});
 	}
@@ -111,6 +114,20 @@ export function activate(context: vscode.ExtensionContext) {
                 ignoreFocusOut:true, 			// 默认false，设置为true时鼠标点击别的地方输入框不会消失
                 placeHolder:'input cmd：', 		// 在输入框内的提示信息
 				prompt:'salt/list', 			// 在输入框下方的提示信息
+				validateInput:function(text){	// 校验输入信息
+					cmds.forEach(element => {
+						if (text.trim() == element)
+							return "";
+						
+					});
+
+					// vscode.window.showInformationMessage('cmds: ' + cmds);
+
+					/**
+					 * Return undefined, null, or the empty string when 'value' is valid.
+					 */
+					return null;
+				}
             }).then( msg => {
 				const activeEditor = vscode.window.activeTextEditor;
 				if (activeEditor) {
