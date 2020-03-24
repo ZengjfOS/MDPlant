@@ -79,13 +79,19 @@ function doList(activeEditor: vscode.TextEditor)
 			let lineText = activeEditor.document.getText(range).trim();
 			let subfix = lineText.substring(lineText.lastIndexOf(".") + 1, lineText.length).toLowerCase();
 
-			if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
-				edit.replace(range, "* ![" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
-			else
-				edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+			if (lineText.indexOf("http") > 0) {
+				let lineTextSplit = lineText.split(" http");
+				if (lineTextSplit.length = 2)
+					edit.replace(range, "* [" + lineTextSplit[0] + "](http" + lineTextSplit[1] + ")");
+			} else {
+				if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
+					edit.replace(range, "* ![" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+				else
+					edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+
+			}
 
 			vscode.window.showInformationMessage("convert txt: " + lineText);
-
 		});
 	}
 }
