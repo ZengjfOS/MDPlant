@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "convert markdown list to plantuml",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -59,7 +59,18 @@
 					"group": "navigation"
 				}
 			]
-    	}
+		},
+		"configuration": {
+			"type": "object",
+			"title": "MDPlant",
+			"properties": {
+				"MDPlant.mdindex.fileRegEx": {
+					"type": "string",
+					"default": "^\\d{1,4}_.*\\.md",
+					"description": "mdindex、index命令文件匹配正则表达式"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

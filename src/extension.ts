@@ -173,7 +173,7 @@ function doIndex(activeEditor: vscode.TextEditor)
 									let files = fs.readdirSync(folderPath || "");
 									var outputString = "";
 									files.forEach((file: fs.PathLike) => {
-										const r = /^\d{1,4}_.*\.md/g;
+										const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
 										const m = r.exec(file.toString());
 										m?.forEach((value, index) => {
 											outputString += "* [" + file + "](" + msg + "/" + file + ")\n";
@@ -183,7 +183,9 @@ function doIndex(activeEditor: vscode.TextEditor)
 									edit.insert(new vscode.Position(line, 0), outputString);
 									console.log(outputString);
 
-									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine);
+									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
+									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
+									// vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine);
 								} else {
 									vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
 								}

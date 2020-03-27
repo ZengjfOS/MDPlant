@@ -2,7 +2,7 @@
 
 ## 离线安装
 
-`code --install-extension mdplant-0.0.1.vsix`
+`code --install-extension mdplant-x.x.x.vsix`
 
 ## command list
 
@@ -51,9 +51,4 @@
 
 ## 注意
 
-在不同的电脑上开发的时候，发现需要使用`npm install`来下载一些项目必要的依赖包；
-
-## dev-info
-
-20200327:  
-更新index命令，根据输入的相对目录（打开的项目根目录），根据`/^\d{1,4}_.*\.md/g`正则表达式匹配文件名，以Markdown list形式展现
+**在不同的电脑上开发的时候，发现需要使用`npm install`来下载一些项目必要的依赖包；**
