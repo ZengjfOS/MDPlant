@@ -199,6 +199,122 @@ function doIndex(activeEditor: vscode.TextEditor)
 	);
 }
 
+
+function fileAbstract(fileContentArr: string[]) {
+
+	let startAbstract = false;
+	for (let i = 0; i < fileContentArr.length; i++) {
+		let element = fileContentArr[i].trim();
+		if (element.startsWith("# ")) {
+			startAbstract = true;
+			continue;
+		}
+
+		if (startAbstract) {
+			if (element.length > 0) {
+				
+				if (element.startsWith("#"))
+					return "Empty Abstract";
+				else
+					return element;
+			}
+		}
+	}
+}
+
+function doTable(activeEditor: vscode.TextEditor)
+{
+	var line = activeEditor.selection.active.line;
+
+	var inputString = vscode.window.showInputBox(
+		{ // 这个对象中所有参数都是可选参数
+			password:false,               // 输入内容是否是密码
+			ignoreFocusOut:true,          // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+			placeHolder:'input relative direcotry：',    // 在输入框内的提示信息
+			prompt:'docs',                // 在输入框下方的提示信息
+			validateInput:function(text){ // 校验输入信息
+				cmds.forEach(element => {
+					if (text.trim() == element)
+						return "";
+				});
+
+				return null;
+			}
+		}).then( msg => {
+			var editor = vscode.window.activeTextEditor;
+			if (editor != undefined) {
+
+				let startLine = findEmptyLine(activeEditor, line, MDP_UP);
+				let endLine = findEmptyLine(activeEditor, line, MDP_DOWN);
+
+				if (startLine == -1) 
+					startLine =  0;
+				else if ((startLine + 1) == activeEditor.document.lineCount)
+					startLine = startLine;
+				else 
+					startLine += 1;
+
+				if (endLine == -1) {
+					if (activeEditor.document.lineCount > 1)
+						endLine = activeEditor.document.lineCount - 1; 
+					else 
+						endLine = 0;
+				}
+
+				if (editor != undefined) {
+					editor.edit(edit => {
+						let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+						edit.delete(range);
+					}).then((value) => {
+
+						line = startLine;
+
+						if (editor != undefined) {
+							editor.edit(edit => {
+								let folderPath = vscode.workspace.rootPath + "\\" + msg;
+								console.log(folderPath);
+								if (fs.existsSync(folderPath)) {
+
+									let files = fs.readdirSync(folderPath || "");
+
+									let outputString = "NO.|文件名称|摘要\n";
+									outputString += ":--:|:--|:--\n";
+									let outputStringArray:string[] = [];
+
+									files.forEach((file: fs.PathLike) => {
+										const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
+										const m = r.exec(file.toString());
+										m?.forEach((value, index) => {
+											const fileContentArr = fs.readFileSync(folderPath + "\\" + file, 'utf8').split(/\r?\n/);
+											let fabs = fileAbstract(fileContentArr);
+											file.toString().match(/\d{1,4}/)?.forEach(index =>{
+												outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + msg + "/" + file + ") | " + fabs + "\n");
+											});
+											// console.log(file);
+										});
+									});
+
+									for (let i = 0; i < outputStringArray.length; i++) {
+										outputString += outputStringArray[outputStringArray.length - 1 - i];
+									}
+
+									edit.insert(new vscode.Position(line, 0), outputString);
+
+									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
+									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
+								} else {
+									vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
+								}
+							});
+						}
+
+					});
+				}
+			}
+		}
+	);
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -248,6 +364,8 @@ export function activate(context: vscode.ExtensionContext) {
 							doList(activeEditor);
 						} else if (msg.toLowerCase() == "index") {
 							doIndex(activeEditor);
+						} else if (msg.toLowerCase() == "table") {
+							doTable(activeEditor);
 						}
 					}
 				}
@@ -283,6 +401,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			doIndex(activeEditor);
+		}
+	});
+
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.mdtable', () => {
+
+		const activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor) {
+			doTable(activeEditor);
 		}
 	});
 
