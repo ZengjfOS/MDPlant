@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { EOF } from 'dns';
 import * as fs from 'fs';
+import { basename } from 'path';
 
 let MDP_UP = -1;
 let MDP_DOWN = 1;
@@ -106,10 +107,9 @@ function doList(activeEditor: vscode.TextEditor)
 					edit.replace(range, "* [" + lineTextSplit[0] + "](http" + lineTextSplit[1] + ")");
 			} else {
 				if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
-					edit.replace(range, "* ![" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
+					edit.replace(range, "* ![" + basename(lineText.replace("\\", "/")) + "](" + lineText.replace("\\", "/") + ")");
 				else
-					edit.replace(range, "* [" + lineText.replace("\\", "/") + "](" + lineText.replace("\\", "/") + ")");
-
+					edit.replace(range, "* [" + basename(lineText.replace("\\", "/")) + "](" + lineText.replace("\\", "/") + ")");
 			}
 
 			vscode.window.showInformationMessage("convert txt: " + lineText);
@@ -197,6 +197,65 @@ function doIndex(activeEditor: vscode.TextEditor)
 			}
 		}
 	);
+}
+
+function doMenu(activeEditor: vscode.TextEditor)
+{
+	var line = activeEditor.selection.active.line;
+
+	var editor = vscode.window.activeTextEditor;
+	if (editor != undefined) {
+
+		let startLine = findEmptyLine(activeEditor, line, MDP_UP);
+		let endLine = findEmptyLine(activeEditor, line, MDP_DOWN);
+
+		if (startLine == -1) 
+			startLine =  0;
+		else if ((startLine + 1) == activeEditor.document.lineCount)
+			startLine = startLine;
+		else 
+			startLine += 1;
+
+		if (endLine == -1) {
+			if (activeEditor.document.lineCount > 1)
+				endLine = activeEditor.document.lineCount - 1; 
+			else 
+				endLine = 0;
+		}
+
+		if (editor != undefined) {
+			editor.edit(edit => {
+				let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+				edit.delete(range);
+			}).then((value) => {
+
+				line = startLine;
+
+				if (editor != undefined) {
+					editor.edit(edit => {
+						let docs = activeEditor.document.getText().split(/\r?\n/);
+						let menus:string[] = [];
+
+						for (let i = 0; i < docs.length; i++) {
+							if (docs[i].match(/^#{1,}/g) != null) {
+								let prefix = docs[i].substr(0, docs[i].lastIndexOf("#")).replace("#", "  "); 
+								let content = docs[i].substr(docs[i].lastIndexOf("#") + 1).trim().replace(" ", "-");
+								menus.push(prefix + "* [" + content + "](#" + content + ")\n");
+							}
+						}
+
+						let outputString = "";
+						for (let i = 0; i < menus.length; i++) {
+							outputString += menus[i];
+						}
+
+						edit.insert(new vscode.Position(line, 0), outputString);
+					});
+				}
+			});
+		}
+	}
+
 }
 
 
@@ -338,7 +397,7 @@ export function activate(context: vscode.ExtensionContext) {
                 password:false,               // 输入内容是否是密码
                 ignoreFocusOut:true,          // 默认false，设置为true时鼠标点击别的地方输入框不会消失
                 placeHolder:'input cmd：',    // 在输入框内的提示信息
-				prompt:'salt/list/index',     // 在输入框下方的提示信息
+				prompt:'salt/list/index/table/menu',     // 在输入框下方的提示信息
 				validateInput:function(text){ // 校验输入信息
 					cmds.forEach(element => {
 						if (text.trim() == element)
@@ -346,11 +405,6 @@ export function activate(context: vscode.ExtensionContext) {
 						
 					});
 
-					// vscode.window.showInformationMessage('cmds: ' + cmds);
-
-					/**
-					 * Return undefined, null, or the empty string when 'value' is valid.
-					 */
 					return null;
 				}
             }).then( msg => {
@@ -366,6 +420,8 @@ export function activate(context: vscode.ExtensionContext) {
 							doIndex(activeEditor);
 						} else if (msg.toLowerCase() == "table") {
 							doTable(activeEditor);
+						} else if (msg.toLowerCase() == "menu") {
+							doMenu(activeEditor);
 						}
 					}
 				}
@@ -411,6 +467,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			doTable(activeEditor);
+		}
+	});
+
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.mdmenu', () => {
+
+		const activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor) {
+			doMenu(activeEditor);
 		}
 	});
 

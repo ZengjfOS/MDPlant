@@ -8,6 +8,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.6] - 2020-03-29
+### Added
+- menu命令，提取当前文档的标题，并形成菜单
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [0.0.5] - 2020-03-28
 ### Added
 - table命令，将index命令生成的索引换成生成table，并提取其摘要内容，摘要内容是标题一到标题二之间的第一行实体内容，如果没有，显示`Empty Abstract`

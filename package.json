@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "convert markdown list to plantuml",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -15,6 +15,7 @@
 		"onCommand:extension.mdsalt",
 		"onCommand:extension.mdlist",
 		"onCommand:extension.mdtable",
+		"onCommand:extension.mdmenu",
 		"onCommand:extension.mdindex"
 	],
 	"main": "./out/extension.js",
@@ -35,6 +36,10 @@
 			{
 				"command": "extension.mdtable",
 				"title": "mdtable"
+			},
+			{
+				"command": "extension.mdmenu",
+				"title": "mdmenu"
 			},
 			{
 				"command": "extension.mdindex",
@@ -61,6 +66,11 @@
 				{
 					"when": "editorFocus",
 					"command": "extension.mdtable",
+					"group": "navigation"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.mdmenu",
 					"group": "navigation"
 				},
 				{
