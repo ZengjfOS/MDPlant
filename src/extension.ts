@@ -98,8 +98,17 @@ function doList(activeEditor: vscode.TextEditor)
 	if (editor != undefined) {
 		editor.edit(edit => {
 			let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-			let lineText = activeEditor.document.getText(range).trim();
+			let lineText = activeEditor.document.getText(range).trim().replace(/\\/g, "/");
 			let subfix = lineText.substring(lineText.lastIndexOf(".") + 1, lineText.length).toLowerCase();
+
+			let fileName = editor?.document.fileName.replace(/\\/g, "/", ) || "";
+			let docs_dir = basename(fileName.replace("/" + basename(fileName), ""));
+
+			if (lineText.length <= 0)
+				return ;
+
+			if (docs_dir == "docs" && lineText.startsWith(docs_dir + "/")) 
+					lineText = lineText.replace(/^docs\//, "");
 
 			if (lineText.indexOf("http") > 0) {
 				let lineTextSplit = lineText.split(" http");
@@ -107,9 +116,9 @@ function doList(activeEditor: vscode.TextEditor)
 					edit.replace(range, "* [" + lineTextSplit[0] + "](http" + lineTextSplit[1] + ")");
 			} else {
 				if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
-					edit.replace(range, "* ![" + basename(lineText.replace("\\", "/")) + "](" + lineText.replace("\\", "/") + ")");
+					edit.replace(range, "![" + basename(lineText) + "](" + lineText + ")");
 				else
-					edit.replace(range, "* [" + basename(lineText.replace("\\", "/")) + "](" + lineText.replace("\\", "/") + ")");
+					edit.replace(range, "* [" + basename(lineText) + "](" + lineText + ")");
 			}
 
 			vscode.window.showInformationMessage("convert txt: " + lineText);
@@ -172,16 +181,21 @@ function doIndex(activeEditor: vscode.TextEditor)
 								if (fs.existsSync(folderPath)) {
 									let files = fs.readdirSync(folderPath || "");
 									var outputString = "";
+									let outputStringArray:string[] = [];
 									files.forEach((file: fs.PathLike) => {
 										const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
 										const m = r.exec(file.toString());
 										m?.forEach((value, index) => {
-											outputString += "* [" + file + "](" + msg + "/" + file + ")\n";
+											outputStringArray.push("* [" + file + "](" + msg + "/" + file + ")\n")
 										});
 									});
 
+									for (let i = 0; i < outputStringArray.length; i++) {
+										outputString += outputStringArray[outputStringArray.length - 1 - i];
+									}
+
 									edit.insert(new vscode.Position(line, 0), outputString);
-									console.log(outputString);
+									// console.log(outputString);
 
 									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
 									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
@@ -223,6 +237,9 @@ function doMenu(activeEditor: vscode.TextEditor)
 				endLine = 0;
 		}
 
+		if (startLine > endLine) 
+			endLine = startLine;
+
 		if (editor != undefined) {
 			editor.edit(edit => {
 				let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
@@ -237,10 +254,10 @@ function doMenu(activeEditor: vscode.TextEditor)
 						let menus:string[] = [];
 
 						for (let i = 0; i < docs.length; i++) {
-							if (docs[i].match(/^#{1,}/g) != null) {
-								let prefix = docs[i].substr(0, docs[i].lastIndexOf("#")).replace("#", "  "); 
-								let content = docs[i].substr(docs[i].lastIndexOf("#") + 1).trim().replace(" ", "-");
-								menus.push(prefix + "* [" + content + "](#" + content + ")\n");
+							if (docs[i].match(/^#{2,} /g) != null) {
+								let prefix = docs[i].substr(2, docs[i].lastIndexOf("#")).trim().replace(/#/g, "  "); 
+								let content = docs[i].substr(docs[i].lastIndexOf("#") + 1).trim();
+								menus.push(prefix + "* [" + content + "](#" + content.replace(/ /g, "-").replace(/[、\.\(\)]/g, "") + ")\n");
 							}
 						}
 
@@ -250,6 +267,7 @@ function doMenu(activeEditor: vscode.TextEditor)
 						}
 
 						edit.insert(new vscode.Position(line, 0), outputString);
+						vscode.window.showInformationMessage("menu start: " + startLine + ", end: " + endLine);
 					});
 				}
 			});

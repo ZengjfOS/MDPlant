@@ -8,6 +8,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.7] - 2020-04-2
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 匹配GMF标题目录，主要是移除`、.()`标题中的这几个字符
+
+
 ## [0.0.6] - 2020-03-29
 ### Added
 - menu命令，提取当前文档的标题，并形成菜单
