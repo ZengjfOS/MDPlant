@@ -2,8 +2,8 @@
 	"publisher": "zengjf",
 	"name": "mdplant",
 	"displayName": "MDPlant",
-	"description": "convert markdown list to plantuml",
-	"version": "0.0.7",
+	"description": "markdown tools for plantuml ",
+	"version": "0.0.8",
 	"engines": {
 		"vscode": "^1.43.0"
 	},

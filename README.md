@@ -68,3 +68,12 @@
 
 * **在不同的电脑上开发的时候，发现需要使用`npm install`来下载一些项目必要的依赖包；**
 * 如果你安装了`Markdown All in One`插件，`menu`命令会出现`Table of Contents(out of date)`问题；
+
+## 编译及安装
+
+* npm install -g yo generator-code
+* yo code
+* code ./mdplant
+* cd mdplant
+* vsce package
+* code --install-extension mdplant-0.0.1.vsix

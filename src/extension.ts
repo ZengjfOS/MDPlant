@@ -113,7 +113,7 @@ function doList(activeEditor: vscode.TextEditor)
 			if (lineText.indexOf("http") > 0) {
 				let lineTextSplit = lineText.split(" http");
 				if (lineTextSplit.length = 2)
-					edit.replace(range, "* [" + lineTextSplit[0] + "](http" + lineTextSplit[1] + ")");
+					edit.replace(range, "* [" + lineTextSplit[0].trim() + "](http" + lineTextSplit[1].trim() + ")");
 			} else {
 				if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
 					edit.replace(range, "![" + basename(lineText) + "](" + lineText + ")");
@@ -166,19 +166,19 @@ function doIndex(activeEditor: vscode.TextEditor)
 						endLine = 0;
 				}
 
-				if (editor != undefined) {
-					editor.edit(edit => {
-						let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
-						edit.delete(range);
-					}).then((value) => {
+				let folderPath = vscode.workspace.rootPath + "\\" + msg;
+				console.log(folderPath);
+				if (fs.existsSync(folderPath)) {
+					if (editor != undefined) {
+						editor.edit(edit => {
+							let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+							edit.delete(range);
+						}).then((value) => {
 
-						line = startLine;
+							line = startLine;
 
-						if (editor != undefined) {
-							editor.edit(edit => {
-								let folderPath = vscode.workspace.rootPath + "\\" + msg;
-								console.log(folderPath);
-								if (fs.existsSync(folderPath)) {
+							if (editor != undefined) {
+								editor.edit(edit => {
 									let files = fs.readdirSync(folderPath || "");
 									var outputString = "";
 									let outputStringArray:string[] = [];
@@ -200,13 +200,13 @@ function doIndex(activeEditor: vscode.TextEditor)
 									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
 									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
 									// vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine);
-								} else {
-									vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
-								}
-							});
-						}
+								});
+							}
 
-					});
+						});
+					}
+				} else {
+					vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
 				}
 			}
 		}
@@ -257,7 +257,7 @@ function doMenu(activeEditor: vscode.TextEditor)
 							if (docs[i].match(/^#{2,} /g) != null) {
 								let prefix = docs[i].substr(2, docs[i].lastIndexOf("#")).trim().replace(/#/g, "  "); 
 								let content = docs[i].substr(docs[i].lastIndexOf("#") + 1).trim();
-								menus.push(prefix + "* [" + content + "](#" + content.replace(/ /g, "-").replace(/[、\.\(\)]/g, "") + ")\n");
+								menus.push(prefix + "* [" + content + "](#" + content.replace(/ /g, "-").replace(/[、\.\(\)\&\*]/g, "") + ")\n");
 							}
 						}
 
@@ -338,20 +338,19 @@ function doTable(activeEditor: vscode.TextEditor)
 						endLine = 0;
 				}
 
-				if (editor != undefined) {
-					editor.edit(edit => {
-						let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
-						edit.delete(range);
-					}).then((value) => {
+				let folderPath = vscode.workspace.rootPath + "\\" + msg;
+				console.log(folderPath);
+				if (fs.existsSync(folderPath)) {
+					if (editor != undefined) {
+						editor.edit(edit => {
+							let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+							edit.delete(range);
+						}).then((value) => {
 
-						line = startLine;
+							line = startLine;
 
-						if (editor != undefined) {
-							editor.edit(edit => {
-								let folderPath = vscode.workspace.rootPath + "\\" + msg;
-								console.log(folderPath);
-								if (fs.existsSync(folderPath)) {
-
+							if (editor != undefined) {
+								editor.edit(edit => {
 									let files = fs.readdirSync(folderPath || "");
 
 									let outputString = "NO.|文件名称|摘要\n";
@@ -379,13 +378,13 @@ function doTable(activeEditor: vscode.TextEditor)
 
 									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
 									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
-								} else {
-									vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
-								}
-							});
-						}
+								});
+							}
 
-					});
+						});
+					}
+				} else {
+					vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
 				}
 			}
 		}
