@@ -7,6 +7,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 - Initial release
+## [0.0.7] - 2021-01-31
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- support gif
+- table remove subfix `.md`
+
+
 
 ## [0.0.7] - 2020-04-2
 ### Added

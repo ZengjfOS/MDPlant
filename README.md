@@ -71,7 +71,13 @@
 
 ## 编译及安装
 
+* 如果没有安装nodejs，安装nodejs
+  * https://nodejs.org/zh-cn/download/
 * npm install -g yo generator-code
+* npm install -g vsce
+* npm install -g typescript
+* 二次编译的可以直接用下面这条安装依赖
+  * npm install
 * yo code
 * code ./mdplant
 * cd mdplant

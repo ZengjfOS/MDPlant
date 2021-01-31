@@ -115,7 +115,7 @@ function doList(activeEditor: vscode.TextEditor)
 				if (lineTextSplit.length = 2)
 					edit.replace(range, "* [" + lineTextSplit[0].trim() + "](http" + lineTextSplit[1].trim() + ")");
 			} else {
-				if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg")
+				if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg" || subfix == "gif")
 					edit.replace(range, "![" + basename(lineText) + "](" + lineText + ")");
 				else
 					edit.replace(range, "* [" + basename(lineText) + "](" + lineText + ")");
@@ -364,7 +364,7 @@ function doTable(activeEditor: vscode.TextEditor)
 											const fileContentArr = fs.readFileSync(folderPath + "\\" + file, 'utf8').split(/\r?\n/);
 											let fabs = fileAbstract(fileContentArr);
 											file.toString().match(/\d{1,4}/)?.forEach(index =>{
-												outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + msg + "/" + file + ") | " + fabs + "\n");
+												outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg + "/" + file + ") | " + fabs + "\n");
 											});
 											// console.log(file);
 										});
