@@ -7,6 +7,20 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 - Initial release
+
+## [0.0.10] - 2021-09-22
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- support list revert
+- support salt revert
+- remove index, table is batter then index
+- table with relative path for default generate and for absolute with '~' string start
+
 ## [0.0.7] - 2021-01-31
 ### Added
 - 无

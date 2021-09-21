@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 import { EOF } from 'dns';
 import * as fs from 'fs';
 import { basename } from 'path';
+import * as path from 'path';
+import { createSecureContext } from 'tls';
 
 let MDP_UP = -1;
 let MDP_DOWN = 1;
@@ -54,6 +56,7 @@ function doSalt(activeEditor: vscode.TextEditor)
 
 	let startLine = findBoundary(activeEditor, line, MDP_UP, SALT_BOUNDARY);
 	let endLine = findBoundary(activeEditor, line, MDP_DOWN, SALT_BOUNDARY);
+	let revert = false
 
 	vscode.window.showInformationMessage("start: " + startLine + ", end: " + endLine);
 
@@ -61,27 +64,59 @@ function doSalt(activeEditor: vscode.TextEditor)
 		var editor = vscode.window.activeTextEditor;
 		if (editor != undefined) {
 			editor.edit(edit => {
-				let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(startLine).range.end)
+				let range = new vscode.Range(activeEditor.document.lineAt(startLine + 1).range.start, activeEditor.document.lineAt(startLine + 1).range.end)
 				let lineText = activeEditor.document.getText(range);
-				edit.replace(range, lineText + "\n{\n{T");
+				let outString = " ";
+				if (lineText.startsWith("{")) {
+					for (var i = (startLine + 1); i < (endLine); i++) {
+						range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
+						lineText = activeEditor.document.getText(range);
 
-				for (var i = (startLine + 1); i < endLine; i++) {
-					let range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
-					let lineText = activeEditor.document.getText(range);
-					
-					let outString = "";
-					for (var j = 0; j < lineText.indexOf("*") + 1; j++) {
-						outString += "+";
+						if (lineText.startsWith("{") || lineText.startsWith("}")) {
+							edit.replace(range, "")
+							continue
+						}
+
+						outString = lineText.trim().replace("+ ", "* ")
+						outString = outString.replace(/\+/g, " ")
+
+						edit.replace(range, outString);
 					}
-					outString += lineText.substring(lineText.indexOf("*") + 1, lineText.length);
 
-					edit.replace(range, outString);
+					revert = true
+				} else {
+					range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(startLine).range.end)
+					lineText = activeEditor.document.getText(range);
+					console.log(lineText)
+					edit.replace(range, lineText + "\n{\n{T");
+
+					for (var i = (startLine + 1); i < endLine; i++) {
+						let range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
+						let lineText = activeEditor.document.getText(range);
+
+						let outString = "";
+						for (var j = 0; j < lineText.indexOf("*") + 1; j++) {
+							outString += "+";
+						}
+						outString += lineText.substring(lineText.indexOf("*") + 1, lineText.length);
+
+						edit.replace(range, outString);
+					}
+
+					range = new vscode.Range(activeEditor.document.lineAt(endLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+					lineText = activeEditor.document.getText(range);
+					edit.replace(range, "}\n}\n" + lineText);
 				}
-
-				range = new vscode.Range(activeEditor.document.lineAt(endLine).range.start, activeEditor.document.lineAt(endLine).range.end)
-				lineText = activeEditor.document.getText(range);
-				edit.replace(range, "}\n}\n" + lineText);
-
+			}).then((value) => {
+				if (revert == true) {
+					console.log("revert")
+					editor?.edit(edit => {
+						let range = new vscode.Range(activeEditor.document.lineAt(endLine - 3).range.end, activeEditor.document.lineAt(endLine - 1).range.end)
+						edit.delete(range);
+						range = new vscode.Range(activeEditor.document.lineAt(startLine + 1).range.start, activeEditor.document.lineAt(startLine + 3).range.start)
+						edit.delete(range);
+					})
+				}
 			});
 		}
 	} else {
@@ -96,19 +131,38 @@ function doList(activeEditor: vscode.TextEditor)
 
 	var editor = vscode.window.activeTextEditor;
 	if (editor != undefined) {
+		// get current file relative dir
+		let currentEditorFile = editor.document.uri.path
+		let currentWorkspaceFold = editor.document.uri.path
+		if(vscode.workspace.workspaceFolders !== undefined) {
+			currentWorkspaceFold = vscode.workspace.workspaceFolders[0].uri.path
+		}
+		let currentFileDir = path.dirname(currentEditorFile.replace(currentWorkspaceFold, "").replace(/^\//, ""))
+		// console.log(currentFileDir)
+
 		editor.edit(edit => {
 			let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
 			let lineText = activeEditor.document.getText(range).trim().replace(/\\/g, "/");
 			let subfix = lineText.substring(lineText.lastIndexOf(".") + 1, lineText.length).toLowerCase();
 
-			let fileName = editor?.document.fileName.replace(/\\/g, "/", ) || "";
-			let docs_dir = basename(fileName.replace("/" + basename(fileName), ""));
-
 			if (lineText.length <= 0)
 				return ;
 
-			if (docs_dir == "docs" && lineText.startsWith(docs_dir + "/")) 
-					lineText = lineText.replace(/^docs\//, "");
+			// revert string
+			if (lineText.startsWith("* ") || lineText.startsWith("![")) {
+				if (lineText.indexOf("(") > -1 && lineText.indexOf(")") > -1) {
+					if (lineText.indexOf("http") > -1) {
+						edit.replace(range, lineText.split("[")[1].split("]")[0] + " " + lineText.split("(")[1].split(")")[0]);
+					} else {
+						edit.replace(range, lineText.split("(")[1].split(")")[0]);
+					}
+				}
+
+				return
+			}
+
+			if (lineText.startsWith(currentFileDir))
+					lineText = lineText.replace(currentFileDir + "/", "");
 
 			if (lineText.indexOf("http") > 0) {
 				let lineTextSplit = lineText.split(" http");
@@ -124,93 +178,6 @@ function doList(activeEditor: vscode.TextEditor)
 			vscode.window.showInformationMessage("convert txt: " + lineText);
 		});
 	}
-}
-
-function doIndex(activeEditor: vscode.TextEditor)
-{
-	var line = activeEditor.selection.active.line;
-
-	var inputString = vscode.window.showInputBox(
-		{ // 这个对象中所有参数都是可选参数
-			password:false,               // 输入内容是否是密码
-			ignoreFocusOut:true,          // 默认false，设置为true时鼠标点击别的地方输入框不会消失
-			placeHolder:'input relative direcotry：',    // 在输入框内的提示信息
-			prompt:'docs',                // 在输入框下方的提示信息
-			validateInput:function(text){ // 校验输入信息
-				cmds.forEach(element => {
-					if (text.trim() == element)
-						return "";
-					
-				});
-
-				return null;
-			}
-		}).then( msg => {
-			var editor = vscode.window.activeTextEditor;
-			if (editor != undefined) {
-
-				let startLine = findEmptyLine(activeEditor, line, MDP_UP);
-				let endLine = findEmptyLine(activeEditor, line, MDP_DOWN);
-
-				if (startLine == -1) 
-					startLine =  0;
-				else if ((startLine + 1) == activeEditor.document.lineCount)
-					startLine = startLine;
-				else 
-					startLine += 1;
-
-				if (endLine == -1) {
-					if (activeEditor.document.lineCount > 1)
-						endLine = activeEditor.document.lineCount - 1; 
-					else 
-						endLine = 0;
-				}
-
-				let folderPath = vscode.workspace.rootPath + "\\" + msg;
-				console.log(folderPath);
-				if (fs.existsSync(folderPath)) {
-					if (editor != undefined) {
-						editor.edit(edit => {
-							let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
-							edit.delete(range);
-						}).then((value) => {
-
-							line = startLine;
-
-							if (editor != undefined) {
-								editor.edit(edit => {
-									let files = fs.readdirSync(folderPath || "");
-									var outputString = "";
-									let outputStringArray:string[] = [];
-									files.forEach((file: fs.PathLike) => {
-										const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
-										const m = r.exec(file.toString());
-										m?.forEach((value, index) => {
-											outputStringArray.push("* [" + file + "](" + msg + "/" + file + ")\n")
-										});
-									});
-
-									for (let i = 0; i < outputStringArray.length; i++) {
-										outputString += outputStringArray[outputStringArray.length - 1 - i];
-									}
-
-									edit.insert(new vscode.Position(line, 0), outputString);
-									// console.log(outputString);
-
-									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
-									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
-									// vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine);
-								});
-							}
-
-						});
-					}
-				} else {
-					vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
-				}
-			}
-		}
-	);
 }
 
 function doMenu(activeEditor: vscode.TextEditor)
@@ -338,8 +305,23 @@ function doTable(activeEditor: vscode.TextEditor)
 						endLine = 0;
 				}
 
-				let folderPath = vscode.workspace.rootPath + "\\" + msg;
+				// get current file relative dir
+				let currentEditorFile = editor.document.uri.path
+				let currentWorkspaceFold = editor.document.uri.path
+				if(vscode.workspace.workspaceFolders !== undefined) {
+					currentWorkspaceFold = vscode.workspace.workspaceFolders[0].uri.path
+				}
+				let currentFileDir = path.dirname(currentEditorFile.replace(currentWorkspaceFold, ""))
+
+				// merge relative dir
+				let folderPath = ""
+				if (msg?.startsWith("~")) {
+					folderPath = vscode.workspace.rootPath + "\\" + msg.replace("~", "");
+				} else {
+					folderPath = vscode.workspace.rootPath + "\\" + currentFileDir.replace("/", "\\") + "\\" + msg;
+				}
 				console.log(folderPath);
+
 				if (fs.existsSync(folderPath)) {
 					if (editor != undefined) {
 						editor.edit(edit => {
@@ -364,7 +346,7 @@ function doTable(activeEditor: vscode.TextEditor)
 											const fileContentArr = fs.readFileSync(folderPath + "\\" + file, 'utf8').split(/\r?\n/);
 											let fabs = fileAbstract(fileContentArr);
 											file.toString().match(/\d{1,4}/)?.forEach(index =>{
-												outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg + "/" + file + ") | " + fabs + "\n");
+												outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg?.replace("~", "") + "/" + file + ") | " + fabs + "\n");
 											});
 											// console.log(file);
 										});
@@ -433,8 +415,6 @@ export function activate(context: vscode.ExtensionContext) {
 							doSalt(activeEditor);
 						} else if (msg.toLowerCase() == "list") {
 							doList(activeEditor);
-						} else if (msg.toLowerCase() == "index") {
-							doIndex(activeEditor);
 						} else if (msg.toLowerCase() == "table") {
 							doTable(activeEditor);
 						} else if (msg.toLowerCase() == "menu") {
@@ -464,16 +444,6 @@ export function activate(context: vscode.ExtensionContext) {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			doList(activeEditor);
-		}
-	});
-
-	context.subscriptions.push(disposable);
-
-	disposable = vscode.commands.registerCommand('extension.mdindex', () => {
-
-		const activeEditor = vscode.window.activeTextEditor;
-		if (activeEditor) {
-			doIndex(activeEditor);
 		}
 	});
 

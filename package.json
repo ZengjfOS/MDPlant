@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown tools for plantuml ",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -15,8 +15,7 @@
 		"onCommand:extension.mdsalt",
 		"onCommand:extension.mdlist",
 		"onCommand:extension.mdtable",
-		"onCommand:extension.mdmenu",
-		"onCommand:extension.mdindex"
+		"onCommand:extension.mdmenu"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -40,10 +39,6 @@
 			{
 				"command": "extension.mdmenu",
 				"title": "mdmenu"
-			},
-			{
-				"command": "extension.mdindex",
-				"title": "mdindex"
 			}
 		],
 		"menus": {
@@ -71,11 +66,6 @@
 				{
 					"when": "editorFocus",
 					"command": "extension.mdmenu",
-					"group": "navigation"
-				},
-				{
-					"when": "editorFocus",
-					"command": "extension.mdindex",
 					"group": "navigation"
 				}
 			]

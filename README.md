@@ -15,6 +15,7 @@
 * mdsalt: 同mdplant -> salt解释
 * mdlist: 同mdplant -> list解释
 * mdindex: 同mdplant -> index解释
+  * removed
 * mdtable: 同mdplant -> table解释
 * mdmenu: 同mdplant -> menu解释
 
