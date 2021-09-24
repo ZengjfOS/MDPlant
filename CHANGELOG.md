@@ -16,6 +16,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - 无
 
 ### Fixed
+- support indent, list to tree
+
+## [0.0.10] - 2021-09-22
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
 - support list revert
 - support salt revert
 - remove index, table is batter then index

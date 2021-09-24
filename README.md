@@ -9,17 +9,14 @@
 * mdplant
   * salt: 将以`@startsalt`开头的行以及以`@endsalt`结束的行包括的markdown list转成salt
   * list: 将鼠标当前行文字转成链接或者图片链接
-  * index: 生成Markdown List目录
+  * indent: 将代码list转换为tree
   * table: 生成Markdown Table目录
   * menu: 生成Markdown Menu
 * mdsalt: 同mdplant -> salt解释
 * mdlist: 同mdplant -> list解释
-* mdindex: 同mdplant -> index解释
-  * removed
+* mdindent: 同mdplant -> indent解释
 * mdtable: 同mdplant -> table解释
 * mdmenu: 同mdplant -> menu解释
-
-
 
 ## 使用示例
 
@@ -47,6 +44,44 @@
 }
 }
 @endsalt
+```
+
+### indent命令
+
+将以下代码
+
+```
+* title
+  * program 1
+    * text 1
+  * program 2
+    * text 2
+    * program 3
+      * text 3
+      * program 4
+        * text 4
+    * program 5
+      * text 5
+  * program 6
+    * text 6
+```
+
+转成
+
+```
+* title
+  ├── program 1
+  │   └── text 1
+  ├── program 2
+  │   ├── text 2
+  │   ├── program 3
+  │   │   ├── text 3
+  │   │   └── program 4
+  │   │       └── text 4
+  │   └── program 5
+  │       └── text 5
+  └── program 6
+      └── text 6
 ```
 
 ### list命令
