@@ -27,23 +27,23 @@
 			},
 			{
 				"command": "extension.mdsalt",
-				"title": "mdsalt"
+				"title": "md.salt"
 			},
 			{
 				"command": "extension.mdlist",
-				"title": "mdlist"
+				"title": "md.list"
 			},
 			{
 				"command": "extension.mdtable",
-				"title": "mdtable"
+				"title": "md.table"
 			},
 			{
 				"command": "extension.mdindent",
-				"title": "mdindent"
+				"title": "md.indent"
 			},
 			{
 				"command": "extension.mdmenu",
-				"title": "mdmenu"
+				"title": "md.menu"
 			}
 		],
 		"menus": {

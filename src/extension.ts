@@ -5,7 +5,6 @@ import { EOF } from 'dns';
 import * as fs from 'fs';
 import { basename } from 'path';
 import * as path from 'path';
-import { createSecureContext } from 'tls';
 
 let MDP_UP = -1;
 let MDP_DOWN = 1;
@@ -20,7 +19,7 @@ function findBoundary(editor: vscode.TextEditor, index: number, direction: numbe
 	while ((line != -1) && (line != editor.document.lineCount)) {
 		let editorLine = editor.document.lineAt(line);
 		let range = new vscode.Range(editorLine.range.start, editorLine.range.end)
-		let lineText = editor.document.getText(range);
+		let lineText = editor.document.getText(range).trim();
 
 		if (lineText.startsWith(boundary[0]) || lineText.startsWith(boundary[1])) {
 			return line;
@@ -190,6 +189,157 @@ function treeToList(contentArray: string[], debug: boolean) {
 		let index = contentArray[i].indexOf("─ ")
 		if (index > 0) {
 			contentArray[i] = "".padStart(index / 2) + "* " + contentArray[i].substring(index + 2)
+		}
+	}
+
+	if (debug) {
+		console.log("-------output--------")
+		for (let i = 0; i < contentArray.length; i++) {
+			console.log(contentArray[i])
+		}
+	}
+}
+
+function findIndexsWithSkip(level: number, start: number, end: number, contentArray: string[], columnInterval: number, debug: boolean, skipLevel: number) {
+
+	let indexs: number[] = []
+
+	if (debug) {
+		console.log("------------level " + level + " --------------")
+		console.log("level = " + level)
+		console.log("start = " + start)
+		console.log("end = " + end)
+		console.log("columnInterval = " + columnInterval)
+	}
+
+	for (let i = start; i < end; i++) {
+		// level * columnInterval: 当前行本身缩进
+		// (level - 1) * columnInterval: 额外添加的行缩进，目前是每个level添加2个空格，为了更方便的阅读
+		let line = contentArray[i]
+		if (level > 0) {
+			if (line.length > ((level + skipLevel) * columnInterval) && line[(2 * level - 1 + skipLevel) * columnInterval] == "*") {
+				indexs.push(i)
+			}
+		} else {	// level <= 0
+			level = 0
+			if (line.length > 0 && line[0] == "*") {
+				indexs.push(i)
+			}
+		}
+	}
+
+	return indexs
+}
+
+function listToTreeWithSkip(level: number, start: number, end: number, contentArray: string[], columnInterval: number, debug: boolean, skipLevel: number) {
+	if (debug) {
+		console.log("------------level " + level + " --------------")
+		console.log("level = " + level)
+		console.log("start = " + start)
+		console.log("end = " + end)
+		console.log("columnInterval = " + columnInterval)
+
+		for (let i = start; i < end - start; i++) {
+			console.log(contentArray[i])
+		}
+	}
+
+	// 因为传入的是包前不包后，排除第一行
+	start += 1
+
+	// 查找子索引数组
+	let indexs = findIndexsWithSkip(level + 1, start, end, contentArray, columnInterval, debug, skipLevel)
+	if (debug) {
+		console.log("indexs:")
+		console.log(indexs)
+	}
+
+	if (indexs.length > 0) {
+		if (debug)
+			console.log("-------padding space--------")
+		// 额外添加的行缩进，目前是每个level添加2个空格，为了更方便的阅读，2 + 2 = 4 space
+		for (let i = start; i < end; i++) {
+			contentArray[i] = contentArray[i].substring(0, (2 * level + skipLevel) * columnInterval) + "  " + contentArray[i].substring((2 * level + skipLevel) * columnInterval)
+			if (debug)
+				console.log(contentArray[i])
+		}
+
+		if (debug)
+			console.log("-------replace with | --------")
+		// 绘制当前的标记的列，range是前闭后开，所以要+1，因为前面为每个level增加了2个空格，替换字符位置是(2 * level + 1) * columnInterval为基准
+		for (let i = start; i < (indexs[indexs.length - 1] + 1); i++) {
+			contentArray[i] = contentArray[i].substring(0, (2 * level + 1 + skipLevel) * columnInterval) + "│" + contentArray[i].substring((2 * level + 1 + skipLevel) * columnInterval + 1)
+			if (debug)
+				console.log(contentArray[i])
+		}
+
+		if (debug)
+			console.log("-------replace with └── /├──--------")
+		// 绘制当前标记的行，由于需要替换掉*号，所以行范围需要range内要+1，由于前面额外的每个level添加了2个空格，所以要以(2 * level + 1) * columnInterval为基准
+		indexs.forEach(value => {
+			if (value == indexs[indexs.length - 1])
+				contentArray[value] = contentArray[value].substring(0, (2 * level + 1 + skipLevel) * columnInterval) + "└──" + contentArray[value].substring((2 * level + 1 + skipLevel) * columnInterval + 3)
+			else
+				contentArray[value] = contentArray[value].substring(0, (2 * level + 1 + skipLevel) * columnInterval) + "├──" + contentArray[value].substring((2 * level + 1 + skipLevel) * columnInterval + 3)
+
+		})
+
+		if (debug)
+			console.log("-------recursion--------")
+		/**
+		 * 1. 当前递归的区域的最后一行放入indexs集合，当作结束范围，这样就可以囊括整个子区域
+		 * 2. 示例 1，不用添加最后一行
+		 *	  * indent 1
+		 *		* indent 2
+		 *	  * indent 1
+		 *	  * indent 1
+		 * 3. 示例 2，需要添加最后一行
+		 *	  * indent 1
+		 *		* indent 2
+		 *	  * indent 1
+		 *		* indent 2
+		 *		* indent 2
+		 *	-> 这个位置就是：indexs.push(end) <-
+		 * 4. 综上两个示例，统一添加最后一行，在内部判断start、end不相等才递归
+		 */
+		indexs.push(end)
+		for (let i = 0; i < indexs.length; i++) {
+			if (debug) {
+				console.log("-------start next recursion" + i + "--------")
+				console.log("start = " + start)
+				console.log("end = " + indexs[i])
+			}
+
+			// skip start == end
+			if (start != indexs[i])
+				listToTreeWithSkip(level + 1, start, indexs[i], contentArray, columnInterval, debug, skipLevel)
+
+			// 下一个子区域
+			start = indexs[i]
+		}
+	} else
+		return
+
+	if (debug) {
+		if (level == 0) {
+			console.log("-------output--------")
+			for (let i = 0; i < contentArray.length; i++) {
+				console.log(contentArray[i])
+			}
+		}
+	}
+}
+
+function treeToListWithSkip(contentArray: string[], debug: boolean, skipSpaces: number) {
+	/**
+	 * 1. 所有的节点都是以'─ '开头;
+	 * 2. 前面level是4的倍数；
+	 * 3. 保留2个space，也就是index / 2
+	 */
+	for (let i = 0; i < contentArray.length; i++) {
+		let index = contentArray[i].indexOf("─ ") - skipSpaces
+		if (index > 0) {
+			contentArray[i] = "".padStart(index / 2 + skipSpaces) + "* " + contentArray[i].substring(index + 2 + skipSpaces)
 		}
 	}
 
@@ -416,23 +566,26 @@ function doIndent(activeEditor: vscode.TextEditor)
 				}
 				// console.log(contentArray)
 
+				let skipLeve = contentArray[0].indexOf("* ") / columnInterval
+
 				if (contentArray[1].indexOf("─ ") > 0) {
-					treeToList(contentArray, false)
+					treeToListWithSkip(contentArray, false, skipLeve * columnInterval)
 				} else {
-					if (findIndexs(0, 0, contentArray.length, contentArray, columnInterval, false).length > 1) {
-						vscode.window.showInformationMessage("just support one title, plz check data format.");
+					if (findIndexsWithSkip(0, 0, contentArray.length, contentArray, columnInterval, false, skipLeve).length > 1) {
+						vscode.window.showInformationMessage("只能有一个根节点，请检查格式");
 						return
 					}
 
 					// check list start with "* "
 					for (var i = 0; i < contentArray.length; i++) {
-						if (contentArray[i].indexOf("* ") < 0) {
-							vscode.window.showInformationMessage("Please check list data format.");
+						let flagIndex = contentArray[i].indexOf("* ")
+						if ( flagIndex < 0 || (flagIndex % 2) != 0) {
+							vscode.window.showInformationMessage("检查数据格式：两个空格 * n + '* ' + 数据 (错误行：" + (startLine + i + 1) + ")");
 							return
 						}
 					}
 
-					listToTree(0, 0, contentArray.length, contentArray, columnInterval, false)
+					listToTreeWithSkip(0, 0, contentArray.length, contentArray, columnInterval, false, skipLeve)
 				}
 
 				for (var i = startLine; i < endLine; i++) {
