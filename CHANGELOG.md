@@ -8,15 +8,26 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.12] - 2021-10-16
+### Added
+- support sub dir README.md
+
+### Changed
+- table use default dir "docs" when enter empty inputed
+
+### Fixed
+- 无
+
+
 ## [0.0.11] - 2021-09-30
 ### Added
-- 无
+- support indent, list to tree
 
 ### Changed
 - 无
 
 ### Fixed
-- support indent, list to tree
+- 无
 
 ## [0.0.10] - 2021-09-22
 ### Added

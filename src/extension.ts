@@ -641,6 +641,11 @@ function doTable(activeEditor: vscode.TextEditor)
 				return null;
 			}
 		}).then( msg => {
+			if (msg == "") {
+				msg = "docs"
+				console.log("use default sub dir: " + msg)
+			}
+
 			var editor = vscode.window.activeTextEditor;
 			if (editor != undefined) {
 
@@ -696,16 +701,32 @@ function doTable(activeEditor: vscode.TextEditor)
 									let outputStringArray:string[] = [];
 
 									files.forEach((file: fs.PathLike) => {
-										const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
-										const m = r.exec(file.toString());
-										m?.forEach((value, index) => {
-											const fileContentArr = fs.readFileSync(folderPath + "\\" + file, 'utf8').split(/\r?\n/);
-											let fabs = fileAbstract(fileContentArr);
-											file.toString().match(/\d{1,4}/)?.forEach(index =>{
-												outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg?.replace("~", "") + "/" + file + ") | " + fabs + "\n");
+										if (fs.lstatSync(folderPath + "/" + file).isDirectory()) {
+											let subREADME = folderPath + "/" + file + "/README.md"
+											if (fs.existsSync(subREADME)) {
+												const r = new RegExp("^\\d{1,4}_.*", "g");
+												const m = r.exec(file.toString());
+												m?.forEach((value, index) => {
+													const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+													let fabs = fileAbstract(fileContentArr);
+													file.toString().match(/\d{1,4}/)?.forEach(index =>{
+														outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + msg?.replace("~", "") + "/" + file + "/README.md" + ") | " + fabs + "\n");
+													});
+													// console.log(file);
+												});
+											}
+										} else {
+											const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
+											const m = r.exec(file.toString());
+											m?.forEach((value, index) => {
+												const fileContentArr = fs.readFileSync(folderPath + "\\" + file, 'utf8').split(/\r?\n/);
+												let fabs = fileAbstract(fileContentArr);
+												file.toString().match(/\d{1,4}/)?.forEach(index =>{
+													outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg?.replace("~", "") + "/" + file + ") | " + fabs + "\n");
+												});
+												// console.log(file);
 											});
-											// console.log(file);
-										});
+										}
 									});
 
 									for (let i = 0; i < outputStringArray.length; i++) {

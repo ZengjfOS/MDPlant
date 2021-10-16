@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown tools for plantuml ",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
