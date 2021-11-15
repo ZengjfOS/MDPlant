@@ -10,6 +10,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.0.12] - 2021-10-16
 ### Added
+- 无
+
+### Changed
+- more easy use for salt cmd
+- keep line wihtespace for list cmd
+
+### Fixed
+- 无
+
+## [0.0.12] - 2021-10-16
+### Added
 - support sub dir README.md
 
 ### Changed
