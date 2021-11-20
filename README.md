@@ -24,12 +24,10 @@
 
 将以下代码
 
-```plantuml
-@startsalt
+```
 * zengjf
   * zengjf
     * zengjf
-@endsalt
 ```
 
 转成

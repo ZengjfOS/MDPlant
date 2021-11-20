@@ -355,8 +355,8 @@ function doSalt(activeEditor: vscode.TextEditor)
 {
 	var line = activeEditor.selection.active.line;
 
-	let startLine = findBoundary(activeEditor, line, MDP_UP, SALT_BOUNDARY);
-	let endLine = findBoundary(activeEditor, line, MDP_DOWN, SALT_BOUNDARY);
+	let startLine = findBoundary(activeEditor, line, MDP_UP, INDEX_BOUNDARY);
+	let endLine = findBoundary(activeEditor, line, MDP_DOWN, INDEX_BOUNDARY);
 	let revert = false
 
 	vscode.window.showInformationMessage("start: " + startLine + ", end: " + endLine);
@@ -368,7 +368,7 @@ function doSalt(activeEditor: vscode.TextEditor)
 				let range = new vscode.Range(activeEditor.document.lineAt(startLine + 1).range.start, activeEditor.document.lineAt(startLine + 1).range.end)
 				let lineText = activeEditor.document.getText(range);
 				let outString = " ";
-				if (lineText.startsWith("{")) {
+				if (lineText.startsWith("@startsalt")) {
 					for (var i = (startLine + 1); i < (endLine); i++) {
 						range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
 						lineText = activeEditor.document.getText(range);
@@ -388,8 +388,10 @@ function doSalt(activeEditor: vscode.TextEditor)
 				} else {
 					range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(startLine).range.end)
 					lineText = activeEditor.document.getText(range);
-					console.log(lineText)
-					edit.replace(range, lineText + "\n{\n{T");
+					if (lineText.startsWith("```plantuml"))
+						edit.replace(range, lineText + "\n@startsalt\n{\n{T");
+					else
+						edit.replace(range, lineText + "plantuml\n@startsalt\n{\n{T");
 
 					for (var i = (startLine + 1); i < endLine; i++) {
 						let range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
@@ -406,15 +408,15 @@ function doSalt(activeEditor: vscode.TextEditor)
 
 					range = new vscode.Range(activeEditor.document.lineAt(endLine).range.start, activeEditor.document.lineAt(endLine).range.end)
 					lineText = activeEditor.document.getText(range);
-					edit.replace(range, "}\n}\n" + lineText);
+					edit.replace(range, "}\n}\n@endsalt\n" + lineText);
 				}
 			}).then((value) => {
 				if (revert == true) {
 					console.log("revert")
 					editor?.edit(edit => {
-						let range = new vscode.Range(activeEditor.document.lineAt(endLine - 3).range.end, activeEditor.document.lineAt(endLine - 1).range.end)
+						let range = new vscode.Range(activeEditor.document.lineAt(endLine - 4).range.end, activeEditor.document.lineAt(endLine - 1).range.end)
 						edit.delete(range);
-						range = new vscode.Range(activeEditor.document.lineAt(startLine + 1).range.start, activeEditor.document.lineAt(startLine + 3).range.start)
+						range = new vscode.Range(activeEditor.document.lineAt(startLine + 1).range.start, activeEditor.document.lineAt(startLine + 4).range.start)
 						edit.delete(range);
 					})
 				}
@@ -443,6 +445,8 @@ function doList(activeEditor: vscode.TextEditor)
 
 		editor.edit(edit => {
 			let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+			let rawText = activeEditor.document.getText(range)
+			let spaceString = rawText.substring(0, rawText.search(/\S/))
 			let lineText = activeEditor.document.getText(range).trim().replace(/\\/g, "/");
 			let subfix = lineText.substring(lineText.lastIndexOf(".") + 1, lineText.length).toLowerCase();
 
@@ -453,26 +457,36 @@ function doList(activeEditor: vscode.TextEditor)
 			if (lineText.startsWith("* ") || lineText.startsWith("![")) {
 				if (lineText.indexOf("(") > -1 && lineText.indexOf(")") > -1) {
 					if (lineText.indexOf("http") > -1) {
-						edit.replace(range, lineText.split("[")[1].split("]")[0] + " " + lineText.split("(")[1].split(")")[0]);
+						edit.replace(range, spaceString + lineText.split("[")[1].split("]")[0] + " " + lineText.split("(")[1].split(")")[0]);
 					} else {
-						edit.replace(range, lineText.split("(")[1].split(")")[0]);
+						let showString = lineText.split("(")[1].split(")")[0]
+						if (!showString.startsWith("/"))
+							edit.replace(range, spaceString + showString);
+						else
+							edit.replace(range, spaceString + showString.replace("/", ""));
 					}
 				}
 
 				return
 			} else {
-				if (lineText.startsWith(currentFileDir))
-						lineText = lineText.replace(currentFileDir + "/", "");
+				if (lineText.startsWith(currentFileDir)) {
+					lineText = lineText.replace(currentFileDir + "/", "");
+				} else {
+					if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText)) {
+						if (!lineText.startsWith("/"))
+							lineText = "/" + lineText
+					}
+				}
 
 				if (lineText.indexOf("http") > 0) {
 					let lineTextSplit = lineText.split(" http");
 					if (lineTextSplit.length = 2)
-						edit.replace(range, "* [" + lineTextSplit[0].trim() + "](http" + lineTextSplit[1].trim() + ")");
+						edit.replace(range, spaceString + "* [" + lineTextSplit[0].trim() + "](http" + lineTextSplit[1].trim() + ")");
 				} else {
 					if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg" || subfix == "gif")
-						edit.replace(range, "![" + basename(lineText) + "](" + lineText + ")");
+						edit.replace(range, spaceString + "![" + basename(lineText) + "](" + lineText + ")");
 					else
-						edit.replace(range, "* [" + basename(lineText) + "](" + lineText + ")");
+						edit.replace(range, spaceString + "* [" + basename(lineText) + "](" + lineText + ")");
 				}
 
 				vscode.window.showInformationMessage("convert txt: " + lineText);
@@ -677,9 +691,9 @@ function doTable(activeEditor: vscode.TextEditor)
 				// merge relative dir
 				let folderPath = ""
 				if (msg?.startsWith("~")) {
-					folderPath = vscode.workspace.rootPath + "\\" + msg.replace("~", "");
+					folderPath = vscode.workspace.rootPath + "/" + msg.replace("~", "");
 				} else {
-					folderPath = vscode.workspace.rootPath + "\\" + currentFileDir.replace("/", "\\") + "\\" + msg;
+					folderPath = vscode.workspace.rootPath + "/" + currentFileDir + "/" + msg;
 				}
 				console.log(folderPath);
 
@@ -719,7 +733,7 @@ function doTable(activeEditor: vscode.TextEditor)
 											const r = new RegExp(vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx') || "^\\d{1,4}_.*\\.md", "g");
 											const m = r.exec(file.toString());
 											m?.forEach((value, index) => {
-												const fileContentArr = fs.readFileSync(folderPath + "\\" + file, 'utf8').split(/\r?\n/);
+												const fileContentArr = fs.readFileSync(folderPath + "/" + file, 'utf8').split(/\r?\n/);
 												let fabs = fileAbstract(fileContentArr);
 												file.toString().match(/\d{1,4}/)?.forEach(index =>{
 													outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg?.replace("~", "") + "/" + file + ") | " + fabs + "\n");
