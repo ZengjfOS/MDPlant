@@ -8,7 +8,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
-## [0.0.12] - 2021-10-16
+## [0.0.14] - 2021-12-11
+### Added
+- ctrl+enter(cmd+enter) for save image from clipboard
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+## [0.0.13] - 2021-11-19
 ### Added
 - 无
 

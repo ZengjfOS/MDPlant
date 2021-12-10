@@ -1,10 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { EOF } from 'dns';
 import * as fs from 'fs';
 import { basename } from 'path';
 import * as path from 'path';
+import { spawn } from 'child_process';
+const axios = require('axios');
 
 let MDP_UP = -1;
 let MDP_DOWN = 1;
@@ -12,6 +13,7 @@ let MDP_DOWN = 1;
 let cmds = ["list", "salt", "indent", "menu", "table"];
 let SALT_BOUNDARY = ["@startsalt", "@endsalt"]
 let INDEX_BOUNDARY = ["```", "```"]
+let imageSubfixArray = ['.xbm','.tif','.pjp','.svgz','.jpg','.jpeg','.ico','.tiff','.gif','.svg','.jfif','.webp','.png','.bmp','.pjpeg','.avif']
 
 function findBoundary(editor: vscode.TextEditor, index: number, direction: number, boundary:string[]) {
 	let line =index;
@@ -483,7 +485,7 @@ function doList(activeEditor: vscode.TextEditor)
 					if (lineTextSplit.length = 2)
 						edit.replace(range, spaceString + "* [" + lineTextSplit[0].trim() + "](http" + lineTextSplit[1].trim() + ")");
 				} else {
-					if ( subfix == "png" || subfix == "jpg" || subfix == "jpeg" || subfix == "svg" || subfix == "gif")
+					if (imageSubfixArray.includes("." + subfix))
 						edit.replace(range, spaceString + "![" + basename(lineText) + "](" + lineText + ")");
 					else
 						edit.replace(range, spaceString + "* [" + basename(lineText) + "](" + lineText + ")");
@@ -492,6 +494,235 @@ function doList(activeEditor: vscode.TextEditor)
 				vscode.window.showInformationMessage("convert txt: " + lineText);
 			}
 		});
+	}
+}
+
+/**
+ * use applescript to save image from clipboard and get file path
+ */
+function saveClipboardImageToFileAndGetPath(imagePath: string, cb: (imagePath: string, imagePathFromScript: string) => void) {
+	if (!imagePath) return;
+
+	let platform = process.platform;
+	if (platform === 'win32') {
+		// Windows
+		const scriptPath = path.join(__dirname, '../res/pc.ps1');
+
+		let command = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe";
+		let powershellExisted = fs.existsSync(command)
+		if (!powershellExisted) {
+			command = "powershell"
+		}
+
+		const powershell = spawn(command, [
+			'-noprofile',
+			'-noninteractive',
+			'-nologo',
+			'-sta',
+			'-executionpolicy', 'unrestricted',
+			'-windowstyle', 'hidden',
+			'-file', scriptPath,
+			imagePath
+		]);
+		powershell.on('error', function (e) {
+			console.log(e);
+		});
+		powershell.on('exit', function (code, signal) {
+			// console.log('exit', code, signal);
+		});
+		powershell.stdout.on('data', function (data: Buffer) {
+			cb(imagePath, data.toString().trim());
+		});
+	}
+	else if (platform === 'darwin') {
+		console.log("darwin")
+		// Mac
+		let scriptPath = path.join(__dirname, '../res/mac.applescript');
+		console.log(scriptPath)
+
+		let ascript = spawn('osascript', [scriptPath, imagePath]);
+		ascript.on('error', function (e) {
+			console.log(e)
+		});
+		ascript.on('exit', function (code, signal) {
+			console.log('exit',code,signal);
+		});
+		ascript.stdout.on('data', function (data: Buffer) {
+			cb(imagePath, data.toString().trim());
+		});
+	} else {
+		// Linux 
+
+		let scriptPath = path.join(__dirname, '../res/linux.sh');
+
+		let ascript = spawn('sh', [scriptPath, imagePath]);
+		ascript.on('error', function (e) {
+			console.log(e)
+		});
+		ascript.on('exit', function (code, signal) {
+			// console.log('exit',code,signal);
+		});
+		ascript.stdout.on('data', function (data: Buffer) {
+			let result = data.toString().trim();
+			if (result == "no xclip") {
+				console.log('You need to install xclip command first.');
+				return;
+			}
+			cb(imagePath, result);
+		});
+	}
+}
+
+async function doPaste(activeEditor: vscode.TextEditor)
+{
+	let currentEditorFile = vscode.window.activeTextEditor?.document.uri.path;
+	let editFileName = basename(currentEditorFile || "")
+	let currentFileDir = path.dirname(currentEditorFile || "")
+	const r = new RegExp("^\\d{1,4}_.*", "g");
+
+	let filePrefix = ""
+	if (r.test(editFileName)) {
+		filePrefix = editFileName.split("_")[0] + "_"
+	}
+
+	currentFileDir = currentFileDir.replace(vscode.workspace.rootPath?.replace(/\\/g, "/") || "", "")
+	let clipboard_content = await vscode.env.clipboard.readText()
+	let linkFilePath = ""
+
+	console.log(clipboard_content)
+	if (fs.existsSync(clipboard_content)) {
+		let imageFileSubfix = path.extname(basename(clipboard_content))
+		let fileSaveRelationDir = "refers"
+
+		if (imageSubfixArray.includes(imageFileSubfix))
+			fileSaveRelationDir = "images"
+
+		await vscode.window.showInputBox(
+		{	// 这个对象中所有参数都是可选参数
+			password:false,								// 输入内容是否是密码
+			ignoreFocusOut:true,						// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+			// placeHolder:'input file name：',			// 在输入框内的提示信息
+			value: filePrefix + basename(clipboard_content),
+			prompt:'copy file',		// 在输入框下方的提示信息
+		}).then(msg => {
+			if (msg != undefined && msg.length > 0) {
+				let targetFilePath = ""
+				if (fs.existsSync(vscode.workspace.rootPath + "/" + currentFileDir + "/" + fileSaveRelationDir)) {
+					targetFilePath = fileSaveRelationDir + "/" + msg
+				} else {
+					targetFilePath = msg
+				}
+
+				fs.copyFile(clipboard_content, vscode.workspace.rootPath + "/" + currentFileDir + "/" + targetFilePath, (err) => {
+					if (err) throw err;
+					vscode.window.showInformationMessage(clipboard_content + ' was copied to ' + targetFilePath);
+				});
+
+				linkFilePath = targetFilePath
+			}
+		})
+
+		if (linkFilePath.trim().length > 0) {
+			var editor = vscode.window.activeTextEditor;
+			var line = activeEditor.selection.active.line;
+			if (editor != undefined) {
+				editor.edit(edit => {
+					let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+					let rawText = activeEditor.document.getText(range)
+					let spaceString = rawText.substring(0, rawText.search(/\S/))
+
+					if (imageSubfixArray.includes(path.extname(linkFilePath)))
+						edit.replace(range, spaceString + "![" + basename(linkFilePath) + "](" + linkFilePath + ")");
+					else
+						edit.replace(range, spaceString + "* [" + basename(linkFilePath) + "](" + linkFilePath + ")");
+				})
+			}
+		}
+	} else if(clipboard_content.startsWith("http")) {
+		await vscode.window.showInputBox(
+		{	// 这个对象中所有参数都是可选参数
+			password:false,								// 输入内容是否是密码
+			ignoreFocusOut:true,						// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+			// placeHolder:'input file name：',			// 在输入框内的提示信息
+			value: filePrefix + basename(clipboard_content.split("?")[0]),
+			prompt:'get doc from web',					// 在输入框下方的提示信息
+		}).then(msg => {
+			if (msg != undefined && msg.length > 0) {
+				axios({
+					method: "get",
+					url: clipboard_content,
+					responseType: "stream"
+				}).then(function (response: any) {
+					let imageFileSubfix = path.extname(basename(clipboard_content.split("?")[0]))
+					let imageFilePath = ""
+					let fileSaveRelationDir = "refers"
+
+					if (imageSubfixArray.includes(imageFileSubfix))
+						fileSaveRelationDir = "images"
+
+					if (fs.existsSync(vscode.workspace.rootPath + "/" + currentFileDir + "/" + fileSaveRelationDir)) {
+						imageFilePath = fileSaveRelationDir + "/" + msg + imageFileSubfix
+					} else {
+						imageFilePath = msg + imageFileSubfix
+					}
+
+					response.data.pipe(fs.createWriteStream(vscode.workspace.rootPath + "/" + currentFileDir + "/" + imageFilePath));
+
+					var editor = vscode.window.activeTextEditor;
+					var line = activeEditor.selection.active.line;
+					if (editor != undefined) {
+						editor.edit(edit => {
+							let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+							let rawText = activeEditor.document.getText(range)
+							let spaceString = rawText.substring(0, rawText.search(/\S/))
+							if (imageSubfixArray.includes(imageFileSubfix)) 
+								edit.replace(range, spaceString + "![" + basename(imageFilePath) + "](" + imageFilePath + ")");
+							else
+								edit.replace(range, spaceString + "* [" + basename(imageFilePath) + "](" + imageFilePath + ")");
+						})
+					}
+				}).catch((error:any) => {
+					vscode.window.showInformationMessage("文件下载失败：" + clipboard_content);
+				})
+			}
+		})
+	} else {
+		await vscode.window.showInputBox(
+		{	// 这个对象中所有参数都是可选参数
+			password:false,								// 输入内容是否是密码
+			ignoreFocusOut:true,						// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+			// placeHolder:'input file name：',			// 在输入框内的提示信息
+			value: filePrefix,
+			prompt:'save image from clipboard',		// 在输入框下方的提示信息
+		}).then(msg => {
+			if (msg != undefined && msg.length > 0) {
+				let imageFilePath = ""
+				if (fs.existsSync(vscode.workspace.rootPath + "/" + currentFileDir + "/images")) {
+					imageFilePath = "images/" + msg + ".png"
+				} else {
+					imageFilePath = msg + ".png"
+				}
+
+				saveClipboardImageToFileAndGetPath(vscode.workspace.rootPath + "/" + currentFileDir + "/" + imageFilePath, (imagePath, imagePathReturnByScript) => {
+					if (!imagePathReturnByScript) return;
+					if (imagePathReturnByScript === 'no image') {
+						vscode.window.showInformationMessage("剪切板(clipboard)图片为空");
+						return;
+					}
+
+					var editor = vscode.window.activeTextEditor;
+					var line = activeEditor.selection.active.line;
+					if (editor != undefined) {
+						editor.edit(edit => {
+							let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+							let rawText = activeEditor.document.getText(range)
+							let spaceString = rawText.substring(0, rawText.search(/\S/))
+							edit.replace(range, spaceString + "![" + basename(imageFilePath) + "](" + imageFilePath + ")");
+						})
+					}
+				});
+			}
+		})
 	}
 }
 
@@ -641,12 +872,12 @@ function doTable(activeEditor: vscode.TextEditor)
 	var line = activeEditor.selection.active.line;
 
 	var inputString = vscode.window.showInputBox(
-		{ // 这个对象中所有参数都是可选参数
-			password:false,			   // 输入内容是否是密码
-			ignoreFocusOut:true,		  // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+		{	// 这个对象中所有参数都是可选参数
+			password:false,								// 输入内容是否是密码
+			ignoreFocusOut:true,						// 默认false，设置为true时鼠标点击别的地方输入框不会消失
 			placeHolder:'input relative direcotry：',	// 在输入框内的提示信息
-			prompt:'docs',				// 在输入框下方的提示信息
-			validateInput:function(text){ // 校验输入信息
+			prompt:'docs',								// 在输入框下方的提示信息
+			validateInput:function(text){				// 校验输入信息
 				cmds.forEach(element => {
 					if (text.trim() == element)
 						return "";
@@ -783,12 +1014,12 @@ export function activate(context: vscode.ExtensionContext) {
 		// vscode.window.showInformationMessage('MDPlant Work Well!');
 
 		var inputString = vscode.window.showInputBox(
-			{ // 这个对象中所有参数都是可选参数
-				password:false,	            // 输入内容是否是密码
-				ignoreFocusOut:true,        // 默认false，设置为true时鼠标点击别的地方输入框不会消失
-				placeHolder:'input cmd：',	// 在输入框内的提示信息
-				prompt: "cmds: " + cmds.join("/"),  // 在输入框下方的提示信息
-				validateInput:function(text){ // 校验输入信息
+			{	// 这个对象中所有参数都是可选参数
+				password:false,						// 输入内容是否是密码
+				ignoreFocusOut:true,				// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+				placeHolder:'input cmd：',			// 在输入框内的提示信息
+				prompt: "cmds: " + cmds.join("/"),	// 在输入框下方的提示信息
+				validateInput:function(text){		// 校验输入信息
 					cmds.forEach(element => {
 						if (text.trim() == element)
 							return "";
@@ -867,6 +1098,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			doMenu(activeEditor);
+		}
+	});
+
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.mdpaste', () => {
+
+		const activeEditor = vscode.window.activeTextEditor;
+		if (activeEditor) {
+			doPaste(activeEditor);
 		}
 	});
 

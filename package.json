@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown tools for plantuml ",
-	"version": "0.0.13",
+	"version": "0.0.14",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -12,6 +12,7 @@
 	],
 	"activationEvents": [
 		"onCommand:extension.mdplant",
+		"onCommand:extension.mdpaste",
 		"onCommand:extension.mdsalt",
 		"onCommand:extension.mdlist",
 		"onCommand:extension.mdtable",
@@ -24,6 +25,10 @@
 			{
 				"command": "extension.mdplant",
 				"title": "mdplant"
+			},
+			{
+				"command": "extension.mdpaste",
+				"title": "md.paste"
 			},
 			{
 				"command": "extension.mdsalt",
@@ -80,6 +85,14 @@
 				}
 			]
 		},
+		"keybindings": [
+			{
+				"command": "extension.mdpaste",
+				"key": "ctrl+enter",
+				"mac": "cmd+enter",
+				"when": "editorTextFocus"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "MDPlant",
@@ -105,9 +118,9 @@
 		"@types/mocha": "^7.0.1",
 		"@types/node": "^12.11.7",
 		"@types/vscode": "^1.43.0",
-		"eslint": "^6.8.0",
-		"@typescript-eslint/parser": "^2.18.0",
 		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"@typescript-eslint/parser": "^2.18.0",
+		"eslint": "^6.8.0",
 		"glob": "^7.1.6",
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",
@@ -116,5 +129,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ZengjfOS/MDPlant"
+	},
+	"dependencies": {
+		"axios": "^0.24.0"
 	}
 }
