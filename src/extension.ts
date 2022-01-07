@@ -1105,6 +1105,70 @@ export function activate(context: vscode.ExtensionContext) {
 
 	disposable = vscode.commands.registerCommand('extension.mdpaste', () => {
 
+		// just use the keybindings do more
+		{
+			var editor = vscode.window.activeTextEditor;
+			if (editor != undefined) {
+
+				var line = editor.selection.active.line;
+				let startLine = findEmptyLine(editor, line, MDP_UP);
+				let endLine = findEmptyLine(editor, line, MDP_DOWN);
+
+				if (startLine == -1)
+					startLine =  0;
+				else if ((startLine + 1) == editor.document.lineCount)
+					startLine = startLine;
+				else
+					startLine += 1;
+
+				if (endLine == -1) {
+					if (editor.document.lineCount > 1)
+						endLine = editor.document.lineCount - 1;
+					else
+						endLine = 0;
+				}
+
+				for (var i = startLine; i < (endLine); i++) {
+					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
+					let lineText = editor.document.getText(range);
+
+					if (lineText.startsWith("NO.|文件名称|摘要")) {
+						let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+						let lineText = editor.document.getText(range);
+						if (lineText.startsWith(":--:|:--|:--")) {
+							doTable(editor)
+							return
+						}
+					}
+
+					if (lineText.trim().startsWith("```plantuml")){
+						doSalt(editor)
+						return
+					}
+
+					if (lineText.trim().startsWith("```")) {
+						let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+						let lineText = editor.document.getText(range);
+						if (lineText.trim().startsWith("* ")) {
+							doIndent(editor)
+							return
+						}
+					}
+
+					if (lineText.split("](#").length == 2) {
+						doMenu(editor)
+						return
+					}
+
+					if (lineText.split("](").length == 2 || lineText.indexOf("http") > 0 || path.basename(lineText.trim()).indexOf(".") > 0) {
+						doList(editor)
+						return
+					}
+
+				}
+			}
+		}
+
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			doPaste(activeEditor);
