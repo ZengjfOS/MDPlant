@@ -8,6 +8,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.15] - 2022-1-7
+### Added
+- ctrl+enter will auto check menu/list/indent/table function
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [0.0.14] - 2021-12-11
 ### Added
 - ctrl+enter(cmd+enter) for save image from clipboard
