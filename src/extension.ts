@@ -1128,7 +1128,7 @@ export function activate(context: vscode.ExtensionContext) {
 						endLine = 0;
 				}
 
-				for (var i = startLine; i < (endLine); i++) {
+				for (var i = startLine; i <= (endLine); i++) {
 					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
 					let lineText = editor.document.getText(range);
 
