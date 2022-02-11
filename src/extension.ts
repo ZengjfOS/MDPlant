@@ -1165,6 +1165,11 @@ export function activate(context: vscode.ExtensionContext) {
 						return
 					}
 
+					if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText.trim())) {
+						doList(editor)
+						return
+					}
+
 				}
 			}
 		}
