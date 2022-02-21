@@ -8,6 +8,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.16] - 2022-2-11
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- fix last line can't work for ctrl + enter
+- fix ctrl+ enter not work for directory
+
 ## [0.0.15] - 2022-1-7
 ### Added
 - ctrl+enter will auto check menu/list/indent/table function

@@ -1128,7 +1128,7 @@ export function activate(context: vscode.ExtensionContext) {
 						endLine = 0;
 				}
 
-				for (var i = startLine; i < (endLine); i++) {
+				for (var i = startLine; i <= (endLine); i++) {
 					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
 					let lineText = editor.document.getText(range);
 
@@ -1161,6 +1161,11 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 					if (lineText.split("](").length == 2 || lineText.indexOf("http") > 0 || path.basename(lineText.trim()).indexOf(".") > 0) {
+						doList(editor)
+						return
+					}
+
+					if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText.trim())) {
 						doList(editor)
 						return
 					}
