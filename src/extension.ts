@@ -687,6 +687,25 @@ async function doPaste(activeEditor: vscode.TextEditor)
 			}
 		})
 	} else {
+		var fileNumber = 0
+		var editorFullPath = path.dirname(currentEditorFile || "")
+		if (fs.existsSync(editorFullPath + "/images")) {
+			var allImages = fs.readdirSync(editorFullPath + "/images")
+			for (var image in allImages) {
+				var imageName = allImages[image]
+
+				if (imageName.startsWith(filePrefix)) {
+					var fileNumberString = imageName.split("_")[1].split(".")[0]
+					var currentFileNumber = Number(fileNumberString)
+					if (currentFileNumber != NaN && currentFileNumber >= fileNumber) {
+						fileNumber = currentFileNumber + 1
+					}
+				}
+			}
+
+			filePrefix += String(fileNumber).padStart(4,'0')
+		}
+
 		await vscode.window.showInputBox(
 		{	// 这个对象中所有参数都是可选参数
 			password:false,								// 输入内容是否是密码
@@ -1131,6 +1150,9 @@ export function activate(context: vscode.ExtensionContext) {
 				for (var i = startLine; i <= (endLine); i++) {
 					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
 					let lineText = editor.document.getText(range);
+
+					if (lineText.trim().length == 0)
+						continue
 
 					if (lineText.startsWith("NO.|文件名称|摘要")) {
 						let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)

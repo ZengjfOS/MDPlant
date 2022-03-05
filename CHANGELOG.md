@@ -8,6 +8,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.17] - 2022-3-5
+### Added
+- auto generate image index when paste image
+
+### Changed
+- 无
+
+### Fixed
+- fix last line can't work for ctrl + enter when paste image
+
+
 ## [0.0.16] - 2022-2-11
 ### Added
 - 无
