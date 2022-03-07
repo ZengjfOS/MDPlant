@@ -8,6 +8,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Initial release
 
+## [0.0.18] - 2022-3-7
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- compatible Windows
+
+
+
 ## [0.0.17] - 2022-3-5
 ### Added
 - auto generate image index when paste image
