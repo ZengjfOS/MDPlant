@@ -688,7 +688,7 @@ async function doPaste(activeEditor: vscode.TextEditor)
 		})
 	} else {
 		var fileNumber = 0
-		var editorFullPath = path.dirname(currentEditorFile || "")
+		var editorFullPath = path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath.replace(/\\/g, "/") || "");
 		if (fs.existsSync(editorFullPath + "/images")) {
 			var allImages = fs.readdirSync(editorFullPath + "/images")
 			for (var image in allImages) {
