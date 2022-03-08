@@ -10,10 +10,13 @@
 ## MDPlant VS Code插件
 
 * https://github.com/ZengjfOS/MDPlant
+* https://gitee.com/zengjfos/MDPlant
 
 ## Docs Example
 
 * https://github.com/ZengjfOS/MDPlant
+  * DocsExample
+* https://gitee.com/zengjfos/MDPlant
   * DocsExample
 
 ## docs
