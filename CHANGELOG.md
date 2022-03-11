@@ -6,7 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+## [0.0.19] - 2022-3-11
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- chinese punctuation
+
 
 ## [0.0.18] - 2022-3-7
 ### Added
