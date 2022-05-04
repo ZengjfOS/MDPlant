@@ -887,7 +887,7 @@ function fileAbstract(fileContentArr: string[]) {
 	}
 }
 
-function doTable(activeEditor: vscode.TextEditor)
+function doTable(activeEditor: vscode.TextEditor, checkedStartLine = -1)
 {
 	var line = activeEditor.selection.active.line;
 
@@ -923,6 +923,9 @@ function doTable(activeEditor: vscode.TextEditor)
 					startLine = startLine;
 				else 
 					startLine += 1;
+
+				if (checkedStartLine > 0)
+					startLine = checkedStartLine
 
 				if (endLine == -1) {
 					if (activeEditor.document.lineCount > 1)
@@ -1183,7 +1186,7 @@ export function activate(context: vscode.ExtensionContext) {
 						return
 					}
 
-					if (lineText.split("](").length == 2 || lineText.indexOf("http") > 0 || path.basename(lineText.trim()).indexOf(".") > 0) {
+					if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || path.basename(lineText.trim()).indexOf(".") > 0) {
 						doList(editor)
 						return
 					}
@@ -1191,6 +1194,34 @@ export function activate(context: vscode.ExtensionContext) {
 					if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText.trim())) {
 						doList(editor)
 						return
+					}
+
+				}
+
+				// check table and create table
+				for (var i = (startLine - 1); i >= 0; i--) {
+					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
+					let lineText = editor.document.getText(range);
+
+					if (lineText.trim().length == 0)
+						continue
+
+					if (lineText.startsWith("NO.|文件名称|摘要")) {
+						let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+						let lineText = editor.document.getText(range);
+						if (lineText.startsWith(":--:|:--|:--")) {
+							doTable(editor, i)
+							return
+						}
+					}
+
+					if (lineText.startsWith("##")) {
+						if (lineText.startsWith("## docs")) {
+							doTable(editor)
+							return
+						}
+
+						break
 					}
 
 				}

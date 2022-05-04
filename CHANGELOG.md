@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.20] - 2022-5-3
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- http index for alt+enter(cmd + enter)
+- since "## docs" for alt+enter(cmd + enter)
+
 ## [0.0.19] - 2022-3-11
 ### Added
 - 无
