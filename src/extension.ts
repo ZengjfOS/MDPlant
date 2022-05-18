@@ -786,11 +786,13 @@ function doMenu(activeEditor: vscode.TextEditor)
 						let menus:string[] = [];
 
 						for (let i = 0; i < docs.length; i++) {
-							if (docs[i].match(/^#{2,} /g) != null) {
-								let prefix = docs[i].substr(2, docs[i].lastIndexOf("#")).trim().replace(/#/g, "  "); 
-								let content = docs[i].substr(docs[i].lastIndexOf("#") + 1).trim();
-								var chinese_reg = /[\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5]/g;
-								menus.push(prefix + "* [" + content + "](#" + content.replace(/ /g, "-").replace(chinese_reg, "").replace(/[\\'!"#$%&()*+,.\/:;<=>?@\[\]^_`{|}~]/g, "") + ")\n");
+							if (docs[i].match(/^#{1,} /g) != null) {
+								if ((i > 0 && docs[i - 1].trim().length == 0) && ((i < (docs.length - 1)) && docs[i + 1].trim().length == 0)) {
+									let prefix = docs[i].substr(1, docs[i].lastIndexOf("#")).trim().replace(/#/g, "  "); 
+									let content = docs[i].substr(docs[i].lastIndexOf("#") + 1).trim();
+									var chinese_reg = /[\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5]/g;
+									menus.push(prefix + "* [" + content + "](#" + content.replace(/ /g, "-").replace(chinese_reg, "").replace(/[\\'!"#$%&()*+,.\/:;<=>?@\[\]^_`{|}~]/g, "") + ")\n");
+								}
 							}
 						}
 
@@ -1215,10 +1217,18 @@ export function activate(context: vscode.ExtensionContext) {
 						}
 					}
 
-					if (lineText.startsWith("##")) {
-						if (lineText.startsWith("## docs")) {
-							doTable(editor)
-							return
+					if (lineText.startsWith("# ") || lineText.startsWith("## ")) {
+						var fragments = lineText.trim().split(" ")
+						if (fragments.length == 2) {
+							if (fragments[1].toLowerCase() == "docs"  || fragments[1].toLowerCase() == "文档索引") {
+								doTable(editor)
+								return
+							}
+
+							if (fragments[1].toLowerCase() == "menu" || fragments[1].toLowerCase() == "目录") {
+								doMenu(editor)
+								return
+							}
 						}
 
 						break
