@@ -786,6 +786,10 @@ function doMenu(activeEditor: vscode.TextEditor)
 						let menus:string[] = [];
 
 						for (let i = 0; i < docs.length; i++) {
+							if (docs[i].trim().startsWith("#") && (docs[i].trim().toLowerCase().indexOf("menu") >= 0
+									|| docs[i].trim().toLowerCase().indexOf("目录") >= 0))
+								continue
+
 							if (docs[i].match(/^#{1,} /g) != null) {
 								if ((i > 0 && docs[i - 1].trim().length == 0) && ((i < (docs.length - 1)) && docs[i + 1].trim().length == 0)) {
 									let prefix = docs[i].substr(1, docs[i].lastIndexOf("#")).trim().replace(/#/g, "  "); 
@@ -1151,6 +1155,12 @@ export function activate(context: vscode.ExtensionContext) {
 						endLine = editor.document.lineCount - 1;
 					else
 						endLine = 0;
+				}
+
+				let code_startLine = findBoundary(editor, line, MDP_UP, INDEX_BOUNDARY);
+				if (code_startLine != -1) {
+					startLine = code_startLine
+					endLine = findBoundary(editor, line, MDP_DOWN, INDEX_BOUNDARY);
 				}
 
 				for (var i = startLine; i <= (endLine); i++) {

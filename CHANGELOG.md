@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.22] - 2022-5-27
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- remove menu info at menu link
+- resolv indent code at list
+
+
 ## [0.0.21] - 2022-5-18
 ### Added
 - 无
