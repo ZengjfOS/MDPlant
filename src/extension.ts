@@ -361,7 +361,7 @@ function doSalt(activeEditor: vscode.TextEditor)
 	let endLine = findBoundary(activeEditor, line, MDP_DOWN, INDEX_BOUNDARY);
 	let revert = false
 
-	vscode.window.showInformationMessage("start: " + startLine + ", end: " + endLine);
+	console.log("start: " + startLine + ", end: " + endLine);
 
 	if (startLine >= 0 && endLine >= 0) {
 		var editor = vscode.window.activeTextEditor;
@@ -491,7 +491,7 @@ function doList(activeEditor: vscode.TextEditor)
 						edit.replace(range, spaceString + "* [" + basename(lineText) + "](" + lineText + ")");
 				}
 
-				vscode.window.showInformationMessage("convert txt: " + lineText);
+				console.log("convert txt: " + lineText);
 			}
 		});
 	}
@@ -615,7 +615,7 @@ async function doPaste(activeEditor: vscode.TextEditor)
 
 				fs.copyFile(clipboard_content, vscode.workspace.rootPath + "/" + currentFileDir + "/" + targetFilePath, (err) => {
 					if (err) throw err;
-					vscode.window.showInformationMessage(clipboard_content + ' was copied to ' + targetFilePath);
+					console.log(clipboard_content + ' was copied to ' + targetFilePath);
 				});
 
 				linkFilePath = targetFilePath
@@ -806,7 +806,7 @@ function doMenu(activeEditor: vscode.TextEditor)
 						}
 
 						edit.insert(new vscode.Position(line, 0), outputString);
-						vscode.window.showInformationMessage("menu start: " + startLine + ", end: " + endLine);
+						console.log("menu start: " + startLine + ", end: " + endLine);
 					});
 				}
 			});
@@ -824,7 +824,7 @@ function doIndent(activeEditor: vscode.TextEditor)
 	let contentArray: string[] = []
 	let columnInterval = 2
 
-	// vscode.window.showInformationMessage("start: " + startLine + ", end: " + endLine);
+	console.log("start: " + startLine + ", end: " + endLine);
 
 	if (startLine >= 0 && endLine >= 0) {
 		var editor = vscode.window.activeTextEditor;
@@ -1010,7 +1010,7 @@ function doTable(activeEditor: vscode.TextEditor, checkedStartLine = -1)
 									edit.insert(new vscode.Position(line, 0), outputString);
 
 									const result = vscode.workspace.getConfiguration().get('MDPlant.mdindex.fileRegEx');
-									vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
+									console.log("list files over. start: " + startLine + ", end: " + endLine + " regex: " + result);
 								});
 							}
 
@@ -1158,7 +1158,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 
 				let code_startLine = findBoundary(editor, line, MDP_UP, INDEX_BOUNDARY);
-				if (code_startLine != -1) {
+				if ((code_startLine != -1) && (code_startLine > startLine)) {
 					startLine = code_startLine
 					endLine = findBoundary(editor, line, MDP_DOWN, INDEX_BOUNDARY);
 				}

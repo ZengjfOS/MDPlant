@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.23] - 2022-5-29
+### Added
+- 无
+
+### Changed
+- change info log to console
+
+### Fixed
+- fix resolv indent error for table
+
+
 ## [0.0.22] - 2022-5-27
 ### Added
 - 无
