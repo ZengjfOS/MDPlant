@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.24] - 2022-6-26
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复list中嵌套代码段导致无法快捷处理list问题
+
 ## [0.0.23] - 2022-5-29
 ### Added
 - 无

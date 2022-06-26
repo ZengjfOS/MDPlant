@@ -1163,6 +1163,18 @@ export function activate(context: vscode.ExtensionContext) {
 					endLine = findBoundary(editor, line, MDP_DOWN, INDEX_BOUNDARY);
 				}
 
+				let range = new vscode.Range(editor.document.lineAt(line).range.start, editor.document.lineAt(line).range.end)
+				let lineText = editor.document.getText(range);
+				if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || path.basename(lineText.trim()).indexOf(".") > 0) {
+					doList(editor)
+					return
+				}
+
+				if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText.trim())) {
+					doList(editor)
+					return
+				}
+
 				for (var i = startLine; i <= (endLine); i++) {
 					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
 					let lineText = editor.document.getText(range);
@@ -1210,7 +1222,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 				}
 
-				// check table and create table
+				// check table and create menu
 				for (var i = (startLine - 1); i >= 0; i--) {
 					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
 					let lineText = editor.document.getText(range);
