@@ -1166,7 +1166,14 @@ export function activate(context: vscode.ExtensionContext) {
 				let range = new vscode.Range(editor.document.lineAt(line).range.start, editor.document.lineAt(line).range.end)
 				let lineText = editor.document.getText(range);
 				if ((lineText.trim().length > 0) && (lineText.trim().indexOf("|") < 0) && (lineText.trim().indexOf("#") < 0)) {
-					if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || path.basename(lineText.trim()).indexOf(".") > 0) {
+					if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1) {
+						doList(editor)
+						return
+					}
+
+					if (lineText.trim().startsWith("*") 
+							&& lineText.split("](").length == 2 
+							&& path.basename(lineText.trim()).indexOf(".") > 0) {
 						doList(editor)
 						return
 					}

@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.26] - 2022-7-8
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复indent中嵌套文件无法处理indent
+
 ## [0.0.25] - 2022-6-28
 
 ### Added

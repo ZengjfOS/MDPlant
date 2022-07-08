@@ -2,8 +2,8 @@
 	"publisher": "zengjf",
 	"name": "mdplant",
 	"displayName": "MDPlant",
-	"description": "markdown tools for plantuml ",
-	"version": "0.0.25",
+	"description": "markdown文档编写工具",
+	"version": "0.0.26",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
