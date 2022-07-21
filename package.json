@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
-	"version": "0.0.26",
+	"version": "0.0.27",
 	"engines": {
 		"vscode": "^1.43.0"
 	},

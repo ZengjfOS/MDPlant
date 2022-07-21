@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.27] - 2022-7-21
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 空行不检查处理list、indent等操作
+- 获取摘要错误
+
 ## [0.0.26] - 2022-7-8
 
 ### Added

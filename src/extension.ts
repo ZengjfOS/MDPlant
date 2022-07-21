@@ -876,7 +876,7 @@ function fileAbstract(fileContentArr: string[]) {
 	let startAbstract = false;
 	for (let i = 0; i < fileContentArr.length; i++) {
 		let element = fileContentArr[i].trim();
-		if (element.startsWith("# ")) {
+		if (element.startsWith("# ") && (startAbstract == false)) {
 			startAbstract = true;
 			continue;
 		}
@@ -1184,51 +1184,53 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 				}
 
-				for (var i = startLine; i <= (endLine); i++) {
-					let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
-					let lineText = editor.document.getText(range);
-
-					if (lineText.trim().length == 0)
-						continue
-
-					if (lineText.startsWith("NO.|文件名称|摘要")) {
-						let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+				if (lineText.trim().length > 0) {
+					for (var i = startLine; i <= (endLine); i++) {
+						let range = new vscode.Range(editor.document.lineAt(i).range.start, editor.document.lineAt(i).range.end)
 						let lineText = editor.document.getText(range);
-						if (lineText.startsWith(":--:|:--|:--")) {
-							doTable(editor)
+
+						if (lineText.trim().length == 0)
+							continue
+
+						if (lineText.startsWith("NO.|文件名称|摘要")) {
+							let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+							let lineText = editor.document.getText(range);
+							if (lineText.startsWith(":--:|:--|:--")) {
+								doTable(editor)
+								return
+							}
+						}
+
+						if (lineText.trim().startsWith("```plantuml")){
+							doSalt(editor)
 							return
 						}
-					}
 
-					if (lineText.trim().startsWith("```plantuml")){
-						doSalt(editor)
-						return
-					}
+						if (lineText.trim().startsWith("```")) {
+							let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+							let lineText = editor.document.getText(range);
+							if (lineText.trim().startsWith("* ")) {
+								doIndent(editor)
+								return
+							}
+						}
 
-					if (lineText.trim().startsWith("```")) {
-						let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
-						let lineText = editor.document.getText(range);
-						if (lineText.trim().startsWith("* ")) {
-							doIndent(editor)
+						if (lineText.split("](#").length == 2) {
+							doMenu(editor)
 							return
 						}
-					}
 
-					if (lineText.split("](#").length == 2) {
-						doMenu(editor)
-						return
-					}
+						if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || path.basename(lineText.trim()).indexOf(".") > 0) {
+							doList(editor)
+							return
+						}
 
-					if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || path.basename(lineText.trim()).indexOf(".") > 0) {
-						doList(editor)
-						return
-					}
+						if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText.trim())) {
+							doList(editor)
+							return
+						}
 
-					if (fs.existsSync(vscode.workspace.rootPath + "/" + lineText.trim())) {
-						doList(editor)
-						return
 					}
-
 				}
 
 				// check table and create menu
