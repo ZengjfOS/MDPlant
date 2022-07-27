@@ -891,6 +891,8 @@ function fileAbstract(fileContentArr: string[]) {
 			}
 		}
 	}
+
+	return "Empty Abstract";
 }
 
 function doTable(activeEditor: vscode.TextEditor, checkedStartLine = -1)
