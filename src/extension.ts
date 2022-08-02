@@ -871,6 +871,151 @@ function doIndent(activeEditor: vscode.TextEditor)
 
 }
 
+function doIndex(activeEditor: vscode.TextEditor)
+{
+	var line = activeEditor.selection.active.line;
+
+	var inputString = vscode.window.showInputBox(
+		{ // 这个对象中所有参数都是可选参数
+			password:false,               // 输入内容是否是密码
+			ignoreFocusOut:true,          // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+			placeHolder:'input relative direcotry：',    // 在输入框内的提示信息
+			prompt:'docs',                // 在输入框下方的提示信息
+			validateInput:function(text){ // 校验输入信息
+				cmds.forEach(element => {
+					if (text.trim() == element)
+						return "";
+
+				});
+
+				return null;
+			}
+		}).then( msg => {
+			if (msg == "") {
+				msg = "docs"
+				console.log("use default sub dir: " + msg)
+			}
+			let dirMsg = msg
+
+			// get current file relative dir
+			let currentEditorFile = activeEditor.document.uri.path
+			let currentWorkspaceFold = activeEditor.document.uri.path
+			if(vscode.workspace.workspaceFolders !== undefined) {
+				currentWorkspaceFold = vscode.workspace.workspaceFolders[0].uri.path
+			}
+			let currentFileDir = path.dirname(currentEditorFile.replace(currentWorkspaceFold, ""))
+
+			// merge relative dir
+			let folderPath = ""
+			if (msg?.startsWith("~")) {
+				folderPath = vscode.workspace.rootPath + "/" + msg.replace("~", "");
+			} else {
+				folderPath = vscode.workspace.rootPath + "/" + currentFileDir + "/" + dirMsg;
+			}
+
+			var inputString = vscode.window.showInputBox(
+			{ // 这个对象中所有参数都是可选参数
+				password:false,               // 输入内容是否是密码
+				ignoreFocusOut:true,          // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+				placeHolder:'input regex：',  // 在输入框内的提示信息
+				prompt:'.*\\.md,^\\d{1,4}_.*\\.md',   // 在输入框下方的提示信息
+				validateInput:function(text){ // 校验输入信息
+					cmds.forEach(element => {
+						if (text.trim() == element)
+							return "";
+					});
+
+					return null;
+				}
+			}).then( msg => {
+
+				if (msg == "") {
+					msg = "^\\d{1,4}_.*\\.md"
+					console.log("use default sub dir: " + msg)
+				}
+
+				var editor = vscode.window.activeTextEditor;
+				if (editor != undefined) {
+
+					let startLine = findEmptyLine(activeEditor, line, MDP_UP);
+					let endLine = findEmptyLine(activeEditor, line, MDP_DOWN);
+
+					if (startLine == -1)
+						startLine =  0;
+					else if ((startLine + 1) == activeEditor.document.lineCount)
+						startLine = startLine;
+
+					if (startLine == endLine) {
+						endLine = startLine + 1
+						if (endLine == activeEditor.document.lineCount)
+							endLine = activeEditor.document.lineCount - 1;
+
+						startLine = startLine - 1
+					}
+
+					if (endLine == -1) {
+						if (activeEditor.document.lineCount > 1)
+							endLine = activeEditor.document.lineCount - 1;
+						else
+							endLine = 0;
+					}
+
+					if (editor != undefined) {
+						editor.edit(edit => {
+							let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
+							edit.delete(range);
+						}).then((value) => {
+
+							line = startLine;
+
+							if (editor != undefined) {
+								editor.edit(edit => {
+
+									if (fs.existsSync(folderPath)) {
+										let files = fs.readdirSync(folderPath || "");
+										let outputString = "\nNO.|文件名称\n";
+										outputString += ":--:|:--\n";
+										let outputStringArray:string[] = [];
+										let count = 1
+
+										files.forEach((file: fs.PathLike) => {
+											// const r = new RegExp("^\\d{1,4}_.*\\.md", "g");
+											const r = new RegExp(msg || "^\\d{1,4}_.*\\.md", "g");
+											const m = r.exec(file.toString());
+											m?.forEach((value, index) => {
+												if (file.toString().match(/\d{1,4}/) != null) {
+													file.toString().match(/\d{1,4}/)?.forEach(index =>{
+														outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + dirMsg + "/" + file + ")\n");
+													});
+												} else {
+													outputStringArray.push(("" + count).padStart(4,'0') + "| [" + file.toString().split(index + "_").join("") + "](" + dirMsg + "/" + file + ")\n");
+													count += 1
+												}
+											});
+										});
+
+										for (let i = 0; i < outputStringArray.length; i++) {
+											outputString += outputStringArray[outputStringArray.length - 1 - i];
+										}
+
+										edit.insert(new vscode.Position(line, 0), outputString);
+										// console.log(outputString);
+
+										vscode.window.showInformationMessage("list files over. start: " + startLine + ", end: " + endLine);
+									} else {
+										vscode.window.showInformationMessage("folder Path: " + folderPath + " not exist");
+									}
+								});
+							}
+
+						});
+					}
+				}
+			});
+		}
+	);
+}
+
 function fileAbstract(fileContentArr: string[]) {
 
 	let startAbstract = false;
@@ -1064,8 +1209,8 @@ export function activate(context: vscode.ExtensionContext) {
 				if (activeEditor) {
 
 					if (msg) {
-						if (msg.toLowerCase() == "salt") {
-							doSalt(activeEditor);
+						if (msg.toLowerCase() == "index") {
+							doIndex(activeEditor);
 						} else if (msg.toLowerCase() == "list") {
 							doList(activeEditor);
 						} else if (msg.toLowerCase() == "table") {
@@ -1084,11 +1229,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
-	disposable = vscode.commands.registerCommand('extension.mdsalt', () => {
+	disposable = vscode.commands.registerCommand('extension.mdindex', () => {
 
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
-			doSalt(activeEditor);
+			doIndex(activeEditor);
 		}
 	});
 
@@ -1194,6 +1339,15 @@ export function activate(context: vscode.ExtensionContext) {
 						if (lineText.trim().length == 0)
 							continue
 
+						if (lineText.trim() == "NO.|文件名称") {
+							let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
+							let lineText = editor.document.getText(range);
+							if (lineText.startsWith(":--:|:--")) {
+								doIndex(editor)
+								return
+							}
+						}
+
 						if (lineText.startsWith("NO.|文件名称|摘要")) {
 							let range = new vscode.Range(editor.document.lineAt(i + 1).range.start, editor.document.lineAt(i + 1).range.end)
 							let lineText = editor.document.getText(range);
@@ -1262,6 +1416,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 							if (fragments[1].toLowerCase() == "menu" || fragments[1].toLowerCase() == "目录") {
 								doMenu(editor)
+								return
+							}
+
+							if (fragments[1].toLowerCase() == "index" || fragments[1].toLowerCase() == "索引") {
+								doIndex(editor)
 								return
 							}
 						}

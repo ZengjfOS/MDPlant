@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
-	"version": "0.0.28",
+	"version": "0.0.29",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -13,7 +13,7 @@
 	"activationEvents": [
 		"onCommand:extension.mdplant",
 		"onCommand:extension.mdpaste",
-		"onCommand:extension.mdsalt",
+		"onCommand:extension.mdindex",
 		"onCommand:extension.mdlist",
 		"onCommand:extension.mdtable",
 		"onCommand:extension.mdindent",
@@ -31,8 +31,8 @@
 				"title": "md.paste"
 			},
 			{
-				"command": "extension.mdsalt",
-				"title": "md.salt"
+				"command": "extension.mdindex",
+				"title": "md.index"
 			},
 			{
 				"command": "extension.mdlist",
@@ -65,7 +65,7 @@
 				},
 				{
 					"when": "editorFocus",
-					"command": "extension.mdsalt",
+					"command": "extension.mdindex",
 					"group": "navigation"
 				},
 				{

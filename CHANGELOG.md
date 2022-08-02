@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.29] - 2022-8-2
+
+### Added
+- 支持index命令，以list的形式列举指定文件夹下的正则表达式匹配的文件
+
+### Changed
+- 无
+
+### Fixed
+- 移除salt命令
+
 ## [0.0.28] - 2022-7-27
 
 ### Added

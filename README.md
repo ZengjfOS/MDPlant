@@ -7,12 +7,12 @@
 ## command list
 
 * mdplant
-  * salt: 将以`@startsalt`开头的行以及以`@endsalt`结束的行包括的markdown list转成salt
+  * index: 采用list的形式列举指定目录下指定正则表达式的的文件链接
   * list: 将鼠标当前行文字转成链接或者图片链接
   * indent: 将代码list转换为tree
   * table: 生成Markdown Table目录
   * menu: 生成Markdown Menu
-* mdsalt: 同mdplant -> salt解释
+* mdindex: 同mdplant -> index解释
 * mdlist: 同mdplant -> list解释
 * mdindent: 同mdplant -> indent解释
 * mdtable: 同mdplant -> table解释
@@ -20,29 +20,9 @@
 
 ## 使用示例
 
-### salt命令
+### index命令
 
-将以下代码
-
-```
-* zengjf
-  * zengjf
-    * zengjf
-```
-
-转成
-
-```plantuml
-@startsalt
-{
-{T
-+ zengjf
-+++ zengjf
-+++++ zengjf
-}
-}
-@endsalt
-```
+采用list的形式列举指定目录下指定正则表达式的的文件链接，譬如`^\\d{1,4}_.*\\.md`可以匹配以1～4个数字和下划线开头md文件
 
 ### indent命令
 
