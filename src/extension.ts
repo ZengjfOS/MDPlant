@@ -486,9 +486,9 @@ function doList(activeEditor: vscode.TextEditor)
 						edit.replace(range, spaceString + "* [" + lineTextSplit[0].trim() + "](http" + lineTextSplit[1].trim() + ")");
 				} else {
 					if (imageSubfixArray.includes("." + subfix))
-						edit.replace(range, spaceString + "![" + basename(lineText) + "](" + lineText + ")");
+						edit.replace(range, spaceString + "![" + basename(lineText) + "](" + (lineText).replace(/ /g, "%20") + ")");
 					else
-						edit.replace(range, spaceString + "* [" + basename(lineText) + "](" + lineText + ")");
+						edit.replace(range, spaceString + "* [" + basename(lineText) + "](" + (lineText).replace(/ /g, "%20") + ")");
 				}
 
 				console.log("convert txt: " + lineText);
@@ -985,10 +985,10 @@ function doIndex(activeEditor: vscode.TextEditor)
 											m?.forEach((value, index) => {
 												if (file.toString().match(/\d{1,4}/) != null) {
 													file.toString().match(/\d{1,4}/)?.forEach(index =>{
-														outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + dirMsg + "/" + file + ")\n");
+														outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + (dirMsg + "/" + file).replace(/ /g, "%20") + ")\n");
 													});
 												} else {
-													outputStringArray.push(("" + count).padStart(4,'0') + "| [" + file.toString().split(index + "_").join("") + "](" + dirMsg + "/" + file + ")\n");
+													outputStringArray.push(("" + count).padStart(4,'0') + "| [" + file.toString().split(index + "_").join("") + "](" + (dirMsg + "/" + file).replace(/ /g, "%20") + ")\n");
 													count += 1
 												}
 											});
@@ -1131,7 +1131,7 @@ function doTable(activeEditor: vscode.TextEditor, checkedStartLine = -1)
 													const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
 													let fabs = fileAbstract(fileContentArr);
 													file.toString().match(/\d{1,4}/)?.forEach(index =>{
-														outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + msg?.replace("~", "") + "/" + file + "/README.md" + ") | " + fabs + "\n");
+														outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("") + "](" + (msg?.replace("~", "") + "/" + file + "/README.md").replace(/ /g, "%20") + ") | " + fabs + "\n");
 													});
 													// console.log(file);
 												});
@@ -1143,7 +1143,7 @@ function doTable(activeEditor: vscode.TextEditor, checkedStartLine = -1)
 												const fileContentArr = fs.readFileSync(folderPath + "/" + file, 'utf8').split(/\r?\n/);
 												let fabs = fileAbstract(fileContentArr);
 												file.toString().match(/\d{1,4}/)?.forEach(index =>{
-													outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + msg?.replace("~", "") + "/" + file + ") | " + fabs + "\n");
+													outputStringArray.push(index + "| [" + file.toString().split(index + "_").join("").split("\.md").join("") + "](" + (msg?.replace("~", "") + "/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
 												});
 												// console.log(file);
 											});

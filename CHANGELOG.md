@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.30] - 2022-8-8
+
+### Added
+- 支持文件名有空格
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [0.0.29] - 2022-8-2
 
 ### Added
