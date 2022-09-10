@@ -92,6 +92,8 @@
 * npm install -g typescript
 * 二次编译的可以直接用下面这条安装依赖
   * npm install
+    * 可能需要：https://www.npmjs.com/package/@types/vscode
+      * npm install @types/vscode@1.33.0
 * yo code
 * code ./mdplant
 * cd mdplant

@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
-	"version": "0.0.30",
+	"version": "0.0.31",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -17,7 +17,8 @@
 		"onCommand:extension.mdlist",
 		"onCommand:extension.mdtable",
 		"onCommand:extension.mdindent",
-		"onCommand:extension.mdmenu"
+		"onCommand:extension.mdmenu",
+		"onCommand:extension.mddir"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -49,6 +50,10 @@
 			{
 				"command": "extension.mdmenu",
 				"title": "md.menu"
+			},
+			{
+				"command": "extension.mddir",
+				"title": "Create MDPlant Folder"
 			}
 		],
 		"menus": {
@@ -82,6 +87,13 @@
 					"when": "editorFocus",
 					"command": "extension.mdmenu",
 					"group": "navigation"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "extension.mddir",
+					"group": "navigation",
+					"when": "explorerResourceIsFolder"
 				}
 			]
 		},
@@ -131,6 +143,7 @@
 		"url": "https://github.com/ZengjfOS/MDPlant"
 	},
 	"dependencies": {
-		"axios": "^0.24.0"
+		"axios": "^0.24.0",
+		"fs-extra": "^10.1.0"
 	}
 }

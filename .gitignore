@@ -4,3 +4,4 @@ node_modules
 *.vsix
 !release/*
 .DS_Store
+package-lock.json

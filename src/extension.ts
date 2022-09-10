@@ -6,6 +6,7 @@ import { basename } from 'path';
 import * as path from 'path';
 import { spawn } from 'child_process';
 const axios = require('axios');
+const fse = require('fs-extra');
 
 let MDP_UP = -1;
 let MDP_DOWN = 1;
@@ -871,6 +872,116 @@ function doIndent(activeEditor: vscode.TextEditor)
 
 }
 
+async function doDir(filePath: string) {
+	let docsDir = ["src", "docs"]
+	let regex = new RegExp("^(\\d{0,4})_")
+	let rootPath = vscode.workspace.rootPath
+	let maxIndex = 0
+
+	// 空文件夹，拷贝整个参考目录
+	if (filePath == rootPath) {
+		let files = fs.readdirSync(rootPath);
+		if (files.filter(e => e != ".git").length == 0) {
+			fse.copySync(__dirname + "/../res/projectTemplate", filePath)
+
+			// custom conf.py
+			const fileContent = fs.readFileSync(filePath + "/conf.py.template", 'utf8').split(/\r?\n/);
+			let confFile = fs.createWriteStream(filePath + "/conf.py")
+			for (let i = 0; i < fileContent.length; i++) {
+				let line = fileContent[i];
+				if (line.startsWith("author = ")) {
+					await vscode.window.showInputBox(
+					{	// 这个对象中所有参数都是可选参数
+						password:false,				// 输入内容是否是密码
+						ignoreFocusOut:true,		// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+						prompt:'author name',		// 在输入框下方的提示信息
+					}).then(msg => {
+						if (msg != undefined && msg.length > 0) {
+							line = "author = '" + msg + "'"
+						}
+					})
+					fileContent[i] = line
+				}
+				confFile.write(line + "\n");
+			}
+			confFile.close()
+			fs.unlinkSync(filePath + "/conf.py.template")
+		}
+	// 针对src、docs目录，创建子项目目录，兼容win、linux
+	} else if (docsDir.indexOf(filePath.replace(rootPath + "", "").replace(/[\\\/]/gi, "")) > -1) {
+		console.log(filePath)
+		let files = fs.readdirSync(filePath);
+		files.forEach((dir => {
+			let matchValue = regex.exec(dir.trim())
+			if (matchValue != null) {
+				let index = Number(matchValue[1])
+				if (index > maxIndex) {
+					maxIndex = index
+				}
+			}
+		}))
+
+		let filePrefix = String(maxIndex + 1).padStart(4,'0')
+		await vscode.window.showInputBox(
+		{	// 这个对象中所有参数都是可选参数
+			password:false,								// 输入内容是否是密码
+			ignoreFocusOut:true,						// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+			// placeHolder:'input file name：',			// 在输入框内的提示信息
+			value: filePrefix + "_",
+			prompt:'sub project name',		// 在输入框下方的提示信息
+		}).then(msg => {
+			if (msg != undefined && msg.length > 0) {
+				fs.mkdirSync(filePath + "/" + msg)
+				fse.copySync(__dirname + "/../res/subProjectTemplate", filePath + "/" + msg)
+				let dirs = ["docs/images", "docs/refers"]
+				dirs.forEach(val => {
+					fs.mkdirSync(filePath + "/" + msg + "/" + val)
+				})
+			}
+		})
+	} else {
+		// 兼容子项目目录以及子项目的docs目录
+		let pathName = path.basename(filePath.replace(/[\/\\]docs/gi, ""))
+		let matchValue = regex.exec(pathName)
+		if (matchValue != null) {
+			let filePathForDocs = filePath
+
+			if (!filePath.endsWith("docs")) {
+				filePathForDocs += "/docs"
+			}
+
+			if (fs.existsSync(filePathForDocs)) {
+				let files = fs.readdirSync(filePathForDocs);
+				files.forEach((dir => {
+					let matchValue = regex.exec(dir.trim())
+					if (matchValue != null) {
+						let index = Number(matchValue[1])
+						if (index > maxIndex) {
+							maxIndex = index
+						}
+					}
+				}))
+
+				let filePrefix = String(maxIndex + 1).padStart(4,'0')
+				await vscode.window.showInputBox(
+				{	// 这个对象中所有参数都是可选参数
+					password:false,								// 输入内容是否是密码
+					ignoreFocusOut:true,						// 默认false，设置为true时鼠标点击别的地方输入框不会消失
+					value: filePrefix + "_",
+					prompt:'file name',		// 在输入框下方的提示信息
+				}).then(msg => {
+					if (msg != undefined && msg.length > 0) {
+						if (msg.indexOf(".md") == -1)
+							msg += ".md"
+
+						fs.writeFileSync(filePathForDocs + "/" + msg, "# " + msg.split("_")[1].split(".")[0])
+					}
+				})
+			}
+		}
+	}
+}
+
 function doIndex(activeEditor: vscode.TextEditor)
 {
 	var line = activeEditor.selection.active.line;
@@ -1277,6 +1388,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	context.subscriptions.push(disposable);
+
+	disposable = vscode.commands.registerCommand('extension.mddir', (uri:vscode.Uri) => {
+		doDir(uri.fsPath)
+	});
 	context.subscriptions.push(disposable);
 
 	disposable = vscode.commands.registerCommand('extension.mdpaste', () => {
