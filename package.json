@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
-	"version": "0.0.31",
+	"version": "0.0.32",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -18,7 +18,8 @@
 		"onCommand:extension.mdtable",
 		"onCommand:extension.mdindent",
 		"onCommand:extension.mdmenu",
-		"onCommand:extension.mddir"
+		"onCommand:extension.mddir",
+		"onLanguage:markdown"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

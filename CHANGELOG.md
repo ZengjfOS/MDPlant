@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.32] - 2022-9-12
+
+### Added
+- 支持自动更新README.md table表
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [0.0.31] - 2022-9-10
 
 ### Added

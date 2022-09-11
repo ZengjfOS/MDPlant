@@ -872,6 +872,207 @@ function doIndent(activeEditor: vscode.TextEditor)
 
 }
 
+async function doFile(filePath: string) {
+	let docFileRegex = new RegExp("^((\\d{0,4})_.*\.md)")
+	let subProjectIndexRegex = new RegExp("^(\\d{0,4})_")
+	let rootPath = vscode.workspace.rootPath
+	let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\//, "")
+	let subProjectRegex = new RegExp("^(.*)/(\\d{0,4})_([^/]*)/README.md")
+	let subProjectFileRegex = new RegExp("^((.*)/(\\d{0,4})_([^/]*))/docs/(\\d{0,4})_(.*)\.md")
+
+	// README.md修改
+	if (filePath.endsWith("README.md")) {
+		// 顶层目录的README.md修改不需要做任何处理
+		if (relativePath == "README.md") {
+			console.log("skip README.md")
+		}
+
+		let subProjectMatchValue = subProjectRegex.exec(relativePath)
+		if (subProjectMatchValue != null) {
+			const activeEditor = vscode.window.activeTextEditor;
+			let abstractContentCheckCount = 0
+			let subProjectRootPath = rootPath + "/" + subProjectMatchValue[1]
+			let subProjectRootRelativePath = subProjectMatchValue[1]
+
+			if (activeEditor) {
+				activeEditor.edit(edit => {
+					var row = 0
+
+					// 检查修改是否属于摘要修改，非摘要修改不需要更新README.md
+					for (; row < activeEditor.document.lineCount; row++) {
+						let range = new vscode.Range(activeEditor.document.lineAt(row).range.start, activeEditor.document.lineAt(row).range.end)
+						let lineText = activeEditor.document.getText(range);
+	
+						// 摘要是第一个#、第二个#之间
+						if (lineText.startsWith("# ")) {
+							abstractContentCheckCount += 1
+
+							if (abstractContentCheckCount == 2)
+								break
+						}
+					}
+
+					// 摘要修改
+					if (row > activeEditor.selection.active.line) {
+						let files = fs.readdirSync(subProjectRootPath || "");
+						let outputString = "NO.|文件名称|摘要\n";
+						outputString += ":--:|:--|:--\n";
+						let outputStringArray:string[] = [];
+
+						files.forEach((file: fs.PathLike) => {
+							if (fs.lstatSync(subProjectRootPath + "/" + file).isDirectory()) {
+								let subREADME = subProjectRootPath + "/" + file + "/README.md"
+								if (fs.existsSync(subREADME)) {
+									let indexMatch = subProjectIndexRegex.exec(file.toString())
+									if (indexMatch) {
+										let subPorjectIndex = indexMatch[1]
+										const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+										let fabs = fileAbstract(fileContentArr);
+										outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("") + "](" + (subProjectRootRelativePath + "/" + file + "/README.md").replace(/ /g, "%20") + ") | " + fabs + "\n");
+										// console.log(file);
+									}
+								}
+							}
+						})
+
+						for (let i = 0; i < outputStringArray.length; i++) {
+							outputString += outputStringArray[outputStringArray.length - 1 - i];
+						}
+
+						const fileContentArr = fs.readFileSync(rootPath + "/README.md", 'utf8').split(/\r?\n/);
+						var outFile = fs.createWriteStream(rootPath + "/README.md");
+						var docsFlag = false
+						for (row = 0; row < fileContentArr.length; row++) {
+							// 写入docs部分
+							if (fileContentArr[row].startsWith("# docs")) {
+								outFile.write(fileContentArr[row] + "\n\n")
+								outFile.write(outputString)
+
+								docsFlag = true
+
+								continue
+							}
+
+							// 判断docs部分是否结束
+							if (docsFlag && fileContentArr[row].startsWith("# ")){
+								outFile.write("\n")
+								docsFlag = false
+							}
+
+							// 原来的docs部分不用写，忽略
+							if (docsFlag)
+								continue
+							
+							if (row == (fileContentArr.length - 1)) {
+								if (fileContentArr[row].trim().length == 0)
+									break
+							}
+
+							outFile.write(fileContentArr[row] + "\n")
+						}
+						outFile.close()
+					}
+				})
+			}
+		}
+	}
+
+	// 文件修改
+	let matchValue = docFileRegex.exec(path.basename(filePath))
+	if (matchValue != null) {
+		let subProjectFileRegexMatch = subProjectFileRegex.exec(relativePath)
+		if (subProjectFileRegexMatch) {
+			let subProjectRootPath = rootPath + "/" + subProjectFileRegexMatch[1]
+			let subProjectDocsPath = rootPath + "/" + subProjectFileRegexMatch[1] + "/docs"
+
+			const activeEditor = vscode.window.activeTextEditor;
+			let abstractContentCheckCount = 0
+
+			if (activeEditor) {
+				activeEditor.edit(edit => {
+					var row = 0
+
+					// 检查修改是否属于摘要修改，非摘要修改不需要更新README.md
+					for (; row < activeEditor.document.lineCount; row++) {
+						let range = new vscode.Range(activeEditor.document.lineAt(row).range.start, activeEditor.document.lineAt(row).range.end)
+						let lineText = activeEditor.document.getText(range);
+	
+						// 摘要是第一个#、第二个#之间
+						if (lineText.startsWith("# ")) {
+							abstractContentCheckCount += 1
+
+							if (abstractContentCheckCount == 2)
+								break
+						}
+					}
+
+					// 摘要修改
+					if (row > activeEditor.selection.active.line) {
+						let files = fs.readdirSync(subProjectDocsPath || "");
+						let outputString = "NO.|文件名称|摘要\n";
+						outputString += ":--:|:--|:--\n";
+						let outputStringArray:string[] = [];
+
+						files.forEach((file: fs.PathLike) => {
+							if (fs.lstatSync(subProjectDocsPath + "/" + file).isDirectory()) {
+							} else {
+								let subREADME = subProjectDocsPath + "/" + file
+								if (fs.existsSync(subREADME)) {
+									let indexMatch = subProjectIndexRegex.exec(file.toString())
+									if (indexMatch) {
+										let subPorjectIndex = indexMatch[1]
+										const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+										let fabs = fileAbstract(fileContentArr);
+										outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("").split("\.md").join("") + "](" + ("docs/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
+										// console.log(file);
+									}
+								}
+							}
+						})
+
+						for (let i = 0; i < outputStringArray.length; i++) {
+							outputString += outputStringArray[outputStringArray.length - 1 - i];
+						}
+
+						const fileContentArr = fs.readFileSync(subProjectRootPath + "/README.md", 'utf8').split(/\r?\n/);
+						var outFile = fs.createWriteStream(subProjectRootPath + "/README.md");
+						var docsFlag = false
+						for (row = 0; row < fileContentArr.length; row++) {
+							// 写入docs部分
+							if (fileContentArr[row].startsWith("# docs")) {
+								outFile.write(fileContentArr[row] + "\n\n")
+								outFile.write(outputString)
+
+								docsFlag = true
+
+								continue
+							}
+
+							// 判断docs部分是否结束
+							if (docsFlag && fileContentArr[row].startsWith("# ")){
+								outFile.write("\n")
+								docsFlag = false
+							}
+
+							// 原来的docs部分不用写，忽略
+							if (docsFlag)
+								continue
+
+							if (row == (fileContentArr.length - 1)) {
+								if (fileContentArr[row].trim().length == 0)
+									break
+							}
+
+							outFile.write(fileContentArr[row] + "\n")
+						}
+						outFile.close()
+					}
+				})
+			}
+		}
+	}
+}
+
 async function doDir(filePath: string) {
 	let docsDir = ["src", "docs"]
 	let regex = new RegExp("^(\\d{0,4})_")
@@ -1555,6 +1756,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	let onDidSaveTextDocumentEventDispose = vscode.workspace.onDidSaveTextDocument(function(event){
+		doFile(event.fileName);
+    });
+
+	context.subscriptions.push(onDidSaveTextDocumentEventDispose)
 }
 
 // this method is called when your extension is deactivated
