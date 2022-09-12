@@ -19,7 +19,8 @@
 		"onCommand:extension.mdindent",
 		"onCommand:extension.mdmenu",
 		"onCommand:extension.mddir",
-		"onLanguage:markdown"
+		"onLanguage:markdown",
+		"workspaceContains:**/README.md"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

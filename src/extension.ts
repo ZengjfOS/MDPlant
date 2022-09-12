@@ -1758,10 +1758,17 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	let onDidSaveTextDocumentEventDispose = vscode.workspace.onDidSaveTextDocument(function(event){
+		console.log(event.fileName);
 		doFile(event.fileName);
-    });
+	});
 
 	context.subscriptions.push(onDidSaveTextDocumentEventDispose)
+
+	let onDidDeleteFilesEventDispose  = vscode.workspace.onDidDeleteFiles(function(event){
+		console.log(event.files[0].path);
+	});
+
+	context.subscriptions.push(onDidDeleteFilesEventDispose)
 }
 
 // this method is called when your extension is deactivated
