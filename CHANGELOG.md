@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.33] - 2022-9-17
+
+### Added
+- 支持删除子工程时自动更新README.md table表
+- 支持快速生成table表模板
+
+### Changed
+- 无
+
+### Fixed
+- 支持对`## docs`的更新
+
 ## [0.0.32] - 2022-9-12
 
 ### Added

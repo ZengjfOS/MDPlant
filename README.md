@@ -89,10 +89,12 @@
   * https://nodejs.org/zh-cn/download/
 * npm install -g yo generator-code
 * npm install -g vsce
+  * sudo npm install -g vsce --unsafe-perm=true --allow-root
 * npm install -g typescript
 * 二次编译的可以直接用下面这条安装依赖
   * npm install
     * 可能需要：https://www.npmjs.com/package/@types/vscode
+      * npm install @types/vscode@1.43.0
       * npm install @types/vscode@1.33.0
 * yo code
 * code ./mdplant

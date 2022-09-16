@@ -872,6 +872,210 @@ function doIndent(activeEditor: vscode.TextEditor)
 
 }
 
+function doLineShortcut(activeEditor: vscode.TextEditor, lineValue: string) {
+	let tableRegex = new RegExp("\\s*table[\\s:]*(\\d*)[x\\s*]*(\\d*)\\s*")
+
+	var editor = vscode.window.activeTextEditor;
+	if (editor != undefined) {
+		let tableMatchValue = tableRegex.exec(lineValue)
+		if (tableMatchValue != null) {
+			let lineText = ""
+
+			for (let row = 0; row < Number(tableMatchValue[1]) + 2; row++) {
+				for (let col = 0; col < Number(tableMatchValue[2]); col++) {
+					if (row == 0) {
+						if (col == 0) {
+							lineText += " NO. "
+						} else {
+							lineText += "col " + (col + 1)
+						}
+
+						if (col != (Number(tableMatchValue[2]) - 1)) {
+							lineText += " | "
+						}
+					}
+
+					if (row == 1) {
+						lineText += "-----"
+
+						if (col != (Number(tableMatchValue[2]) - 1)) {
+							lineText += "-|-"
+						}
+					}
+
+					if (row > 1) {
+
+						if (col == 0) {
+							lineText += (" " + ((row - 2) + 1)).padEnd(5, ' ')
+						} else {
+							lineText += "     "
+						}
+
+						if (col != (Number(tableMatchValue[2]) - 1)) {
+							lineText += " | "
+						}
+					}
+				}
+
+				if (row != Number(tableMatchValue[1]) + 2 - 1)
+					lineText += "\n"
+			}
+
+			editor.edit(edit => {
+				let range = new vscode.Range(activeEditor.document.lineAt(activeEditor.selection.active.line).range.start, activeEditor.document.lineAt(activeEditor.selection.active.line).range.end)
+				edit.replace(range, lineText);
+			});
+
+			return true
+		}
+	}
+
+	return false
+
+}
+
+async function doDelete(filePath: string) {
+	let docFileRegex = new RegExp("^((\\d{0,4})_.*\.md)")
+	let subProjectIndexRegex = new RegExp("^(\\d{0,4})_")
+	let rootPath = vscode.workspace.rootPath
+	let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\//, "")
+	let subProjectRegex = new RegExp("^([^./]*)/(\\d{0,4})_([^./]*)$")
+	let subProjectFileRegex = new RegExp("^((.*)/(\\d{0,4})_([^/]*))/docs/(\\d{0,4})_(.*)\.md")
+
+	let subProjectMatchValue = subProjectRegex.exec(relativePath)
+	if (subProjectMatchValue != null) {
+		let subProjectRootPath = rootPath + "/" + subProjectMatchValue[1]
+		let subProjectRootRelativePath = subProjectMatchValue[1]
+
+		let files = fs.readdirSync(subProjectRootPath || "");
+		let outputString = "NO.|文件名称|摘要\n";
+		outputString += ":--:|:--|:--\n";
+		let outputStringArray:string[] = [];
+
+		files.forEach((file: fs.PathLike) => {
+			if (fs.lstatSync(subProjectRootPath + "/" + file).isDirectory()) {
+				let subREADME = subProjectRootPath + "/" + file + "/README.md"
+				if (fs.existsSync(subREADME)) {
+					let indexMatch = subProjectIndexRegex.exec(file.toString())
+					if (indexMatch) {
+						let subPorjectIndex = indexMatch[1]
+						const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+						let fabs = fileAbstract(fileContentArr);
+						outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("") + "](" + (subProjectRootRelativePath + "/" + file + "/README.md").replace(/ /g, "%20") + ") | " + fabs + "\n");
+						// console.log(file);
+					}
+				}
+			}
+		})
+
+		for (let i = 0; i < outputStringArray.length; i++) {
+			outputString += outputStringArray[outputStringArray.length - 1 - i];
+		}
+
+		const fileContentArr = fs.readFileSync(rootPath + "/README.md", 'utf8').split(/\r?\n/);
+		var outFile = fs.createWriteStream(rootPath + "/README.md");
+		var docsFlag = false
+		for (let row = 0; row < fileContentArr.length; row++) {
+			// 写入docs部分
+			if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
+				outFile.write(fileContentArr[row] + "\n\n")
+				outFile.write(outputString)
+
+				docsFlag = true
+
+				continue
+			}
+
+			// 判断docs部分是否结束
+			if (docsFlag && fileContentArr[row].startsWith("# ")){
+				outFile.write("\n")
+				docsFlag = false
+			}
+
+			// 原来的docs部分不用写，忽略
+			if (docsFlag)
+				continue
+
+			if (row == (fileContentArr.length - 1)) {
+				if (fileContentArr[row].trim().length == 0)
+					break
+			}
+
+			outFile.write(fileContentArr[row] + "\n")
+		}
+		outFile.close()
+	}
+
+	// 文件修改
+	let matchValue = docFileRegex.exec(path.basename(filePath))
+	if (matchValue != null) {
+		let subProjectFileRegexMatch = subProjectFileRegex.exec(relativePath)
+		if (subProjectFileRegexMatch) {
+			let subProjectRootPath = rootPath + "/" + subProjectFileRegexMatch[1]
+			let subProjectDocsPath = rootPath + "/" + subProjectFileRegexMatch[1] + "/docs"
+
+			let files = fs.readdirSync(subProjectDocsPath || "");
+			let outputString = "NO.|文件名称|摘要\n";
+			outputString += ":--:|:--|:--\n";
+			let outputStringArray:string[] = [];
+
+			files.forEach((file: fs.PathLike) => {
+				if (fs.lstatSync(subProjectDocsPath + "/" + file).isDirectory()) {
+				} else {
+					let subREADME = subProjectDocsPath + "/" + file
+					if (fs.existsSync(subREADME)) {
+						let indexMatch = subProjectIndexRegex.exec(file.toString())
+						if (indexMatch) {
+							let subPorjectIndex = indexMatch[1]
+							const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+							let fabs = fileAbstract(fileContentArr);
+							outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("").split("\.md").join("") + "](" + ("docs/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
+							// console.log(file);
+						}
+					}
+				}
+			})
+
+			for (let i = 0; i < outputStringArray.length; i++) {
+				outputString += outputStringArray[outputStringArray.length - 1 - i];
+			}
+
+			const fileContentArr = fs.readFileSync(subProjectRootPath + "/README.md", 'utf8').split(/\r?\n/);
+			var outFile = fs.createWriteStream(subProjectRootPath + "/README.md");
+			var docsFlag = false
+			for (let row = 0; row < fileContentArr.length; row++) {
+				// 写入docs部分
+				if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
+					outFile.write(fileContentArr[row] + "\n\n")
+					outFile.write(outputString)
+
+					docsFlag = true
+
+					continue
+				}
+
+				// 判断docs部分是否结束
+				if (docsFlag && fileContentArr[row].startsWith("# ")){
+					outFile.write("\n")
+					docsFlag = false
+				}
+
+				// 原来的docs部分不用写，忽略
+				if (docsFlag)
+					continue
+
+				if (row == (fileContentArr.length - 1)) {
+					if (fileContentArr[row].trim().length == 0)
+						break
+				}
+
+				outFile.write(fileContentArr[row] + "\n")
+			}
+			outFile.close()
+		}
+	}
+}
+
 async function doFile(filePath: string) {
 	let docFileRegex = new RegExp("^((\\d{0,4})_.*\.md)")
 	let subProjectIndexRegex = new RegExp("^(\\d{0,4})_")
@@ -884,7 +1088,9 @@ async function doFile(filePath: string) {
 	if (filePath.endsWith("README.md")) {
 		// 顶层目录的README.md修改不需要做任何处理
 		if (relativePath == "README.md") {
-			console.log("skip README.md")
+			console.log("skip root README.md")
+
+			return
 		}
 
 		let subProjectMatchValue = subProjectRegex.exec(relativePath)
@@ -944,7 +1150,7 @@ async function doFile(filePath: string) {
 						var docsFlag = false
 						for (row = 0; row < fileContentArr.length; row++) {
 							// 写入docs部分
-							if (fileContentArr[row].startsWith("# docs")) {
+							if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
 								outFile.write(fileContentArr[row] + "\n\n")
 								outFile.write(outputString)
 
@@ -1039,7 +1245,7 @@ async function doFile(filePath: string) {
 						var docsFlag = false
 						for (row = 0; row < fileContentArr.length; row++) {
 							// 写入docs部分
-							if (fileContentArr[row].startsWith("# docs")) {
+							if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
 								outFile.write(fileContentArr[row] + "\n\n")
 								outFile.write(outputString)
 
@@ -1110,7 +1316,6 @@ async function doDir(filePath: string) {
 		}
 	// 针对src、docs目录，创建子项目目录，兼容win、linux
 	} else if (docsDir.indexOf(filePath.replace(rootPath + "", "").replace(/[\\\/]/gi, "")) > -1) {
-		console.log(filePath)
 		let files = fs.readdirSync(filePath);
 		files.forEach((dir => {
 			let matchValue = regex.exec(dir.trim())
@@ -1629,6 +1834,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 				let range = new vscode.Range(editor.document.lineAt(line).range.start, editor.document.lineAt(line).range.end)
 				let lineText = editor.document.getText(range);
+				var currentLineText = lineText;
 				if ((lineText.trim().length > 0) && (lineText.trim().indexOf("|") < 0) && (lineText.trim().indexOf("#") < 0)) {
 					if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1) {
 						doList(editor)
@@ -1646,6 +1852,9 @@ export function activate(context: vscode.ExtensionContext) {
 						doList(editor)
 						return
 					}
+
+					if (doLineShortcut(editor, lineText))
+						return
 				}
 
 				if (lineText.trim().length > 0) {
@@ -1693,7 +1902,7 @@ export function activate(context: vscode.ExtensionContext) {
 							return
 						}
 
-						if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || path.basename(lineText.trim()).indexOf(".") > 0) {
+						if (lineText.split("](").length == 2 || lineText.indexOf("http") > -1 || (path.basename(lineText.trim()).indexOf(".") > 0 && path.basename(lineText.trim()).indexOf("NO.") == -1)) {
 							doList(editor)
 							return
 						}
@@ -1746,6 +1955,9 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 				}
+
+				if (currentLineText.length > 0)
+					return
 			}
 		}
 
@@ -1758,14 +1970,15 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	let onDidSaveTextDocumentEventDispose = vscode.workspace.onDidSaveTextDocument(function(event){
-		console.log(event.fileName);
+		console.log("doFile: " + event.fileName)
 		doFile(event.fileName);
 	});
 
 	context.subscriptions.push(onDidSaveTextDocumentEventDispose)
 
 	let onDidDeleteFilesEventDispose  = vscode.workspace.onDidDeleteFiles(function(event){
-		console.log(event.files[0].path);
+		console.log("doDelete: " + event.files[0].path)
+		doDelete(event.files[0].path);
 	});
 
 	context.subscriptions.push(onDidDeleteFilesEventDispose)
