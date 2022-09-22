@@ -1082,7 +1082,7 @@ async function doFile(filePath: string) {
 	let rootPath = vscode.workspace.rootPath
 	let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\//, "")
 	let subProjectRegex = new RegExp("^(.*)/(\\d{0,4})_([^/]*)/README.md")
-	let subProjectFileRegex = new RegExp("^((.*)/(\\d{0,4})_([^/]*))/docs/(\\d{0,4})_(.*)\.md")
+	let subProjectFileRegex = new RegExp("([^/]*)/((\\d{0,4})_([^/]*)\.md)")
 
 	// README.md修改
 	if (filePath.endsWith("README.md")) {
@@ -1188,8 +1188,9 @@ async function doFile(filePath: string) {
 	if (matchValue != null) {
 		let subProjectFileRegexMatch = subProjectFileRegex.exec(relativePath)
 		if (subProjectFileRegexMatch) {
-			let subProjectRootPath = rootPath + "/" + subProjectFileRegexMatch[1]
-			let subProjectDocsPath = rootPath + "/" + subProjectFileRegexMatch[1] + "/docs"
+			let relativePathSubProject = relativePath.replace(subProjectFileRegexMatch[1] + "/" + subProjectFileRegexMatch[2], "")
+			let subProjectRootPath = rootPath + "/" + relativePathSubProject
+			let subProjectDocsPath = rootPath + "/" + relativePathSubProject + "/" + subProjectFileRegexMatch[1]
 
 			const activeEditor = vscode.window.activeTextEditor;
 			let abstractContentCheckCount = 0
