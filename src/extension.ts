@@ -1281,7 +1281,6 @@ async function doFile(filePath: string) {
 }
 
 async function doDir(filePath: string) {
-	let docsDir = ["src", "docs"]
 	let regex = new RegExp("^(\\d{0,4})_")
 	let rootPath = vscode.workspace.rootPath
 	let maxIndex = 0
@@ -1316,7 +1315,7 @@ async function doDir(filePath: string) {
 			fs.unlinkSync(filePath + "/conf.py.template")
 		}
 	// 针对src、docs目录，创建子项目目录，兼容win、linux
-	} else if (docsDir.indexOf(filePath.replace(rootPath + "", "").replace(/[\\\/]/gi, "")) > -1) {
+	} else if ((fs.existsSync(filePath) && (!filePath.endsWith("images")) && (!filePath.endsWith("refers")))) {
 		let files = fs.readdirSync(filePath);
 		files.forEach((dir => {
 			let matchValue = regex.exec(dir.trim())
