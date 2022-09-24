@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.34] - 2022-9-24
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 创建子项目不限制在src、docs目录 
+- 支持一级目录更新README.md
+
 ## [0.0.33] - 2022-9-17
 
 ### Added

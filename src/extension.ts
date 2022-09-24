@@ -1190,7 +1190,8 @@ async function doFile(filePath: string) {
 		if (subProjectFileRegexMatch) {
 			let relativePathSubProject = relativePath.replace(subProjectFileRegexMatch[1] + "/" + subProjectFileRegexMatch[2], "")
 			let subProjectRootPath = rootPath + "/" + relativePathSubProject
-			let subProjectDocsPath = rootPath + "/" + relativePathSubProject + "/" + subProjectFileRegexMatch[1]
+			let subProjectDocsRelativePath = subProjectFileRegexMatch[1]
+			let subProjectDocsPath = rootPath + "/" + relativePathSubProject + "/" + subProjectDocsRelativePath
 
 			const activeEditor = vscode.window.activeTextEditor;
 			let abstractContentCheckCount = 0
@@ -1230,7 +1231,7 @@ async function doFile(filePath: string) {
 										let subPorjectIndex = indexMatch[1]
 										const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
 										let fabs = fileAbstract(fileContentArr);
-										outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("").split("\.md").join("") + "](" + ("docs/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
+										outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("").split("\.md").join("") + "](" + (subProjectDocsRelativePath + "/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
 										// console.log(file);
 									}
 								}
