@@ -630,7 +630,7 @@ async function doPaste(activeEditor: vscode.TextEditor)
 				editor.edit(edit => {
 					let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
 					let rawText = activeEditor.document.getText(range)
-					let spaceString = rawText.substring(0, rawText.search(/\S/))
+					let spaceString = rawText.match(/^\s*/)
 
 					if (imageSubfixArray.includes(path.extname(linkFilePath)))
 						edit.replace(range, spaceString + "![" + basename(linkFilePath) + "](" + linkFilePath + ")");
@@ -675,7 +675,7 @@ async function doPaste(activeEditor: vscode.TextEditor)
 						editor.edit(edit => {
 							let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
 							let rawText = activeEditor.document.getText(range)
-							let spaceString = rawText.substring(0, rawText.search(/\S/))
+							let spaceString = rawText.match(/^\s*/)
 							if (imageSubfixArray.includes(imageFileSubfix)) 
 								edit.replace(range, spaceString + "![" + basename(imageFilePath) + "](" + imageFilePath + ")");
 							else
@@ -736,7 +736,7 @@ async function doPaste(activeEditor: vscode.TextEditor)
 						editor.edit(edit => {
 							let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
 							let rawText = activeEditor.document.getText(range)
-							let spaceString = rawText.substring(0, rawText.search(/\S/))
+							let spaceString = rawText.match(/^\s*/)
 							edit.replace(range, spaceString + "![" + basename(imageFilePath) + "](" + imageFilePath + ")");
 						})
 					}
@@ -1957,7 +1957,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 				}
 
-				if (currentLineText.length > 0)
+				if (currentLineText.replace(/[\t ]/g, "").length > 0)
 					return
 			}
 		}
