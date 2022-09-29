@@ -3,7 +3,7 @@
 	"name": "mdplant",
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
-	"version": "0.0.34",
+	"version": "0.0.35",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -55,7 +55,7 @@
 			},
 			{
 				"command": "extension.mddir",
-				"title": "Create MDPlant Folder"
+				"title": "Create MDPlant Template"
 			}
 		],
 		"menus": {
@@ -95,7 +95,7 @@
 				{
 					"command": "extension.mddir",
 					"group": "navigation",
-					"when": "explorerResourceIsFolder"
+					"when": "explorerResourceIsFolder || resourceExtname == .md"
 				}
 			]
 		},

@@ -6,6 +6,20 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.35] - 2022-9-28
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 空白行(空格、制表符缩进)允许粘贴图片
+- 子项目右键创建另一个子项目，不用滚轮到src目录去处理
+- 子项目内docs、docs/images、docs/refers目录右键创建文件
+- 子项目内在`\d{1,4}_[^\\\/]*\.md`文件右键创建文件
+
 ## [0.0.34] - 2022-9-24
 
 ### Added

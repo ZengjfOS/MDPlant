@@ -940,7 +940,7 @@ async function doDelete(filePath: string) {
 	let rootPath = vscode.workspace.rootPath
 	let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\//, "")
 	let subProjectRegex = new RegExp("^([^./]*)/(\\d{0,4})_([^./]*)$")
-	let subProjectFileRegex = new RegExp("^((.*)/(\\d{0,4})_([^/]*))/docs/(\\d{0,4})_(.*)\.md")
+	let subProjectFileRegex = new RegExp("^((.*)/(\\d{0,4})_([^/]*)/)?([^/]*)/(\\d{0,4})_([^/]*)\.md")
 
 	let subProjectMatchValue = subProjectRegex.exec(relativePath)
 	if (subProjectMatchValue != null) {
@@ -1011,8 +1011,15 @@ async function doDelete(filePath: string) {
 	if (matchValue != null) {
 		let subProjectFileRegexMatch = subProjectFileRegex.exec(relativePath)
 		if (subProjectFileRegexMatch) {
-			let subProjectRootPath = rootPath + "/" + subProjectFileRegexMatch[1]
-			let subProjectDocsPath = rootPath + "/" + subProjectFileRegexMatch[1] + "/docs"
+			let subProjectRootPath = rootPath
+			let subProjectDocsPath = rootPath
+
+			if (subProjectFileRegexMatch[1] != undefined) {
+				subProjectRootPath += "/" + subProjectFileRegexMatch[1]
+				subProjectDocsPath += "/" + subProjectFileRegexMatch[1] + "/" + subProjectFileRegexMatch[5]
+			} else {
+				subProjectDocsPath += "/" + subProjectFileRegexMatch[5]
+			}
 
 			let files = fs.readdirSync(subProjectDocsPath || "");
 			let outputString = "NO.|文件名称|摘要\n";
@@ -1316,7 +1323,22 @@ async function doDir(filePath: string) {
 			fs.unlinkSync(filePath + "/conf.py.template")
 		}
 	// 针对src、docs目录，创建子项目目录，兼容win、linux
-	} else if ((fs.existsSync(filePath) && (!filePath.endsWith("images")) && (!filePath.endsWith("refers")))) {
+	} else if (
+				fs.existsSync(filePath)
+				&& !(
+					(fs.existsSync(filePath + "/images"))
+					|| (fs.existsSync(filePath + "/refers"))
+				)
+				&& (!filePath.endsWith("images"))
+				&& (!filePath.endsWith("refers"))
+				&& (!filePath.endsWith("\.md"))
+			) {
+		let pathName = path.basename(filePath)
+		let matchValue = regex.exec(pathName)
+		if (matchValue != null) {
+			filePath = filePath.replace(pathName, "").replace(/[\\\/]$/, "")
+		}
+
 		let files = fs.readdirSync(filePath);
 		files.forEach((dir => {
 			let matchValue = regex.exec(dir.trim())
@@ -1348,14 +1370,11 @@ async function doDir(filePath: string) {
 		})
 	} else {
 		// 兼容子项目目录以及子项目的docs目录
-		let pathName = path.basename(filePath.replace(/[\/\\]docs/gi, ""))
+		let subProjectRootPath = filePath.replace(/[\/\\]docs[\/\\]?(images|refers|\d{1,4}_[^\/\\]*\.md)?/gi, "")
+		let pathName = path.basename(subProjectRootPath)
 		let matchValue = regex.exec(pathName)
-		if (matchValue != null) {
-			let filePathForDocs = filePath
-
-			if (!filePath.endsWith("docs")) {
-				filePathForDocs += "/docs"
-			}
+		if (matchValue != null || subProjectRootPath == rootPath) {
+			let filePathForDocs = subProjectRootPath + "/docs"
 
 			if (fs.existsSync(filePathForDocs)) {
 				let files = fs.readdirSync(filePathForDocs);
@@ -1381,7 +1400,18 @@ async function doDir(filePath: string) {
 						if (msg.indexOf(".md") == -1)
 							msg += ".md"
 
-						fs.writeFileSync(filePathForDocs + "/" + msg, "# " + msg.split("_")[1].split(".")[0])
+						// fse.copySync(__dirname + "/../res/subProjectTemplate/docs/0001_template.md", filePathForDocs + "/" + msg)
+						let fileContent = "# " + msg.replace(/^\d{1,4}_/, "").split(".")[0] + "\n"
+						fileContent += "\n"
+						fileContent += "write your first doc at here...\n"
+						fileContent += "\n"
+						fileContent += "# steps\n"
+						fileContent += "\n"
+						fileContent += "* 思考\n"
+						fileContent += "* 思考\n"
+						fileContent += "* 思考\n"
+
+						fs.writeFileSync(filePathForDocs + "/" + msg, fileContent)
 					}
 				})
 			}
