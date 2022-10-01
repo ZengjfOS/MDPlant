@@ -937,8 +937,8 @@ function doLineShortcut(activeEditor: vscode.TextEditor, lineValue: string) {
 async function doDelete(filePath: string) {
 	let docFileRegex = new RegExp("^((\\d{0,4})_.*\.md)")
 	let subProjectIndexRegex = new RegExp("^(\\d{0,4})_")
-	let rootPath = vscode.workspace.rootPath
-	let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\//, "")
+	let rootPath = (vscode.workspace.rootPath || "").replace(/[\\]/gi, "/")
+	let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\/*/, "")
 	let subProjectRegex = new RegExp("^([^./]*)/(\\d{0,4})_([^./]*)$")
 	let subProjectFileRegex = new RegExp("^((.*)/(\\d{0,4})_([^/]*)/)?([^/]*)/(\\d{0,4})_([^/]*)\.md")
 

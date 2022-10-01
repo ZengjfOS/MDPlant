@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.36] - 2022-10-1
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- Windows路径导致删除文件相对路径出错
+
 ## [0.0.35] - 2022-9-28
 
 ### Added
