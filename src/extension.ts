@@ -1103,7 +1103,6 @@ async function doFile(filePath: string) {
 		let subProjectMatchValue = subProjectRegex.exec(relativePath)
 		if (subProjectMatchValue != null) {
 			const activeEditor = vscode.window.activeTextEditor;
-			let abstractContentCheckCount = 0
 			let subProjectRootPath = rootPath + "/" + subProjectMatchValue[1]
 			let subProjectRootRelativePath = subProjectMatchValue[1]
 
@@ -1111,80 +1110,63 @@ async function doFile(filePath: string) {
 				activeEditor.edit(edit => {
 					var row = 0
 
-					// 检查修改是否属于摘要修改，非摘要修改不需要更新README.md
-					for (; row < activeEditor.document.lineCount; row++) {
-						let range = new vscode.Range(activeEditor.document.lineAt(row).range.start, activeEditor.document.lineAt(row).range.end)
-						let lineText = activeEditor.document.getText(range);
-	
-						// 摘要是第一个#、第二个#之间
-						if (lineText.startsWith("# ")) {
-							abstractContentCheckCount += 1
+					let files = fs.readdirSync(subProjectRootPath || "");
+					let outputString = "NO.|文件名称|摘要\n";
+					outputString += ":--:|:--|:--\n";
+					let outputStringArray:string[] = [];
 
-							if (abstractContentCheckCount == 2)
-								break
-						}
-					}
-
-					// 摘要修改
-					if (row > activeEditor.selection.active.line) {
-						let files = fs.readdirSync(subProjectRootPath || "");
-						let outputString = "NO.|文件名称|摘要\n";
-						outputString += ":--:|:--|:--\n";
-						let outputStringArray:string[] = [];
-
-						files.forEach((file: fs.PathLike) => {
-							if (fs.lstatSync(subProjectRootPath + "/" + file).isDirectory()) {
-								let subREADME = subProjectRootPath + "/" + file + "/README.md"
-								if (fs.existsSync(subREADME)) {
-									let indexMatch = subProjectIndexRegex.exec(file.toString())
-									if (indexMatch) {
-										let subPorjectIndex = indexMatch[1]
-										const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
-										let fabs = fileAbstract(fileContentArr);
-										outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("") + "](" + (subProjectRootRelativePath + "/" + file + "/README.md").replace(/ /g, "%20") + ") | " + fabs + "\n");
-										// console.log(file);
-									}
+					files.forEach((file: fs.PathLike) => {
+						if (fs.lstatSync(subProjectRootPath + "/" + file).isDirectory()) {
+							let subREADME = subProjectRootPath + "/" + file + "/README.md"
+							if (fs.existsSync(subREADME)) {
+								let indexMatch = subProjectIndexRegex.exec(file.toString())
+								if (indexMatch) {
+									let subPorjectIndex = indexMatch[1]
+									const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+									let fabs = fileAbstract(fileContentArr);
+									outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("") + "](" + (subProjectRootRelativePath + "/" + file + "/README.md").replace(/ /g, "%20") + ") | " + fabs + "\n");
+									// console.log(file);
 								}
 							}
-						})
-
-						for (let i = 0; i < outputStringArray.length; i++) {
-							outputString += outputStringArray[outputStringArray.length - 1 - i];
 						}
+					})
 
-						const fileContentArr = fs.readFileSync(rootPath + "/README.md", 'utf8').split(/\r?\n/);
-						var outFile = fs.createWriteStream(rootPath + "/README.md");
-						var docsFlag = false
-						for (row = 0; row < fileContentArr.length; row++) {
-							// 写入docs部分
-							if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
-								outFile.write(fileContentArr[row] + "\n\n")
-								outFile.write(outputString)
-
-								docsFlag = true
-
-								continue
-							}
-
-							// 判断docs部分是否结束
-							if (docsFlag && fileContentArr[row].startsWith("# ")){
-								outFile.write("\n")
-								docsFlag = false
-							}
-
-							// 原来的docs部分不用写，忽略
-							if (docsFlag)
-								continue
-							
-							if (row == (fileContentArr.length - 1)) {
-								if (fileContentArr[row].trim().length == 0)
-									break
-							}
-
-							outFile.write(fileContentArr[row] + "\n")
-						}
-						outFile.close()
+					for (let i = 0; i < outputStringArray.length; i++) {
+						outputString += outputStringArray[outputStringArray.length - 1 - i];
 					}
+
+					const fileContentArr = fs.readFileSync(rootPath + "/README.md", 'utf8').split(/\r?\n/);
+					var outFile = fs.createWriteStream(rootPath + "/README.md");
+					var docsFlag = false
+					for (row = 0; row < fileContentArr.length; row++) {
+						// 写入docs部分
+						if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
+							outFile.write(fileContentArr[row] + "\n\n")
+							outFile.write(outputString)
+
+							docsFlag = true
+
+							continue
+						}
+
+						// 判断docs部分是否结束
+						if (docsFlag && fileContentArr[row].startsWith("# ")){
+							outFile.write("\n")
+							docsFlag = false
+						}
+
+						// 原来的docs部分不用写，忽略
+						if (docsFlag)
+							continue
+						
+						if (row == (fileContentArr.length - 1)) {
+							if (fileContentArr[row].trim().length == 0)
+								break
+						}
+
+						outFile.write(fileContentArr[row] + "\n")
+					}
+					outFile.close()
 				})
 			}
 		}
@@ -1201,87 +1183,69 @@ async function doFile(filePath: string) {
 			let subProjectDocsPath = rootPath + "/" + relativePathSubProject + "/" + subProjectDocsRelativePath
 
 			const activeEditor = vscode.window.activeTextEditor;
-			let abstractContentCheckCount = 0
 
 			if (activeEditor) {
 				activeEditor.edit(edit => {
 					var row = 0
 
-					// 检查修改是否属于摘要修改，非摘要修改不需要更新README.md
-					for (; row < activeEditor.document.lineCount; row++) {
-						let range = new vscode.Range(activeEditor.document.lineAt(row).range.start, activeEditor.document.lineAt(row).range.end)
-						let lineText = activeEditor.document.getText(range);
-	
-						// 摘要是第一个#、第二个#之间
-						if (lineText.startsWith("# ")) {
-							abstractContentCheckCount += 1
+					let files = fs.readdirSync(subProjectDocsPath || "");
+					let outputString = "NO.|文件名称|摘要\n";
+					outputString += ":--:|:--|:--\n";
+					let outputStringArray:string[] = [];
 
-							if (abstractContentCheckCount == 2)
-								break
-						}
-					}
-
-					// 摘要修改
-					if (row > activeEditor.selection.active.line) {
-						let files = fs.readdirSync(subProjectDocsPath || "");
-						let outputString = "NO.|文件名称|摘要\n";
-						outputString += ":--:|:--|:--\n";
-						let outputStringArray:string[] = [];
-
-						files.forEach((file: fs.PathLike) => {
-							if (fs.lstatSync(subProjectDocsPath + "/" + file).isDirectory()) {
-							} else {
-								let subREADME = subProjectDocsPath + "/" + file
-								if (fs.existsSync(subREADME)) {
-									let indexMatch = subProjectIndexRegex.exec(file.toString())
-									if (indexMatch) {
-										let subPorjectIndex = indexMatch[1]
-										const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
-										let fabs = fileAbstract(fileContentArr);
-										outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("").split("\.md").join("") + "](" + (subProjectDocsRelativePath + "/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
-										// console.log(file);
-									}
+					files.forEach((file: fs.PathLike) => {
+						if (fs.lstatSync(subProjectDocsPath + "/" + file).isDirectory()) {
+						} else {
+							let subREADME = subProjectDocsPath + "/" + file
+							if (fs.existsSync(subREADME)) {
+								let indexMatch = subProjectIndexRegex.exec(file.toString())
+								if (indexMatch) {
+									let subPorjectIndex = indexMatch[1]
+									const fileContentArr = fs.readFileSync(subREADME, 'utf8').split(/\r?\n/);
+									let fabs = fileAbstract(fileContentArr);
+									outputStringArray.push(subPorjectIndex + "| [" + file.toString().split(subPorjectIndex + "_").join("").split("\.md").join("") + "](" + (subProjectDocsRelativePath + "/" + file).replace(/ /g, "%20") + ") | " + fabs + "\n");
+									// console.log(file);
 								}
 							}
-						})
-
-						for (let i = 0; i < outputStringArray.length; i++) {
-							outputString += outputStringArray[outputStringArray.length - 1 - i];
 						}
+					})
 
-						const fileContentArr = fs.readFileSync(subProjectRootPath + "/README.md", 'utf8').split(/\r?\n/);
-						var outFile = fs.createWriteStream(subProjectRootPath + "/README.md");
-						var docsFlag = false
-						for (row = 0; row < fileContentArr.length; row++) {
-							// 写入docs部分
-							if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
-								outFile.write(fileContentArr[row] + "\n\n")
-								outFile.write(outputString)
-
-								docsFlag = true
-
-								continue
-							}
-
-							// 判断docs部分是否结束
-							if (docsFlag && fileContentArr[row].startsWith("# ")){
-								outFile.write("\n")
-								docsFlag = false
-							}
-
-							// 原来的docs部分不用写，忽略
-							if (docsFlag)
-								continue
-
-							if (row == (fileContentArr.length - 1)) {
-								if (fileContentArr[row].trim().length == 0)
-									break
-							}
-
-							outFile.write(fileContentArr[row] + "\n")
-						}
-						outFile.close()
+					for (let i = 0; i < outputStringArray.length; i++) {
+						outputString += outputStringArray[outputStringArray.length - 1 - i];
 					}
+
+					const fileContentArr = fs.readFileSync(subProjectRootPath + "/README.md", 'utf8').split(/\r?\n/);
+					var outFile = fs.createWriteStream(subProjectRootPath + "/README.md");
+					var docsFlag = false
+					for (row = 0; row < fileContentArr.length; row++) {
+						// 写入docs部分
+						if (fileContentArr[row].startsWith("# docs") || fileContentArr[row].startsWith("## docs")) {
+							outFile.write(fileContentArr[row] + "\n\n")
+							outFile.write(outputString)
+
+							docsFlag = true
+
+							continue
+						}
+
+						// 判断docs部分是否结束
+						if (docsFlag && fileContentArr[row].startsWith("# ")){
+							outFile.write("\n")
+							docsFlag = false
+						}
+
+						// 原来的docs部分不用写，忽略
+						if (docsFlag)
+							continue
+
+						if (row == (fileContentArr.length - 1)) {
+							if (fileContentArr[row].trim().length == 0)
+								break
+						}
+
+						outFile.write(fileContentArr[row] + "\n")
+					}
+					outFile.close()
 				})
 			}
 		}
@@ -1401,7 +1365,7 @@ async function doDir(filePath: string) {
 							msg += ".md"
 
 						// fse.copySync(__dirname + "/../res/subProjectTemplate/docs/0001_template.md", filePathForDocs + "/" + msg)
-						let fileContent = "# " + msg.replace(/^\d{1,4}_/, "").split(".")[0] + "\n"
+						let fileContent = "# " + msg.replace(/^\d{1,4}_/, "").split(".")[0].replace(/_/gi, " ") + "\n"
 						fileContent += "\n"
 						fileContent += "write your first doc at here...\n"
 						fileContent += "\n"

@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.37] - 2022-10-14
+
+### Added
+- 无
+
+### Changed
+- 创建文件会替换下划线
+
+### Fixed
+- 删除文件夹、修改文件会更新README.md中的table
+
+
 ## [0.0.36] - 2022-10-1
 
 ### Added
