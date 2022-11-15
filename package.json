@@ -11,7 +11,6 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.mdplant",
 		"onCommand:extension.mdpaste",
 		"onCommand:extension.mdindex",
 		"onCommand:extension.mdlist",
@@ -25,10 +24,6 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "extension.mdplant",
-				"title": "mdplant"
-			},
 			{
 				"command": "extension.mdpaste",
 				"title": "md.paste"
@@ -60,11 +55,6 @@
 		],
 		"menus": {
 			"editor/context": [
-				{
-					"when": "editorFocus",
-					"command": "extension.mdplant",
-					"group": "navigation"
-				},
 				{
 					"when": "editorFocus",
 					"command": "extension.mdlist",
@@ -111,10 +101,20 @@
 			"type": "object",
 			"title": "MDPlant",
 			"properties": {
-				"MDPlant.mdindex.fileRegEx": {
+				"MDPlant.plantuml.server": {
 					"type": "string",
-					"default": "^\\d{1,4}_.*\\.md",
-					"description": "mdindex、index命令文件匹配正则表达式"
+					"default": "http://www.plantuml.com/plantuml",
+					"description": "plantuml server"
+				},
+				"MDPlant.plantuml.image.suffix": {
+					"type": "string",
+					"default": "svg",
+					"description": "plantuml image suffix"
+				},
+				"MDPlant.paste.image.suffix": {
+					"type": "string",
+					"default": "png",
+					"description": "paste image suffix"
 				}
 			}
 		}
@@ -146,6 +146,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.24.0",
-		"fs-extra": "^10.1.0"
+		"fs-extra": "^10.1.0",
+		"mdplantlib": "file:../MDPlantLib"
 	}
 }

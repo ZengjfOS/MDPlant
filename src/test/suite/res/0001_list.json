@@ -1,0 +1,40 @@
+{
+    "dataset": {
+        "title": "list",
+        "enable": true,
+        "sets": [
+            {
+                "title": "title with http link",
+                "enable": true,
+                "cursor": 1,
+                "input": [
+                    "",
+                    "zengjf http://zengjf.fun",
+                    ""
+                ],
+                "output": [
+                    "",
+                    "* [zengjf](http://zengjf.fun)",
+                    ""
+                ],
+                "checkType": "content"
+            },
+            {
+                "title": "title with http link",
+                "enable": false,
+                "cursor": 1,
+                "input": [
+                    "",
+                    "zengjf http://zengjf.fun",
+                    ""
+                ],
+                "output": [
+                    "",
+                    "* [zengjf](http://zengjf.fun)",
+                    ""
+                ],
+                "checkType": "content"
+            }
+        ]
+    }
+}

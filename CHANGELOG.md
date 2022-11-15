@@ -332,7 +332,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 - support gif
-- table remove subfix `.md`
+- table remove suffix `.md`
 
 
 
