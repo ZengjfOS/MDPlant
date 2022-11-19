@@ -30,24 +30,45 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
                     let imageAbsolutePath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath
 
                     mdplantlibapi.getHTTPPlantumlImage(contentArray, suffix, imageAbsolutePath, status => {
-                        logger.info("status: " + status + ", path: " + imageAbsolutePath)
+                        let imagePositiion = mdplantlibapi.getConfig("MDPlant.plantuml.image.position", "up")
+                        logger.info("status: " + status + ", image pos: " + imagePositiion +  ", path: " + imageAbsolutePath)
                         activeEditor.edit(edit => {
-                            if (activeEditor.document.lineCount > endLine + 2) {
-                                let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.end, activeEditor.document.lineAt(endLine + 2).range.end)
-                                let rawText = activeEditor.document.getText(range)
-                                if (rawText.trim().length != 0) {
-                                    edit.delete(range)
+                            if (imagePositiion == "up") {
+                                if ((startLine - 2) >= 0) {
+                                    let range = new vscode.Range(activeEditor.document.lineAt(startLine - 2).range.start, activeEditor.document.lineAt(startLine - 1).range.start)
+                                    let rawText = activeEditor.document.getText(range)
+                                    if (rawText.trim().length != 0) {
+                                        edit.delete(range)
+                                    }
+                                }
+                            } else if (imagePositiion == "down") {
+                                if (activeEditor.document.lineCount > endLine + 2) {
+                                    let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.end, activeEditor.document.lineAt(endLine + 2).range.end)
+                                    let rawText = activeEditor.document.getText(range)
+                                    if (rawText.trim().length != 0) {
+                                        edit.delete(range)
+                                    }
                                 }
                             }
                         }).then ( value => {
                             activeEditor.edit(edit => {
-                                let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.start, activeEditor.document.lineAt(endLine + 1).range.end)
-                                let rawText = activeEditor.document.getText(range)
-                                let spaceString = rawText.match(/^\s*/)
-                                edit.replace(range, rawText + "\n" + spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")")
-
+                                if (imagePositiion == "up") {
+                                    let range = new vscode.Range(activeEditor.document.lineAt(startLine - 1).range.start, activeEditor.document.lineAt(startLine - 1).range.end)
+                                    let rawText = activeEditor.document.getText(range)
+                                    let spaceString = rawText.match(/^\s*/)
+                                    edit.replace(range, spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")" + "\n" + rawText)
+                                } else if (imagePositiion == "down") {
+                                    let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.start, activeEditor.document.lineAt(endLine + 1).range.end)
+                                    let rawText = activeEditor.document.getText(range)
+                                    let spaceString = rawText.match(/^\s*/)
+                                    edit.replace(range, rawText + "\n" + spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")")
+                                }
                             }).then(value => {
-                                mdplantlibapi.cursor(activeEditor, endLine + 2)
+                                if (imagePositiion == "up") {
+                                    mdplantlibapi.cursor(activeEditor, startLine - 1)
+                                } else if (imagePositiion == "down") {
+                                    mdplantlibapi.cursor(activeEditor, endLine + 2)
+                                }
                             })
                         })
                     })

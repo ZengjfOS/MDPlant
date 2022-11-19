@@ -111,6 +111,11 @@
 					"default": "svg",
 					"description": "plantuml image suffix"
 				},
+				"MDPlant.plantuml.image.position": {
+					"type": "string",
+					"default": "up",
+					"description": "plantuml image position"
+				},
 				"MDPlant.paste.image.suffix": {
 					"type": "string",
 					"default": "png",
