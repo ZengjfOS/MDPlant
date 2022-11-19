@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import * as mdplantlibapi from "./mdplantlibapi"
+const logger = new mdplantlibapi.Loggger("mdplant", true)
 
 export function doPlantuml(activeEditor: vscode.TextEditor)
 {
@@ -13,7 +14,7 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
     let startLine = textBlock.start
     let endLine = textBlock.end
     let contentArray: string[] = textBlock.textBlock
-    console.log("doPlantuml")
+    logger.info("doPlantuml")
 
     if (contentArray.length > 1) {
         activeEditor.edit( async edit => {
@@ -29,7 +30,7 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
                     let imageAbsolutePath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath
 
                     mdplantlibapi.getHTTPPlantumlImage(contentArray, suffix, imageAbsolutePath, status => {
-                        console.log("status: " + status + ", path: " + imageAbsolutePath)
+                        logger.info("status: " + status + ", path: " + imageAbsolutePath)
                         activeEditor.edit(edit => {
                             if (activeEditor.document.lineCount > endLine + 2) {
                                 let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.end, activeEditor.document.lineAt(endLine + 2).range.end)
@@ -102,7 +103,7 @@ export async function doPaste(activeEditor: vscode.TextEditor)
                     let spaceString = rawText.match(/^\s*/)
                     edit.replace(range, spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")")
 
-                    console.log("doPaste: " + imageFileRelativePath)
+                    logger.info("doPaste: " + imageFileRelativePath)
                 }).then(value => {
                     mdplantlibapi.cursor(activeEditor, line)
                 })
@@ -130,7 +131,7 @@ export function doMenu(activeEditor: vscode.TextEditor)
 
             edit.insert(new vscode.Position(startLine, 0), menus.join("\n"))
 
-            console.log("doMenu:  start: " + startLine + ", end: " + endLine)
+            logger.info("doMenu:  start: " + startLine + ", end: " + endLine)
         }).then( value => {
             mdplantlibapi.cursor(activeEditor, startLine)
         })
@@ -149,7 +150,7 @@ export function doIndent(activeEditor: vscode.TextEditor)
         activeEditor.edit(edit => {
             if (mdplantlibapi.doIndent(contentArray, startLine)) {
                 edit.replace(new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end), contentArray.join("\n"))
-                console.log("doIndent: finished")
+                logger.info("doIndent: finished")
             }
         }).then(value => {
             mdplantlibapi.cursor(activeEditor, line)
@@ -186,7 +187,7 @@ function doDelete(filePath: string) {
     let rootPath = mdplantlibapi.getRootPath(undefined)
     let pathInfo = mdplantlibapi.parsePath(rootPath, filePath)
 
-    console.log(pathInfo)
+    logger.info(pathInfo)
 
     // README.md修改
     if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir) {
@@ -201,11 +202,11 @@ function doFile(filePath: string) {
     let relativePath = filePath.replace(rootPath + "", "").replace(/[\\]/gi, "/").replace(/^\//, "")
     let pathInfo = mdplantlibapi.parsePath(rootPath, filePath)
 
-    console.log(pathInfo)
+    logger.info(pathInfo)
 
     // 顶层目录的README.md修改不需要做任何处理
     if (relativePath == "README.md") {
-        console.log("skip root README.md")
+        logger.info("skip root README.md")
 
         return
     }
@@ -223,7 +224,7 @@ export async function doDir(filePath: string) {
     let regex = new RegExp("^(\\d{0,4})_")
     let maxIndex = 0
 
-    console.log("doDir: " + filePath)
+    logger.info("doDir: " + filePath)
 
     // 空文件夹，拷贝整个参考模板目录
     if (filePath == rootPath) {
@@ -240,13 +241,13 @@ export async function doDir(filePath: string) {
     // 针对src、docs目录，创建子项目目录，兼容win、linux
     } else {
         let pathInfo = mdplantlibapi.parsePath(rootPath, filePath)
-        console.log(pathInfo)
+        logger.info(pathInfo)
         if (pathInfo.status) {
             if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir && pathInfo.subPath != "" && pathInfo.subSrcPath == "") {
                 let docsPath = rootPath + "/" + path.dirname(pathInfo.subPath)
 
-                console.log("doDir sub path: " + pathInfo.subPath)
-                console.log("doDir docs path: " + docsPath)
+                logger.info("doDir sub path: " + pathInfo.subPath)
+                logger.info("doDir docs path: " + docsPath)
 
                 let files = fs.readdirSync(docsPath)
                 files.forEach((dir => {
@@ -275,7 +276,7 @@ export async function doDir(filePath: string) {
 
                         await vscode.workspace.openTextDocument(docsPath + "/" + msg + "/README.md").then( async doc => {
                             await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
-                                console.log("show file success...")
+                                logger.info("show file success...")
                             })
                         })
                     }
@@ -286,7 +287,7 @@ export async function doDir(filePath: string) {
                 let docsPath = rootPath + "/" + pathInfo.subPath + "/" + pathInfo.subSrcPath
                 let files = fs.readdirSync(docsPath)
 
-                console.log("doDir docs path: " + docsPath)
+                logger.info("doDir docs path: " + docsPath)
 
                 files.forEach((dir => {
                     let matchValue = regex.exec(dir.trim())
@@ -342,14 +343,14 @@ export async function doIndex(activeEditor: vscode.TextEditor)
 
             if (msg == "") {
                 msg = "docs"
-                console.log("use default sub dir: " + msg)
+                logger.info("use default sub dir: " + msg)
             }
 
             let startLine = textBlock.start
             let endLine = textBlock.end
             let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
             let folderPath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + msg
-            console.log(folderPath)
+            logger.info(folderPath)
 
             if (fs.existsSync(folderPath)) {
                 activeEditor.edit(edit => {
@@ -391,14 +392,14 @@ export async function doTable(activeEditor: vscode.TextEditor)
 
             if (msg == "") {
                 msg = "docs"
-                console.log("use default sub dir: " + msg)
+                logger.info("use default sub dir: " + msg)
             }
 
             let startLine = textBlock.start
             let endLine = textBlock.end
             let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
             let folderPath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + msg
-            console.log(folderPath)
+            logger.info(folderPath)
 
             if (fs.existsSync(folderPath)) {
                 activeEditor.edit(edit => {
@@ -424,9 +425,9 @@ export async function doTable(activeEditor: vscode.TextEditor)
 
 export function activate(context: vscode.ExtensionContext) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
+    // Use the console to output diagnostic information (logger.info) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "mdplant" is now active!')
+    logger.info('Congratulations, your extension "mdplant" is now active!')
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
@@ -499,10 +500,10 @@ export function activate(context: vscode.ExtensionContext) {
             let startLine = textBlock.start
             let endLine = textBlock.end
 
-            console.log(textBlock)
+            logger.info(textBlock)
 
             let textBlockInfo = mdplantlibapi.parseTextBlock(textBlock.textBlock, mdplantlibapi.getRootPath(activeEditor), line - startLine)
-            console.log(textBlockInfo)
+            logger.info(textBlockInfo)
 
             if (textBlockInfo.status) {
                 switch(textBlockInfo.type) {
@@ -586,14 +587,14 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable)
 
     let onDidSaveTextDocumentEventDispose = vscode.workspace.onDidSaveTextDocument(function(event){
-        console.log("doFile: " + event.fileName)
+        logger.info("doFile: " + event.fileName)
         doFile(event.fileName)
     })
 
     context.subscriptions.push(onDidSaveTextDocumentEventDispose)
 
     let onDidDeleteFilesEventDispose  = vscode.workspace.onDidDeleteFiles(function(event){
-        console.log("doDelete: " + event.files[0].path)
+        logger.info("doDelete: " + event.files[0].path)
         doDelete(event.files[0].path)
     })
 

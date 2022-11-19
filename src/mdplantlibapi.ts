@@ -5,6 +5,7 @@ import * as mdplantlib from 'mdplantlib'
 
 export let projectPathTypeEnum      = mdplantlib.projectPathTypeEnum
 export let projectTextBlockTypeEnum = mdplantlib.projectTextBlockTypeEnum
+export let Loggger                  = mdplantlib.Logger
 
 /**
  * 
