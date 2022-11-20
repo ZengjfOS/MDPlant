@@ -4,7 +4,7 @@
         "enable": true,
         "sets": [
             {
-                "title": "title with http link",
+                "title": "list 1",
                 "enable": true,
                 "cursor": 1,
                 "input": [
@@ -20,8 +20,8 @@
                 "checkType": "content"
             },
             {
-                "title": "title with http link",
-                "enable": false,
+                "title": "list 2",
+                "enable": true,
                 "cursor": 1,
                 "input": [
                     "",
@@ -31,6 +31,54 @@
                 "output": [
                     "",
                     "* [zengjf](http://zengjf.fun)",
+                    ""
+                ],
+                "checkType": "content"
+            },
+            {
+                "title": "list 3",
+                "enable": true,
+                "cursor": 1,
+                "input": [
+                    "",
+                    "* [0000_USB_PD_R2_0_V1.3-20170112.pdf](docs/refers/0000_USB_PD_R2_0_V1.3-20170112.pdf)",
+                    ""
+                ],
+                "output": [
+                    "",
+                    "docs/refers/0000_USB_PD_R2_0_V1.3-20170112.pdf",
+                    ""
+                ],
+                "checkType": "content"
+            },
+            {
+                "title": "list 4",
+                "enable": true,
+                "cursor": 1,
+                "input": [
+                    "",
+                    "docs/refers/0000_USB_PD_R2_0_V1.3-20170112.pdf",
+                    ""
+                ],
+                "output": [
+                    "",
+                    "* [0000_USB_PD_R2_0_V1.3-20170112.pdf](docs/refers/0000_USB_PD_R2_0_V1.3-20170112.pdf)",
+                    ""
+                ],
+                "checkType": "content"
+            },
+            {
+                "title": "list 4",
+                "enable": true,
+                "cursor": 1,
+                "input": [
+                    "",
+                    "docs/refers/0000_USB_PD_R2_0_V1.3-20170112.pdf",
+                    ""
+                ],
+                "output": [
+                    "",
+                    "* [0000_USB_PD_R2_0_V1.3-20170112.pdf](docs/refers/0000_USB_PD_R2_0_V1.3-20170112.pdf)",
                     ""
                 ],
                 "checkType": "content"
