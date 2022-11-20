@@ -329,12 +329,18 @@ export async function doDir(filePath: string) {
                     // placeHolder:'input file name: ',      // 在输入框内的提示信息
                     value: filePrefix + "_",
                     prompt:'file name',                      // 在输入框下方的提示信息
-                }).then(msg => {
+                }).then(async msg => {
                     if (msg != undefined && msg.length > 0) {
                         if (msg.indexOf(".md") == -1)
                             msg += ".md"
 
                         mdplantlibapi.newSubProjectWorkFile(docsPath + "/" + msg)
+
+                        await vscode.workspace.openTextDocument(docsPath + "/" + msg).then( async doc => {
+                            await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
+                                logger.info("show file success...")
+                            })
+                        })
                     }
                 })
             }
