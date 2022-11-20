@@ -85,9 +85,9 @@ export function doList(activeEditor: vscode.TextEditor)
 
     activeEditor.edit(edit => {
         let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-        let lineText = activeEditor.document.getText(range).trim().replace(/\\/g, "/")
+        let lineText = activeEditor.document.getText(range).replace(/\\/g, "/")
 
-        if (lineText.length <= 0)
+        if (lineText.trim().length <= 0)
             return 
 
         if (lineText.startsWith(currentFileDir)) {
