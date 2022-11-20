@@ -38,6 +38,7 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
                                     let range = new vscode.Range(activeEditor.document.lineAt(startLine - 2).range.start, activeEditor.document.lineAt(startLine - 1).range.start)
                                     let rawText = activeEditor.document.getText(range)
                                     if (rawText.trim().length != 0) {
+                                        startLine -= 1
                                         edit.delete(range)
                                     }
                                 }
