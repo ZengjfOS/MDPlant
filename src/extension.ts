@@ -215,6 +215,9 @@ function doDelete(filePath: string) {
     if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir) {
         mdplantlibapi.refreshReadmeDocsTable(rootPath + "/" + pathInfo.mainPath + "/README.md", rootPath + "/" + pathInfo.mainPath + "/" + path.dirname(pathInfo.subPath))
     } else if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.file) {
+        if (!filePath.endsWith(".md"))
+            return
+
         mdplantlibapi.refreshReadmeDocsTable(rootPath + "/" + pathInfo.subPath + "/README.md", rootPath + "/" + pathInfo.subPath + "/" + pathInfo.subSrcPath)
     }
 }
@@ -225,6 +228,9 @@ function doFile(filePath: string) {
     let pathInfo = mdplantlibapi.parsePath(rootPath, filePath)
 
     logger.info(pathInfo)
+
+    if (!filePath.endsWith(".md"))
+        return
 
     // 顶层目录的README.md修改不需要做任何处理
     if (relativePath == "README.md") {
