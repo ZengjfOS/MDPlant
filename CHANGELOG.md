@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.0] - 2022-11-23
+
+### Added
+- 支持plantuml获取图片
+
+### Changed
+- 才用新的架构，分离出MDPlantLib作为核心处理逻辑
+
+### Fixed
+- 无
+
+
 ## [0.0.37] - 2022-10-14
 
 ### Added

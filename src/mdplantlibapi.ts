@@ -122,7 +122,7 @@ export function getRelativeDir(editor: vscode.TextEditor) {
 }
 
 export function doList(textLine: string) {
-    return mdplantlib.convert2List(textLine)
+    return mdplantlib.convert2List(textLine).content
 }
 
 export function saveClipboardImage(imagePath: string) {
@@ -134,7 +134,7 @@ export function doIndent(contentArray: string[], startLine: number) {
     let skipLevel = contentArray[0].indexOf("* ") / columnInterval
 
     if (contentArray[1].indexOf("─ ") > 0) {
-        mdplantlib.revert2Tree(contentArray, skipLevel)
+        mdplantlib.revert2List(contentArray, skipLevel)
     } else {
         let countLeaderIndent = 0
         let flagIndex = -1
@@ -163,22 +163,22 @@ export function doIndent(contentArray: string[], startLine: number) {
 }
 
 export function convert2Table(lineValue: string, rootPath: string) {
-    return mdplantlib.convert2Table(lineValue, rootPath)
+    return mdplantlib.convert2Table(lineValue, rootPath).content
 }
 
 export function doMenu(contentArray: string[]) {
-    return mdplantlib.generateMenu(contentArray)
+    return mdplantlib.generateMenu(contentArray).content.split("\n")
 }
 
 export function refreshReadmeDocsTable(outputFile: string | null | undefined, subProjectDocsDir: string) {
-    return mdplantlib.refreshReadmeDocsTable(outputFile, subProjectDocsDir)
+    return mdplantlib.refreshReadmeDocsTable(outputFile, subProjectDocsDir).content
 }
 
 export function generateIndexTable(rootPath: string, relativePath: string | undefined, suffix: string) {
     if (relativePath == undefined)
         return ""
     else 
-        return mdplantlib.generateIndexTable(rootPath, relativePath, suffix)
+        return mdplantlib.generateIndexTable(rootPath, relativePath, suffix).content
 }
 
 export function newProject(outputDir: string, author: string) {
@@ -232,7 +232,7 @@ export function convert2SequenceDiagram(contentArray: string[], startLine: numbe
         return []
     }
 
-    return mdplantlib.convert2SequenceDiagram(contentArray, skipLevel)
+    return mdplantlib.convert2SequenceDiagram(contentArray, skipLevel).content.split("\n")
 }
 
 export function getConfig(name: string, defaultValue: any) {
