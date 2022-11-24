@@ -90,7 +90,7 @@ export function doList(activeEditor: vscode.TextEditor)
         if (lineText.trim().length <= 0)
             return 
 
-        if (lineText.startsWith(currentFileDir)) {
+        if (lineText.trim().startsWith(currentFileDir)) {
             lineText = lineText.replace(currentFileDir + "/", "")
         } else {
             if (fs.existsSync(mdplantlibapi.getWorkspaceFolder(activeEditor) + "/" + lineText)) {
