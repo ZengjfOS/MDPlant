@@ -24,12 +24,12 @@ export function getRootPath(workspaceFolders: ReadonlyArray<vscode.WorkspaceFold
 	let output = ""
 
 	if (workspaceFolders?.length == 1)
-		output = workspaceFolders[0].uri.path
+		output = workspaceFolders[0].uri.fsPath
 	else {
 		workspaceFolders?.forEach(workspaceFolder => {
-			console.log("workspace folder: " + workspaceFolder.uri.path)
-			if (filePath.includes(workspaceFolder.uri.path)) {
-				output = workspaceFolder.uri.path
+			console.log("workspace folder: " + workspaceFolder.uri.fsPath)
+			if (filePath.includes(workspaceFolder.uri.fsPath)) {
+				output = workspaceFolder.uri.fsPath
 			}
 		})
 	}

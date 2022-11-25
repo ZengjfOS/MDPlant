@@ -94,11 +94,11 @@ export function getRootPath(editor: vscode.TextEditor | undefined) {
 
     if (workspaceFolders?.length == 1 || editor == undefined) {
         if (workspaceFolders)
-            output = workspaceFolders[0].uri.path
+            output = workspaceFolders[0].uri.fsPath
     } else {
         workspaceFolders?.forEach(workspaceFolder => {
-            if (editor?.document.uri.path.includes(workspaceFolder.uri.path)) {
-                output = workspaceFolder.uri.path
+            if (editor?.document.uri.fsPath.includes(workspaceFolder.uri.fsPath)) {
+                output = workspaceFolder.uri.fsPath
             }
         })
     }
@@ -111,7 +111,7 @@ export function getWorkspaceFolder(editor: vscode.TextEditor) {
 }
 
 export function getRelativePath(editor: vscode.TextEditor) {
-    let filePath = editor.document.uri.path
+    let filePath = editor.document.uri.fsPath
     let rootPath = getRootPath(editor)
 
     return filePath.replace(rootPath, "").replace(/[\\]/gi, "/").replace(/^\/*/, "")
@@ -245,7 +245,7 @@ export function getHTTPPlantumlImage(contentArray: string[], suffix: string, fil
 }
 
 export async function saveImageFile(activeEditor: vscode.TextEditor, callback: (imageFileRelativePath: string) => void) {
-    let currentEditorFile = activeEditor.document.uri.path
+    let currentEditorFile = activeEditor.document.uri.fsPath
     let editFileName = path.basename(currentEditorFile)
     let currentFileDir = getRelativeDir(activeEditor)
 

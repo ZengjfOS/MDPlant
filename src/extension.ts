@@ -672,15 +672,15 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable)
 
     let onDidSaveTextDocumentEventDispose = vscode.workspace.onDidSaveTextDocument(function(event){
-        logger.info("doFile: " + event.fileName)
-        doFile(event.fileName)
+        logger.info("doFile: " + event.uri.fsPath)
+        doFile(event.uri.fsPath)
     })
 
     context.subscriptions.push(onDidSaveTextDocumentEventDispose)
 
     let onDidDeleteFilesEventDispose  = vscode.workspace.onDidDeleteFiles(function(event){
-        logger.info("doDelete: " + event.files[0].path)
-        doDelete(event.files[0].path)
+        logger.info("doDelete: " + event.files[0].fsPath)
+        doDelete(event.files[0].fsPath)
     })
 
     context.subscriptions.push(onDidDeleteFilesEventDispose)
