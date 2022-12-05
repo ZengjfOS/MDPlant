@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.2] - 2022-12-5
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复list检查卡死
+
+
 ## [1.0.1] - 2022-12-5
 
 ### Added
