@@ -12,6 +12,7 @@ delete:
 	@#   2. use cmd 'brew info gnu-sed' to get path setting for ~/.zshrc
 	sed -i"" -e "/mdplantlib/d" package.json
 	rm -rf node_modules/mdplantlib
+	rm -rf mdplant-*.vsix
 
 package: remote
 	vsce package

@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.1] - 2022-12-5
+
+### Added
+- 无
+
+### Changed
+- list转tree不限制代码块语言设置
+
+### Fixed
+- 无
+
+
 ## [1.0.0] - 2022-11-23
 
 ### Added
