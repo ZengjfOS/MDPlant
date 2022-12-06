@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.3] - 2022-12-6
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复list检查中文目录卡死
+
+
 ## [1.0.2] - 2022-12-5
 
 ### Added
@@ -15,7 +27,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - 无
 
 ### Fixed
-- 修复list检查卡死
+- 修复list检查文件有符号卡死
 
 
 ## [1.0.1] - 2022-12-5
