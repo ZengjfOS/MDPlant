@@ -1,3 +1,5 @@
+countLine = $(shell find src -iname "*.ts" | xargs wc -l | tail -n 1 | awk -F ' ' '{print $$1}')
+
 all: package install
 
 local: delete
@@ -13,6 +15,9 @@ delete:
 	sed -i"" -e "/mdplantlib/d" package.json
 	rm -rf node_modules/mdplantlib
 	rm -rf mdplant-*.vsix
+
+count:
+	@echo $(countLine) line for valid working code :\)
 
 package: remote
 	vsce package

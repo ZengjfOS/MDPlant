@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.5] - 2022-12-10
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- menu多删除了下划线
+- 快捷键与list冲突
+
 ## [1.0.4] - 2022-12-7
 
 ### Added
