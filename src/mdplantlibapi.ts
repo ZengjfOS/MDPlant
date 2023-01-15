@@ -14,9 +14,9 @@ export let Loggger                  = mdplantlib.Logger
  * @param direction 
  * @returns 
  * 
- * 1 代码块标记
- * 2 空白行
- * 3 不包含边界
+ * 1. 代码块标记
+ * 2. 空白行
+ * 3. 不包含边界
  */
 export function findBoundary(editor: vscode.TextEditor, index: number, direction: number, boundary: boolean = true) {
     let boundaryLine = ["```"]
@@ -265,7 +265,7 @@ export async function saveImageFile(activeEditor: vscode.TextEditor, callback: (
             if (imageName.startsWith(filePrefix)) {
                 var fileNumberString = imageName.split("_")[1].split(".")[0]
                 var currentFileNumber = Number(fileNumberString)
-                if (currentFileNumber != NaN && currentFileNumber >= fileNumber) {
+                if (!Number.isNaN(currentFileNumber) && currentFileNumber >= fileNumber) {
                     fileNumber = currentFileNumber + 1
                 }
             }
