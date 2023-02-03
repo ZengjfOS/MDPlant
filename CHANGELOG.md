@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.6] - 2023-2-3
+
+### Added
+- 支持src目录右键创建子project
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [1.0.5] - 2022-12-10
 
 ### Added

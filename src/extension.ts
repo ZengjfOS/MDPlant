@@ -397,6 +397,70 @@ export async function doDir(filePath: string) {
                         })
                     }
                 })
+            } else if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.src
+                    || pathInfo.subSrcPath.trim().length != 0) {
+
+                let docsPath = rootPath + "/" + pathInfo.subSrcPath
+                let files = fs.readdirSync(docsPath)
+
+                logger.info("doDir docs path: " + docsPath)
+
+                files.forEach((dir => {
+                    let matchValue = regex.exec(dir.trim())
+                    if (matchValue != null) {
+                        let index = Number(matchValue[1])
+                        if (index > maxIndex) {
+                            maxIndex = index
+                        }
+                    }
+                }))
+
+                if (pathInfo.subSrcPath != "docs") {
+                    let filePrefix = String(maxIndex + 1).padStart(4,'0')
+                    await vscode.window.showInputBox(
+                    {   // 这个对象中所有参数都是可选参数
+                        password:false,                       // 输入内容是否是密码
+                        ignoreFocusOut:true,                  // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+                        // placeHolder:'input file name：',   // 在输入框内的提示信息
+                        value: filePrefix + "_",
+                        prompt:'sub project name',            // 在输入框下方的提示信息
+                    }).then(async msg => {
+                        if (msg != undefined && msg.length > 0) {
+                            mdplantlibapi.newSubProject(docsPath + "/" + msg)
+
+                            doFile(docsPath + "/" + msg + "/README.md")
+
+                            await vscode.workspace.openTextDocument(docsPath + "/" + msg + "/README.md").then( async doc => {
+                                await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
+                                    logger.info("show file success...")
+                                })
+                            })
+                        }
+                    })
+                } else {
+                    let filePrefix = String(maxIndex + 1).padStart(4,'0')
+                    await vscode.window.showInputBox(
+                    {   // 这个对象中所有参数都是可选参数
+                        password:false,                          // 输入内容是否是密码
+                        ignoreFocusOut:true,                     // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+                        // placeHolder:'input file name: ',      // 在输入框内的提示信息
+                        value: filePrefix + "_",
+                        prompt:'file name',                      // 在输入框下方的提示信息
+                    }).then(async msg => {
+                        if (msg != undefined && msg.length > 0) {
+                            if (msg.indexOf(".md") == -1)
+                                msg += ".md"
+
+                            mdplantlibapi.newSubProjectWorkFile(docsPath + "/" + msg)
+
+                            await vscode.workspace.openTextDocument(docsPath + "/" + msg).then( async doc => {
+                                await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
+                                    logger.info("show file success...")
+                                })
+                            })
+                        }
+                    })
+                }
             }
         }
     }
