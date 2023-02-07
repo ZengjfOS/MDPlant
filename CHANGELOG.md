@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.7] - 2023-2-7
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复ubuntu无xclip不提示
+
 ## [1.0.6] - 2023-2-3
 
 ### Added
