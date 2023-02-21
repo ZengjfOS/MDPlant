@@ -247,6 +247,23 @@ export function doTableLineShortcut(activeEditor: vscode.TextEditor, lineValue: 
         return false
 }
 
+export function doCopyShortcut(activeEditor: vscode.TextEditor, lineValue: string) {
+    let currentEditorFile = activeEditor.document.uri.fsPath
+    let output = mdplantlibapi.copyDocument(lineValue.replace(/^copy\s+/g, ""), [], currentEditorFile).content
+    if (output.length > 0) {
+        activeEditor.edit(edit => {
+            let startLine = 0
+            let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.selection.end)
+            edit.replace(range, output.join("\n"))
+        }).then(value => {
+            mdplantlibapi.cursor(activeEditor, 0)
+        })
+
+        return true
+    } else
+        return false
+}
+
 function doDelete(filePath: string) {
     let rootPath = mdplantlibapi.getRootPath(undefined)
     let pathInfo = mdplantlibapi.parsePath(rootPath, filePath)
@@ -677,6 +694,9 @@ export function activate(context: vscode.ExtensionContext) {
                         } else {
                             doPlantuml(activeEditor)
                         }
+                        break
+                    case mdplantlibapi.projectTextBlockTypeEnum.copy:
+                        doCopyShortcut(activeEditor, textBlockInfo.content)
                         break
                     default:
                         break

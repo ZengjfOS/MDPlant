@@ -294,3 +294,12 @@ export async function saveImageFile(activeEditor: vscode.TextEditor, callback: (
         }
     })
 }
+
+export function copyDocument(filePath: string, subpath: string[], targetPath: string) {
+    let rootPath = getRootPath(undefined)
+
+    if (filePath.startsWith("/"))
+        return mdplantlib.copyDocument(filePath, subpath, targetPath)
+    else
+        return mdplantlib.copyDocument(rootPath + "/" + filePath, subpath, targetPath)
+}
