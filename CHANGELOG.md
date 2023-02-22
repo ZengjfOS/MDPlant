@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.8] - 2023-2-22
+
+### Added
+- 支持copy快捷命令，便于迁移文件及其附属文件
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [1.0.7] - 2023-2-7
 
 ### Added

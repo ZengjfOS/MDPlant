@@ -300,6 +300,8 @@ export function copyDocument(filePath: string, subpath: string[], targetPath: st
 
     if (filePath.startsWith("/"))
         return mdplantlib.copyDocument(filePath, subpath, targetPath)
+    if (filePath.charAt(1) == ":")
+        return mdplantlib.copyDocument(filePath, subpath, targetPath)
     else
-        return mdplantlib.copyDocument(rootPath + "/" + filePath, subpath, targetPath)
+        return mdplantlib.copyDocument((rootPath + "/" + filePath), subpath, targetPath)
 }
