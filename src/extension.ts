@@ -283,6 +283,8 @@ export function doCopyShortcut(activeEditor: vscode.TextEditor, lineValue: strin
             await vscode.workspace.openTextDocument(vscode.Uri.parse(output)).then( async doc => {
                 await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
                     logger.info("show file success...")
+
+                    vscode.workspace.saveAll()
                 })
             })
         })
