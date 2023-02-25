@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.10] - 2023-2-25
+
+### Added
+- 无
+
+### Changed
+- 无
+- 无
+
+### Fixed
+- 固定为4个索引字符为文件索引，因为过少的字符匹配导致链接失效
+
 ## [1.0.9] - 2023-2-25
 
 ### Added
