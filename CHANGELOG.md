@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.11] - 2023-2-25
+
+### Added
+- 无
+
+### Changed
+- 无
+- 无
+
+### Fixed
+- 正则表达式匹配copy文件索引
+
 ## [1.0.10] - 2023-2-25
 
 ### Added
