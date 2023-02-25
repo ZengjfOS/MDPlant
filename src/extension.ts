@@ -251,12 +251,40 @@ export function doCopyShortcut(activeEditor: vscode.TextEditor, lineValue: strin
     let currentEditorFile = activeEditor.document.uri.fsPath
     let output = mdplantlibapi.copyDocument(lineValue.replace(/^copy\s+/g, ""), [], currentEditorFile).content
     if (output.length > 0) {
+        let preLineStart = activeEditor.selection.active.line - 1
+        let preLineEnd = activeEditor.selection.active.line + 1
+
         activeEditor.edit(edit => {
-            let startLine = 0
-            let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.selection.end)
-            edit.replace(range, output.join("\n"))
-        }).then(value => {
-            mdplantlibapi.cursor(activeEditor, 0)
+            if (preLineStart < 0)
+                preLineStart = 0
+            else {
+                let preRange = new vscode.Range(activeEditor.document.lineAt(preLineStart).range.start, activeEditor.document.lineAt(preLineStart).range.end)
+                let preLineStartText = activeEditor.document.getText(preRange).trim()
+
+                console.log(preLineStart)
+                console.log(preLineStartText.length)
+
+                if (preLineStartText.length != 0)
+                    preLineStart = activeEditor.selection.active.line
+
+                if (preLineEnd >= (activeEditor.document.lineCount - 1))
+                    preLineEnd = activeEditor.document.lineCount - 1
+            }
+
+            console.log(preLineStart)
+            console.log(preLineEnd)
+            let range = new vscode.Range(activeEditor.document.lineAt(preLineStart).range.start, activeEditor.document.lineAt(preLineEnd).range.end)
+            edit.delete(range)
+        }).then(async value => {
+            // mdplantlibapi.cursor(activeEditor, preLine)
+
+            doFile(output)
+
+            await vscode.workspace.openTextDocument(vscode.Uri.parse(output)).then( async doc => {
+                await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
+                    logger.info("show file success...")
+                })
+            })
         })
 
         return true

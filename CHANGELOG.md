@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.9] - 2023-2-25
+
+### Added
+- 无
+
+### Changed
+- 优化copy功能，可以在任意文件执行拷贝文件到当前子项目，自动打开文件
+- 优化子项目文档模版索引从0001为0000，便于copy功能从0001开始计算索引
+
+### Fixed
+- 无
+
 ## [1.0.8] - 2023-2-22
 
 ### Added
