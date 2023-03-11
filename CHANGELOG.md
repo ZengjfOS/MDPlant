@@ -6,13 +6,24 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.12] - 2023-3-11
+
+### Added
+- 无
+
+### Changed
+- list支持.开头的文件
+- 新建文件第二个一级标题改为参考文档
+
+### Fixed
+- 无
+
 ## [1.0.11] - 2023-2-25
 
 ### Added
 - 无
 
 ### Changed
-- 无
 - 无
 
 ### Fixed
