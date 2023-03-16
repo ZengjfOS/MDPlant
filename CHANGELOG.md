@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.13] - 2023-3-16
+
+### Added
+- 无
+
+### Changed
+- list提高http检查优先级
+- 修复文件名存在类似数字索引导致拷贝不修改链接
+
+### Fixed
+- 无
+
 ## [1.0.12] - 2023-3-11
 
 ### Added
