@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.14] - 2023-3-18
+
+### Added
+- 无
+
+### Changed
+- 允许list命令文本中有-
+
+### Fixed
+- 无
+
 ## [1.0.13] - 2023-3-16
 
 ### Added
