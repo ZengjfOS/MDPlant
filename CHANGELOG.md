@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.15] - 2023-3-23
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 删除子项目不更新README中的table表
+
 ## [1.0.14] - 2023-3-18
 
 ### Added

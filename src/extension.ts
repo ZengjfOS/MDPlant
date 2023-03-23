@@ -302,7 +302,7 @@ function doDelete(filePath: string) {
 
     // README.md修改
     if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir) {
-        mdplantlibapi.refreshReadmeDocsTable(rootPath + "/" + pathInfo.mainPath + "/README.md", rootPath + "/" + pathInfo.mainPath + "/" + path.dirname(pathInfo.subPath))
+        mdplantlibapi.refreshReadmeDocsTable(rootPath + "/" + pathInfo.mainPath + "/README.md", rootPath + "/" + path.dirname(pathInfo.subPath))
     } else if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.file) {
         const indexRE = new RegExp("^\\d{1,4}_.*", "g")
         if (!indexRE.test(path.basename(filePath)) || !filePath.endsWith(".md")) {
