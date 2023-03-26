@@ -1,4 +1,6 @@
-countLine = $(shell find src -iname "*.ts" | xargs wc -l | tail -n 1 | awk -F ' ' '{print $$1}')
+mdplantCountLine    = $(shell find src -iname "*.ts" | xargs wc -l | tail -n 1 | awk -F ' ' '{print $$1}')
+mdplantlibCountLine = $(shell find node_modules/mdplantlib/lib node_modules/mdplantlib/test -iname "*.js" | xargs wc -l | tail -n 1 | awk -F ' ' '{print $$1}')
+countLine           = $(shell echo $(mdplantCountLine)+$(mdplantlibCountLine) | bc)
 
 all: package install
 
@@ -17,7 +19,9 @@ delete:
 	rm -rf mdplant-*.vsix
 
 count:
-	@echo $(countLine) line for valid working code :\)
+	@echo "MDPlant:    $(mdplantCountLine) lines"
+	@echo "MDPlantLib: $(mdplantlibCountLine) lines"
+	@echo "$(countLine) line for valid working code :\)"
 
 package: remote
 	vsce package
