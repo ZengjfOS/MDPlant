@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.16] - 2023-4-9
+
+### Added
+- 无
+
+### Changed
+- copy命令可以支持覆盖文件: copy [source] [target]
+
+### Fixed
+- 无
+
 ## [1.0.15] - 2023-3-23
 
 ### Added

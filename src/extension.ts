@@ -249,7 +249,15 @@ export function doTableLineShortcut(activeEditor: vscode.TextEditor, lineValue: 
 
 export function doCopyShortcut(activeEditor: vscode.TextEditor, lineValue: string) {
     let currentEditorFile = activeEditor.document.uri.fsPath
-    let output = mdplantlibapi.copyDocument(lineValue.replace(/^copy\s+/g, ""), [], currentEditorFile).content
+    let lineValueArray = lineValue.trim().split(/\s+/)
+    let output = ""
+
+    if (lineValueArray.length == 2) {
+        output = mdplantlibapi.copyDocument(lineValueArray[1], [], currentEditorFile, false).content
+    } else if (lineValueArray.length == 3) {
+        output = mdplantlibapi.copyDocument(lineValueArray[1], [], lineValueArray[2], true).content
+    }
+
     if (output.length > 0) {
         let preLineStart = activeEditor.selection.active.line - 1
         let preLineEnd = activeEditor.selection.active.line + 1
