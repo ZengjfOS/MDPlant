@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.17] - 2023-4-22
+
+### Added
+- 无
+
+### Changed
+- EXPLORER中右键`Create MDPlant Template`时自动检测创建文件还是子项目
+
+### Fixed
+- 无
+
 ## [1.0.16] - 2023-4-9
 
 ### Added

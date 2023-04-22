@@ -374,10 +374,14 @@ export async function doDir(filePath: string) {
         let pathInfo = mdplantlibapi.parsePath(rootPath, filePath)
         logger.info(pathInfo)
         if (pathInfo.status) {
-            if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir && pathInfo.subPath != "" && pathInfo.subSrcPath == "") {
-                let docsPath = rootPath + "/" + path.dirname(pathInfo.subPath)
+            if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir) {
+                let docsPath = ""
 
-                logger.info("doDir sub path: " + pathInfo.subPath)
+                if (pathInfo.subSrcPath != "") {
+                    docsPath = rootPath + "/" + pathInfo.subPath
+                    docsPath += "/" + pathInfo.subSrcPath
+                } else
+                    docsPath = rootPath + "/" + path.dirname(pathInfo.subPath)
                 logger.info("doDir docs path: " + docsPath)
 
                 let files = fs.readdirSync(docsPath)
@@ -412,8 +416,7 @@ export async function doDir(filePath: string) {
                         })
                     }
                 })
-            } else if ((pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.dir && pathInfo.subPath != "" && pathInfo.subSrcPath != "") 
-                    || pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.file) {
+            } else if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.file) {
 
                 let docsPath = rootPath + "/" + pathInfo.subPath + "/" + pathInfo.subSrcPath
                 let files = fs.readdirSync(docsPath)
