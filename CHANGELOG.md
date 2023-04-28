@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.17] - 2023-4-29
+
+### Added
+- 无
+
+### Changed
+- 添加icon
+
+### Fixed
+- 无
+
 ## [1.0.16] - 2023-4-28
 
 ### Added
