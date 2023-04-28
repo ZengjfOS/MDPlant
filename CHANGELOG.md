@@ -6,24 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [1.0.17] - 2023-4-22
-
-### Added
-- 无
-
-### Changed
-- EXPLORER中右键`Create MDPlant Template`时自动检测创建文件还是子项目
-
-### Fixed
-- 无
-
-## [1.0.16] - 2023-4-9
+## [1.0.16] - 2023-4-28
 
 ### Added
 - 无
 
 ### Changed
 - copy命令可以支持覆盖文件: copy [source] [target]
+- EXPLORER中右键`Create MDPlant Template`时自动检测创建文件还是子项目
+- list路径支持绝对路径
+- copy提供缺失文件提示
 
 ### Fixed
 - 无

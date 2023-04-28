@@ -124,6 +124,7 @@ export function doList(activeEditor: vscode.TextEditor)
 {
     let line = activeEditor.selection.active.line
     let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
+    let rootPath = mdplantlibapi.getRootPath(activeEditor)
 
     activeEditor.edit(edit => {
         let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
@@ -131,6 +132,9 @@ export function doList(activeEditor: vscode.TextEditor)
 
         if (lineText.trim().length <= 0)
             return 
+
+        if (lineText.trim().startsWith(rootPath))
+            lineText = lineText.replace(rootPath + "/", "")
 
         if (lineText.trim().startsWith(currentFileDir)) {
             lineText = lineText.replace(currentFileDir + "/", "")
