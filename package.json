@@ -27,27 +27,27 @@
 		"commands": [
 			{
 				"command": "extension.mdpaste",
-				"title": "md.paste"
+				"title": "MDPlant: paste"
 			},
 			{
 				"command": "extension.mdindex",
-				"title": "md.index"
+				"title": "MDPlant: index"
 			},
 			{
 				"command": "extension.mdlist",
-				"title": "md.list"
+				"title": "MDPlant: list"
 			},
 			{
 				"command": "extension.mdtable",
-				"title": "md.table"
+				"title": "MDPlant: table"
 			},
 			{
 				"command": "extension.mdindent",
-				"title": "md.indent"
+				"title": "MDPlant: indent"
 			},
 			{
 				"command": "extension.mdmenu",
-				"title": "md.menu"
+				"title": "MDPlant: menu"
 			},
 			{
 				"command": "extension.mddir",
@@ -57,29 +57,29 @@
 		"menus": {
 			"editor/context": [
 				{
-					"when": "editorFocus",
+					"when": "editorFocus && resourceExtname == .md",
 					"command": "extension.mdlist",
-					"group": "navigation"
+					"group": "mdplant@1"
 				},
 				{
-					"when": "editorFocus",
+					"when": "editorFocus && resourceExtname == .md",
 					"command": "extension.mdindex",
-					"group": "navigation"
+					"group": "mdplant@2"
 				},
 				{
-					"when": "editorFocus",
+					"when": "editorFocus && resourceExtname == .md",
 					"command": "extension.mdtable",
-					"group": "navigation"
+					"group": "mdplant@3"
 				},
 				{
-					"when": "editorFocus",
+					"when": "editorFocus && resourceExtname == .md",
 					"command": "extension.mdindent",
-					"group": "navigation"
+					"group": "mdplant@4"
 				},
 				{
-					"when": "editorFocus",
+					"when": "editorFocus && resourceExtname == .md",
 					"command": "extension.mdmenu",
-					"group": "navigation"
+					"group": "mdplant@5"
 				}
 			],
 			"explorer/context": [
