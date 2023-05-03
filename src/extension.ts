@@ -599,7 +599,17 @@ export async function doTable(activeEditor: vscode.TextEditor)
                 return
 
             if (msg == "") {
-                msg = "docs"
+                let mdDirs = ["docs", "src"]
+                for (let i = 0; i < mdDirs.length; i++) {
+                    if (fs.existsSync(mdplantlibapi.getRootPath(activeEditor)
+                            + "/" + mdplantlibapi.getRelativeDir(activeEditor)
+                            + "/" + mdDirs[i])) {
+                        msg = mdDirs[i]
+
+                        break
+                    }
+                }
+
                 logger.info("use default sub dir: " + msg)
             }
 

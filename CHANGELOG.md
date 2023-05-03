@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.18] - 2023-5-3
+
+### Added
+- 无
+
+### Changed
+- 支持docs、src作为默认文档目录，docs优先
+- 支持独立的右键group
+
+### Fixed
+- 无
+
 ## [1.0.17] - 2023-4-29
 
 ### Added
