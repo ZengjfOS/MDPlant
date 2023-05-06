@@ -6,7 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [1.0.18] - 2023-5-3
+## [1.1.1] - 2023-5-7
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 优化检测默认文档目录，docs优先
+- 优化list检测，防止indent中错误检测到list
+
+## [1.1.0] - 2023-5-3
 
 ### Added
 - 无

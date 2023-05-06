@@ -600,15 +600,32 @@ export async function doTable(activeEditor: vscode.TextEditor)
 
             if (msg == "") {
                 let mdDirs = ["docs", "src"]
-                for (let i = 0; i < mdDirs.length; i++) {
-                    if (fs.existsSync(mdplantlibapi.getRootPath(activeEditor)
-                            + "/" + mdplantlibapi.getRelativeDir(activeEditor)
-                            + "/" + mdDirs[i])) {
-                        msg = mdDirs[i]
 
-                        break
+                for (let i = 0; i < mdDirs.length; i++) {
+                    let checkDocsPath = mdplantlibapi.getRootPath(activeEditor)
+                            + "/" + mdplantlibapi.getRelativeDir(activeEditor)
+                            + "/" + mdDirs[i]
+
+                    if (fs.existsSync(checkDocsPath)) {
+                        let files = fs.readdirSync(checkDocsPath)
+                        let regex = new RegExp("^(\\d{0,4})_")
+
+                        for (let j = 0; j < files.length; j++) {
+                            let matchValue = regex.exec(files[j].trim())
+                            if (matchValue != null) {
+                                msg = mdDirs[i]
+
+                                break
+                            }
+                        }
                     }
+
+                    if (msg != "")
+                        break
                 }
+
+                if (msg == "")
+                    msg = "docs"
 
                 logger.info("use default sub dir: " + msg)
             }
