@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.2] - 2023-5-20
+
+### Added
+- 支持sub project重排序
+
+### Changed
+- 将右键功能放在一个单独的group中
+
+### Fixed
+- 无
+
 ## [1.1.1] - 2023-5-7
 
 ### Added

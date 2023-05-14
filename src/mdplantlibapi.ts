@@ -306,3 +306,9 @@ export function copyDocument(srcPath: string, subpath: string[], targetPath: str
 
     return mdplantlib.copyDocument(srcPath, subpath, targetPath, replace)
 }
+
+export function sortDocument(srcPath: string) {
+    let rootPath = getRootPath(undefined)
+
+    return mdplantlib.sortDocument(rootPath, srcPath)
+}

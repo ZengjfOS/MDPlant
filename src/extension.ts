@@ -353,6 +353,11 @@ function doFile(filePath: string) {
         mdplantlibapi.refreshReadmeDocsTable(rootPath + "/" + pathInfo.subPath + "/README.md", rootPath + "/" + pathInfo.subPath + "/" + pathInfo.subSrcPath)
     }
 }
+export async function doSort(filePath: string) {
+    logger.info("doDir: " + filePath)
+
+    mdplantlibapi.sortDocument(filePath)
+}
 
 export async function doDir(filePath: string) {
     let rootPath = mdplantlibapi.getRootPath(undefined)
@@ -840,6 +845,11 @@ export function activate(context: vscode.ExtensionContext) {
     })
 
     context.subscriptions.push(onDidDeleteFilesEventDispose)
+
+    disposable = vscode.commands.registerCommand('extension.mdsort', (uri:vscode.Uri) => {
+        doSort(uri.fsPath)
+    })
+    context.subscriptions.push(disposable)
 }
 
 // this method is called when your extension is deactivated
