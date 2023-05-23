@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.3] - 2023-5-23
+
+### Added
+- 无
+
+### Changed
+- sort自动更新README.md
+
+### Fixed
+- 无
+
 ## [1.1.2] - 2023-5-20
 
 ### Added
