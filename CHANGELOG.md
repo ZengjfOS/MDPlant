@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.4] - 2023-6-6
+
+### Added
+- 无
+
+### Changed
+- 默认创建文件改为创建子目录
+
+### Fixed
+- 无
+
 ## [1.1.3] - 2023-5-23
 
 ### Added
