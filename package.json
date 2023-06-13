@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "1.1.4",
+	"version": "1.1.5",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -56,6 +56,10 @@
 			{
 				"command": "extension.mdsort",
 				"title": "MDPlant: Docs Sort"
+			},
+			{
+				"command": "extension.mdresort",
+				"title": "MDPlant: Docs Resort"
 			}
 		],
 		"menus": {
@@ -95,6 +99,11 @@
 				{
 					"command": "extension.mdsort",
 					"group": "1_mdplant@2",
+					"when": "explorerResourceIsFolder || resourceExtname == .md"
+				},
+				{
+					"command": "extension.mdresort",
+					"group": "1_mdplant@3",
 					"when": "explorerResourceIsFolder || resourceExtname == .md"
 				}
 			]

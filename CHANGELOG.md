@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.5] - 2023-6-13
+
+### Added
+- 支持resort功能
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [1.1.4] - 2023-6-6
 
 ### Added

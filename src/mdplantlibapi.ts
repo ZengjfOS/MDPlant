@@ -312,3 +312,9 @@ export function sortDocument(srcPath: string) {
 
     return mdplantlib.sortDocument(rootPath, srcPath)
 }
+
+export function resortDocument(srcPath: string) {
+    let rootPath = getRootPath(undefined)
+
+    return mdplantlib.resortDocument(rootPath, srcPath)
+}
