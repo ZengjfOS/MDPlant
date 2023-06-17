@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+
+## [1.1.6] - 2023-6-17
+
+### Added
+- 无
+
+### Changed
+- 更新模版内容，添加快捷键参考、练习模版
+
+### Fixed
+- 无
+
 ## [1.1.5] - 2023-6-13
 
 ### Added
