@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.7] - 2023-6-20
+
+### Added
+- 无
+
+### Changed
+- 修正list过滤table正则表达式
+
+### Fixed
+- 无
 
 ## [1.1.6] - 2023-6-17
 
