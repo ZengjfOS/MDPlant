@@ -365,6 +365,12 @@ export async function doResort(filePath: string) {
     mdplantlibapi.resortDocument(filePath)
 }
 
+export async function doMerge(filePath: string) {
+    logger.info("doMerge: " + filePath)
+
+    mdplantlibapi.mergeDocument(mdplantlibapi.getRootPath(undefined), mdplantlibapi.getRelativePath(filePath))
+}
+
 export async function doDir(filePath: string) {
     let rootPath = mdplantlibapi.getRootPath(undefined)
     let regex = new RegExp("^(\\d{0,4})_")
@@ -859,6 +865,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     disposable = vscode.commands.registerCommand('extension.mdresort', (uri:vscode.Uri) => {
         doResort(uri.fsPath)
+    })
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('extension.mdmerge', (uri:vscode.Uri) => {
+        doMerge(uri.fsPath)
     })
     context.subscriptions.push(disposable)
 }

@@ -110,15 +110,14 @@ export function getWorkspaceFolder(editor: vscode.TextEditor) {
     return getRootPath(editor)
 }
 
-export function getRelativePath(editor: vscode.TextEditor) {
-    let filePath = editor.document.uri.fsPath
-    let rootPath = getRootPath(editor)
+export function getRelativePath(filePath: string) {
+    let rootPath = getRootPath(undefined)
 
     return filePath.replace(rootPath, "").replace(/[\\]/gi, "/").replace(/^\/*/, "")
 }
 
 export function getRelativeDir(editor: vscode.TextEditor) {
-    return path.dirname(getRelativePath(editor))
+    return path.dirname(getRelativePath(editor.document.uri.fsPath))
 }
 
 export function doList(textLine: string) {
@@ -317,4 +316,8 @@ export function resortDocument(srcPath: string) {
     let rootPath = getRootPath(undefined)
 
     return mdplantlib.resortDocument(rootPath, srcPath)
+}
+
+export function mergeDocument(rootPath:string, srcPath: string) {
+    return mdplantlib.mergeDocument(rootPath, srcPath)
 }
