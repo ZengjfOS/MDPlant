@@ -6,6 +6,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+
+## [1.1.9] - 2023-6-24
+
+### Added
+- 无
+
+### Changed
+- 新建整个project失败给出提示，允许.git开头文件不提示
+- 右键sort、resort过滤显示
+- 优化merged处理
+- 移除不需要的文档
+
+### Fixed
+- 无
+
 ## [1.1.8] - 2023-6-24
 
 ### Added

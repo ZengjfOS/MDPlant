@@ -181,7 +181,7 @@ export function generateIndexTable(rootPath: string, relativePath: string | unde
 }
 
 export function newProject(outputDir: string, author: string) {
-    mdplantlib.newProject(outputDir, author)
+    return mdplantlib.newProject(outputDir, author)
 }
 
 export function parsePath(rootPath: string, filePath: string) {

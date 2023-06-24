@@ -387,7 +387,9 @@ export async function doDir(filePath: string) {
             prompt:'author name',       // 在输入框下方的提示信息
         }).then(msg => {
             if (msg != undefined && msg.length > 0) {
-                mdplantlibapi.newProject(rootPath, msg)
+                if (!mdplantlibapi.newProject(rootPath, msg)) {
+                    vscode.window.showInformationMessage("请清空目录及隐藏文件")
+                }
             }
         })
     // 针对src、docs目录，创建子项目目录，兼容win、linux
@@ -872,6 +874,15 @@ export function activate(context: vscode.ExtensionContext) {
         doMerge(uri.fsPath)
     })
     context.subscriptions.push(disposable)
+
+    vscode.commands.executeCommand('setContext', 'ext.unSupportedSortPath', [
+        'README.md',
+        'images',
+        'refers',
+        'docs',
+        'src',
+        'drawio',
+    ]);
 }
 
 // this method is called when your extension is deactivated

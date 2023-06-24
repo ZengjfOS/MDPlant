@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "1.1.8",
+	"version": "1.1.9",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -103,12 +103,12 @@
 				{
 					"command": "extension.mdsort",
 					"group": "1_mdplant@2",
-					"when": "explorerResourceIsFolder || resourceExtname == .md"
+					"when": "(explorerResourceIsFolder || resourceExtname == .md) && resourceFilename not in ext.unSupportedSortPath"
 				},
 				{
 					"command": "extension.mdresort",
 					"group": "1_mdplant@3",
-					"when": "explorerResourceIsFolder || resourceExtname == .md"
+					"when": "(explorerResourceIsFolder || resourceExtname == .md) && resourceFilename not in ext.unSupportedSortPath"
 				},
 				{
 					"command": "extension.mdmerge",
