@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.10] - 2023-6-27
+
+### Added
+- 支持将当前subproject转为更进一级subproject
+
+### Changed
+- 无
+
+### Fixed
+- 无
 
 ## [1.1.9] - 2023-6-24
 

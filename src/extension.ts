@@ -371,6 +371,68 @@ export async function doMerge(filePath: string) {
     mdplantlibapi.mergeDocument(mdplantlibapi.getRootPath(undefined), mdplantlibapi.getRelativePath(filePath))
 }
 
+export async function doSubproject(filePath: string) {
+    logger.info("doSubproject: " + filePath)
+
+    let rootPath = mdplantlibapi.getRootPath(undefined)
+    let regex = new RegExp("^(\\d{0,4})_")
+    let docsPathRegex = new RegExp("[\\/\\\\](docs|src)[\\/\\\\]\\d{0,4}_[^\\/\\\\]*.md$")
+    let maxIndex = 0
+    let currentFileDir = ""
+
+    let matchValue = docsPathRegex.exec(filePath)
+    if (matchValue != null) {
+        currentFileDir = filePath.replace(matchValue[0], "") + "/" + matchValue[1]
+    }
+
+    logger.info(currentFileDir)
+    let pathInfo = mdplantlibapi.parsePath(rootPath, currentFileDir)
+    logger.info(pathInfo)
+    if (pathInfo.status) {
+        if (pathInfo.pathType == mdplantlibapi.projectPathTypeEnum.file) {
+            let docsPath = currentFileDir
+            logger.info("doDir docs path: " + docsPath)
+
+            let files = fs.readdirSync(docsPath)
+            files.forEach((dir => {
+                if (fs.lstatSync(currentFileDir + "/" + dir).isDirectory()) {
+                    let matchValue = regex.exec(dir.trim())
+                    if (matchValue != null) {
+                        let index = Number(matchValue[1])
+                        if (index > maxIndex) {
+                            maxIndex = index
+                        }
+                    }
+                }
+            }))
+
+            if (maxIndex == 0) {
+                let filePrefix = String(maxIndex + 1).padStart(4,'0')
+                await vscode.window.showInputBox(
+                {   // 这个对象中所有参数都是可选参数
+                    password:false,                       // 输入内容是否是密码
+                    ignoreFocusOut:true,                  // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+                    // placeHolder:'input file name：',   // 在输入框内的提示信息
+                    value: filePrefix + "_",
+                    prompt:'sub project name',            // 在输入框下方的提示信息
+                }).then(async msg => {
+                    if (msg != undefined && msg.length > 0) {
+                        mdplantlibapi.convertToSubProject(docsPath, docsPath + "/" + msg)
+
+                        doFile(docsPath + "/" + msg + "/README.md")
+
+                        await vscode.workspace.openTextDocument(docsPath + "/" + msg + "/README.md").then( async doc => {
+                            await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
+                                logger.info("show file success...")
+                            })
+                        })
+                    }
+                })
+            }
+        }
+    }
+}
+
 export async function doDir(filePath: string) {
     let rootPath = mdplantlibapi.getRootPath(undefined)
     let regex = new RegExp("^(\\d{0,4})_")
@@ -872,6 +934,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     disposable = vscode.commands.registerCommand('extension.mdmerge', (uri:vscode.Uri) => {
         doMerge(uri.fsPath)
+    })
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('extension.mdsubproject', (uri:vscode.Uri) => {
+        doSubproject(uri.fsPath)
     })
     context.subscriptions.push(disposable)
 

@@ -192,6 +192,10 @@ export function newSubProject(subProjectDir: string) {
     return mdplantlib.newSubProject(subProjectDir)
 }
 
+export function convertToSubProject(srcPath: string, subProjectDir: string) {
+    return mdplantlib.convertToSubProject(srcPath, subProjectDir)
+}
+
 export function newSubProjectWorkFile(outputFile: string) {
     return mdplantlib.newSubProjectWorkFile(outputFile)
 }
