@@ -442,14 +442,27 @@ export async function doDir(filePath: string) {
 
     // 空文件夹，拷贝整个参考模板目录
     if (filePath == rootPath) {
+        let authorName = ""
+        let newProjectFlag = true
+        const fileContent = fs.readFileSync(rootPath + "/" + "conf.py", 'utf8').split(/\r?\n/)
+        for (let i = 0; i < fileContent.length; i++) {
+            if(fileContent[i].trim().startsWith("author")) {
+                authorName = fileContent[i].trim().split("=")[1].trim().replace(/'/g, "")
+                newProjectFlag = false
+
+                break
+            }
+        }
+
         await vscode.window.showInputBox(
         {   // 这个对象中所有参数都是可选参数
             password:false,             // 输入内容是否是密码
             ignoreFocusOut:true,        // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+            value: authorName,
             prompt:'author name',       // 在输入框下方的提示信息
         }).then(msg => {
             if (msg != undefined && msg.length > 0) {
-                if (!mdplantlibapi.newProject(rootPath, msg)) {
+                if (!mdplantlibapi.newProject(rootPath, msg, newProjectFlag)) {
                     vscode.window.showInformationMessage("请清空目录及隐藏文件")
                 }
             }
@@ -942,6 +955,15 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(disposable)
 
+    vscode.commands.executeCommand('setContext', 'ext.unSupportedProjectPath', [
+        'README.md',
+        'images',
+        'refers',
+        'docs',
+        'src',
+        'drawio',
+    ]);
+
     vscode.commands.executeCommand('setContext', 'ext.unSupportedSortPath', [
         'README.md',
         'images',
@@ -949,6 +971,7 @@ export function activate(context: vscode.ExtensionContext) {
         'docs',
         'src',
         'drawio',
+        path.basename(mdplantlibapi.getRootPath(undefined)),
     ]);
 }
 

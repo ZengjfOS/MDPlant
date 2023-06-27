@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.11] - 2023-6-27
+
+### Added
+- 无
+
+### Changed
+- 支持更新基础project模板
+- 修改右键功能过滤
+
+### Fixed
+- 无
+
 ## [1.1.10] - 2023-6-27
 
 ### Added

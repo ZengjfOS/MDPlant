@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "1.1.10",
+	"version": "1.1.11",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -102,7 +102,7 @@
 				{
 					"command": "extension.mddir",
 					"group": "1_mdplant@1",
-					"when": "explorerResourceIsFolder || resourceExtname == .md"
+					"when": "(explorerResourceIsFolder || resourceExtname == .md) && resourceFilename not in ext.unSupportedProjectPath"
 				},
 				{
 					"command": "extension.mdsubproject",

@@ -180,8 +180,8 @@ export function generateIndexTable(rootPath: string, relativePath: string | unde
         return mdplantlib.generateIndexTable(rootPath, relativePath, suffix).content
 }
 
-export function newProject(outputDir: string, author: string) {
-    return mdplantlib.newProject(outputDir, author)
+export function newProject(outputDir: string, author: string, flag: boolean) {
+    return mdplantlib.newProject(outputDir, author, flag)
 }
 
 export function parsePath(rootPath: string, filePath: string) {
