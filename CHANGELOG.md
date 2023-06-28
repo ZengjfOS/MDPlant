@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.12] - 2023-6-28
+
+### Added
+- 无
+
+### Changed
+- 移除merge文档链接
+
+### Fixed
+- 无
+
 ## [1.1.11] - 2023-6-27
 
 ### Added
