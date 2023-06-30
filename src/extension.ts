@@ -206,6 +206,26 @@ export function doMenu(activeEditor: vscode.TextEditor)
     })
 }
 
+export function doMenuIndex(activeEditor: vscode.TextEditor)
+{
+    let docs = activeEditor.document.getText().split(/\r?\n/)
+
+    let contentArray = mdplantlibapi.doMenuIndex("", docs)
+
+    var line = activeEditor.selection.active.line
+    let startLine = 0
+    let endLine = activeEditor.document.lineCount - 1
+
+    if (contentArray.length > 1) {
+        activeEditor.edit(edit => {
+            edit.replace(new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end), contentArray.join("\n"))
+            logger.info("doMenuIndex: finished")
+        }).then(value => {
+            mdplantlibapi.cursor(activeEditor, line)
+        })
+    }
+}
+
 export function doIndent(activeEditor: vscode.TextEditor)
 {
     var line = activeEditor.selection.active.line
@@ -852,7 +872,10 @@ export function activate(context: vscode.ExtensionContext) {
                         }
                         break
                     case mdplantlibapi.projectTextBlockTypeEnum.menu:
-                        doMenu(activeEditor)
+                        if (textBlockInfo.content == "")
+                            doMenu(activeEditor)
+                        else if (textBlockInfo.content == "menu index")
+                            doMenuIndex(activeEditor)
                         break
                     case mdplantlibapi.projectTextBlockTypeEnum.plantuml:
                         if (textBlockInfo.content.startsWith("plantuml")) {

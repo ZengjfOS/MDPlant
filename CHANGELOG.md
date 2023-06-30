@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.13] - 2023-6-30
+
+### Added
+- 添加标题数字索引
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [1.1.12] - 2023-6-28
 
 ### Added

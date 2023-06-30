@@ -169,6 +169,10 @@ export function doMenu(contentArray: string[]) {
     return mdplantlib.generateMenu(contentArray).content.split("\n")
 }
 
+export function doMenuIndex(fileName:string, contentArray: string[]) {
+    return mdplantlib.generateMenuIndex("", contentArray, true, true, false).content.split("\n")
+}
+
 export function refreshReadmeDocsTable(outputFile: string | null | undefined, subProjectDocsDir: string) {
     return mdplantlib.refreshReadmeDocsTable(outputFile, subProjectDocsDir).content
 }
