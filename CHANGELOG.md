@@ -6,6 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.14] - 2023-7-4
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复sort/resort不重置索引问题
+- 标题上下都要求有空行
+- 修复menu直接替换导致的文本丢失
+
 ## [1.1.13] - 2023-6-30
 
 ### Added
