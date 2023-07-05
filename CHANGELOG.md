@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.15] - 2023-7-5
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复conf.py不存在导致的无法创建project
+
 ## [1.1.14] - 2023-7-4
 
 ### Added

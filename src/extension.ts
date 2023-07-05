@@ -464,13 +464,16 @@ export async function doDir(filePath: string) {
     if (filePath == rootPath) {
         let authorName = ""
         let newProjectFlag = true
-        const fileContent = fs.readFileSync(rootPath + "/" + "conf.py", 'utf8').split(/\r?\n/)
-        for (let i = 0; i < fileContent.length; i++) {
-            if(fileContent[i].trim().startsWith("author")) {
-                authorName = fileContent[i].trim().split("=")[1].trim().replace(/'/g, "")
-                newProjectFlag = false
 
-                break
+        if (fs.existsSync(rootPath + "/" + "conf.py")) {
+            const fileContent = fs.readFileSync(rootPath + "/" + "conf.py", 'utf8').split(/\r?\n/)
+            for (let i = 0; i < fileContent.length; i++) {
+                if(fileContent[i].trim().startsWith("author")) {
+                    authorName = fileContent[i].trim().split("=")[1].trim().replace(/'/g, "")
+                    newProjectFlag = false
+
+                    break
+                }
             }
         }
 
