@@ -6,6 +6,7 @@ import * as mdplantlib from 'mdplantlib'
 export let projectPathTypeEnum      = mdplantlib.projectPathTypeEnum
 export let projectTextBlockTypeEnum = mdplantlib.projectTextBlockTypeEnum
 export let Loggger                  = mdplantlib.Logger
+const logger                        = new Loggger("mdplantlib", true)
 
 /**
  * 
@@ -72,6 +73,7 @@ export function findBoundary(editor: vscode.TextEditor, index: number, direction
  * 包含代码块标记、空白行
  */
 export function getTextBlock(editor: vscode.TextEditor, index: number, boundary: boolean = true) {
+    /*
     let MDP_UP = -1
     let MDP_DOWN = 1
     let textBlock: string[] = []
@@ -86,6 +88,219 @@ export function getTextBlock(editor: vscode.TextEditor, index: number, boundary:
     }
 
     return {"start": upInfo.index, "end": downInfo.index, "textBlock": textBlock, "cursor": index}
+    */
+
+    let textInfo = getTextBlockV2(editor, boundary)
+
+    // 兼容就的属性数据
+    return {
+        "start"     : textInfo.spaceStart,
+        "end"       : textInfo.spaceEnd,
+        "spaceStart": textInfo.spaceStart,
+        "spaceEnd"  : textInfo.spaceEnd,
+        "textBlock" : textInfo.textBlock,
+        "codeStart" : textInfo.codeStart,
+        "codeEnd"   : textInfo.codeEnd,
+        "codeBlock" : textInfo.codeBlock,
+        "cursor"    : index
+    }
+}
+
+function countLeadingSpaces(str: string) {  
+    let regex = new RegExp("^(\\s+).*")
+    let matchValue = regex.exec(str)
+
+    if (matchValue != null) {
+        return matchValue[1].length
+    } else {
+        return 0
+    }
+}  
+
+/**
+ * 
+ * @param editor 
+ * @param index 
+ * @returns 
+ * 
+ * 包含代码块标记、空白行
+ */
+export function getTextBlockV2(editor: vscode.TextEditor, boundary: boolean = true) {
+    let textBlock: string[] = []
+    let codeBlock: string[] = []
+    var index               = editor.selection.active.line
+    let contentArray        = editor.document.getText().split(/\r?\n/)
+    let codeStart           = -1
+    let codeEnd             = -1
+    let codeIndent          = 1024
+    let spaceStart          = -1
+    let spaceEnd            = -1
+
+    // 从index往上扫描
+    for (let i = index; i >= 0; i--) {
+        if (contentArray[i].trim().length == 0 && spaceStart == -1) {
+            spaceStart = i
+        }
+
+        if (contentArray[i].trim().startsWith("```") && codeStart == -1) {
+            codeStart = i
+
+            if (i == 0) {
+                spaceStart = i
+            } else {
+                if (spaceStart == -1) {
+                    if (contentArray[i - 1].trim().length == 0) {
+                        spaceStart = i - 1
+                    } else {
+                        spaceStart = i
+                    }
+                }
+            }
+
+            break
+        }
+    }
+
+    // 从index往下扫描
+    for (let i = (index); i < contentArray.length; i++) {
+        if (contentArray[i].trim().length == 0 && spaceEnd == -1) {
+            spaceEnd= i
+        }
+
+        if (contentArray[i].trim().startsWith("```") && codeEnd == -1) {
+            codeEnd = i
+
+            if (spaceEnd == -1) {
+                if (contentArray[i + 1].trim().length == 0) {
+                    if (i + 1 >= contentArray.length)
+                        spaceEnd = i
+                    else
+                        spaceEnd = i + 1
+                }
+            }
+
+            break
+        }
+    }
+
+    logger.info({
+        "codeStart" : codeStart,
+        "codeEnd"   : codeEnd,
+        "spaceStart": spaceStart,
+        "spaceEnd"  : spaceEnd,
+        "cursor"    : index,
+        "boundary"  : boundary
+    })
+
+    if (codeStart == -1) {
+        codeEnd = -1
+    }
+
+    if (codeStart != -1 && codeEnd == -1) {
+        codeStart = -1
+    }
+
+    if (spaceStart == -1) {
+        spaceStart = 0
+    }
+
+    if (spaceStart != -1 && spaceEnd == -1) {
+        spaceEnd = contentArray.length - 1
+    }
+
+    // 判定成对的```
+    if (codeStart != -1 && codeEnd != -1 && (contentArray[codeStart].indexOf("```") != contentArray[codeEnd].indexOf("```"))) {
+        codeStart = -1
+        codeEnd   = -1
+    }
+
+    if (spaceStart <= codeStart && spaceEnd >= codeEnd) {
+        spaceStart = codeStart
+        spaceEnd   = codeEnd
+    }
+
+    if (codeStart != -1) {
+        /**
+         * 代码段包含边界，因为有语言信息用于信息判断
+         */
+        /*
+        if (boundary) {
+            codeBlock = contentArray.slice(codeStart, codeEnd + 1)
+        } else {
+            codeBlock = contentArray.slice(codeStart + 1, codeEnd)
+        }
+        */
+
+        codeBlock = contentArray.slice(codeStart, codeEnd + 1)
+    }
+
+    if (spaceStart != -1) {
+        if (!boundary) {
+            if (spaceStart == codeStart && spaceEnd == codeEnd) {
+                spaceStart = spaceStart + 1
+                spaceEnd   = spaceEnd - 1
+            } else {
+                if (contentArray[spaceStart].trim().length == 0)
+                    spaceStart = spaceStart + 1
+
+                if (contentArray[spaceEnd].trim().length == 0)
+                    spaceEnd = spaceEnd - 1
+            }
+        }
+
+        textBlock = contentArray.slice(spaceStart, spaceEnd + 1)
+    }
+
+    // 检查代码块是否属于同一代码块
+    if (codeBlock != undefined && codeBlock.length > 0){
+        // 检查缩紧
+        for (let i = 0; i < codeBlock.length; i++) {
+            // 空白行忽略
+            if (codeBlock[i].trim().length == 0)
+                continue
+
+            let leadingSpaces = countLeadingSpaces(codeBlock[i])
+
+            if (leadingSpaces < codeIndent)
+                codeIndent = leadingSpaces
+        }
+
+        let leadingSpaces = countLeadingSpaces(codeBlock[0])
+        logger.info("leading space: " + leadingSpaces + ", code indent: " + codeIndent)
+        if (leadingSpaces > codeIndent) {
+            codeBlock = []
+            codeStart = -1
+            codeEnd   = -1
+        } else {
+            // 标记了是哪种语言的代码块
+            logger.info("code mark start: " + codeBlock[0].length + ", code mark end: " + codeBlock[codeBlock.length - 1].length)
+            if (codeBlock[0].length < codeBlock[codeBlock.length - 1].length) {
+                codeBlock = []
+                codeStart = -1
+                codeEnd   = -1
+            }
+        }
+    }
+
+    console.log({
+        "codeStart" : codeStart,
+        "codeEnd"   : codeEnd,
+        "spaceStart": spaceStart,
+        "spaceEnd"  : spaceEnd,
+        "textBlock" : textBlock,
+        "codeBlock" : codeBlock,
+        "cursor"    : index
+    })
+
+    return {
+        "codeStart" : codeStart,
+        "codeEnd"   : codeEnd,
+        "spaceStart": spaceStart,
+        "spaceEnd"  : spaceEnd,
+        "textBlock" : textBlock,
+        "codeBlock" : codeBlock,
+        "cursor"    : index
+    }
 }
 
 export function getRootPath(editor: vscode.TextEditor | undefined) {
