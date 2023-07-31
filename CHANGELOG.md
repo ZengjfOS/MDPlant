@@ -6,6 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.16] - 2023-7-31
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- indent support lang type
+- sort/resort windows path compatible
+
+
 ## [1.1.15] - 2023-7-5
 
 ### Added
