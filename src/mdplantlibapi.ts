@@ -329,3 +329,7 @@ export function resortDocument(srcPath: string) {
 export function mergeDocument(rootPath:string, srcPath: string) {
     return mdplantlib.mergeDocument(rootPath, srcPath)
 }
+
+export function formatIndex(srcPath: string) {
+    return mdplantlib.formatIndex(srcPath)
+}

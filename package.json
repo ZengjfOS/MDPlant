@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "1.1.15",
+	"version": "1.1.16",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -68,6 +68,10 @@
 			{
 				"command": "extension.mdsubproject",
 				"title": "MDPlant: Convert To Subproject"
+			},
+			{
+				"command": "extension.mdformatIndex",
+				"title": "MDPlant: Format Index"
 			}
 		],
 		"menus": {
@@ -123,6 +127,11 @@
 					"command": "extension.mdmerge",
 					"group": "1_mdplant@5",
 					"when": "resourceExtname == .md && resourceFilename != README.md"
+				},
+				{
+					"command": "extension.mdformatIndex",
+					"group": "1_mdplant@6",
+					"when": "resourceExtname != .md && !explorerResourceIsFolder"
 				}
 			]
 		},

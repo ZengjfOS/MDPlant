@@ -453,6 +453,12 @@ export async function doSubproject(filePath: string) {
     }
 }
 
+export async function doFormatIndex(filePath: string) {
+    logger.info("doSubproject: " + filePath)
+
+    mdplantlibapi.formatIndex(filePath)
+}
+
 export async function doDir(filePath: string) {
     let rootPath = mdplantlibapi.getRootPath(undefined)
     let regex = new RegExp("^(\\d{0,4})_")
@@ -978,6 +984,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     disposable = vscode.commands.registerCommand('extension.mdsubproject', (uri:vscode.Uri) => {
         doSubproject(uri.fsPath)
+    })
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('extension.mdformatIndex', (uri:vscode.Uri) => {
+        doFormatIndex(uri.fsPath)
     })
     context.subscriptions.push(disposable)
 
