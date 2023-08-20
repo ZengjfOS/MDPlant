@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.17] - 2023-8-20
+
+### Added
+- support format index: auto generate index for refer file
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [1.1.16] - 2023-7-31
 
 ### Added
