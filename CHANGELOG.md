@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.18] - 2023-9-2
+
+### Added
+- 无
+
+### Changed
+- table excel/csv采用对齐
+
+### Fixed
+- table excel生成引用错误导致报错
+
 ## [1.1.17] - 2023-8-20
 
 ### Added
