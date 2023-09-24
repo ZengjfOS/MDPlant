@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.19] - 2023-9-24
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复copy文件名不能包含点号
+
 ## [1.1.18] - 2023-9-2
 
 ### Added
