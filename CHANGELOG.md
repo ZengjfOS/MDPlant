@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.20] - 2023-9-30
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- format index with whitespace replace
+
 ## [1.1.19] - 2023-9-24
 
 ### Added
