@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.21] - 2023-10-3
+
+### Added
+- 无
+
+### Changed
+- html list for table
+
+### Fixed
+- 无
+
 ## [1.1.20] - 2023-9-30
 
 ### Added
