@@ -159,8 +159,14 @@ export async function doPaste(activeEditor: vscode.TextEditor)
         imageFileRelativePath += "." + mdplantlibapi.getConfig("MDPlant.paste.image.suffix", "png")
 
         let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
-        let ret = mdplantlibapi.saveClipboardImage(mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath)
+        let targetFilePath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath
 
+        if (fs.existsSync(targetFilePath)) {
+            vscode.window.showInformationMessage("image existed: " + currentFileDir + "/" + imageFileRelativePath)
+            return
+        }
+
+        let ret = mdplantlibapi.saveClipboardImage(targetFilePath)
         if (ret.status) {
             var editor = vscode.window.activeTextEditor
             var line = activeEditor.selection.active.line

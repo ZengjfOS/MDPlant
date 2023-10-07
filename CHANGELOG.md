@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.23] - 2023-10-7
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 贴图重名不覆盖处理
+
 ## [1.1.22] - 2023-10-7
 
 ### Added
