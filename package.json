@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "1.1.21",
+	"version": "1.1.22",
 	"engines": {
 		"vscode": "^1.43.0"
 	},

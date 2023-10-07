@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.22] - 2023-10-7
+
+### Added
+- 无
+
+### Changed
+- 格式化索引支持重置索引
+
+### Fixed
+- 无
+
 ## [1.1.21] - 2023-10-3
 
 ### Added

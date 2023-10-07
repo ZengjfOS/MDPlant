@@ -330,6 +330,6 @@ export function mergeDocument(rootPath:string, srcPath: string) {
     return mdplantlib.mergeDocument(rootPath, srcPath)
 }
 
-export function formatIndex(srcPath: string) {
-    return mdplantlib.formatIndex(srcPath)
+export function formatIndex(srcPath: string, fileIndex: string = "") {
+    return mdplantlib.formatIndex(srcPath, fileIndex)
 }
