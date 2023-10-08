@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-10-8
+
+### Added
+- 支持检测代码段
+
+### Changed
+- 使用代码段处理plantuml图片
+
+### Fixed
+- 无
+
 ## [1.1.23] - 2023-10-7
 
 ### Added

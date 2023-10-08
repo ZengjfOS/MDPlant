@@ -55,9 +55,9 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
 {
     var line = activeEditor.selection.active.line
     let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, false)
-    let startLine = textBlock.start
-    let endLine = textBlock.end
-    let contentArray: string[] = textBlock.textBlock
+    let startLine = textBlock.codeStart + 1
+    let endLine = textBlock.codeEnd - 1
+    let contentArray: string[] = textBlock.codeBlock.slice(1, textBlock.codeBlock.length - 1)
     logger.info("doPlantuml")
 
     if (contentArray.length > 1) {
@@ -65,58 +65,92 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
             contentArray =  mdplantlibapi.convert2SequenceDiagram(contentArray, startLine)
         }
 
-        mdplantlibapi.saveImageFile(activeEditor, imageFileRelativePath => {
-            let suffix = mdplantlibapi.getConfig("MDPlant.plantuml.image.suffix", "svg")
-            imageFileRelativePath += "." + suffix
+        let targetFileName = ""
 
-            let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
-            let imageAbsolutePath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath
+        if ((startLine - 2) >= 0) {
+            let range = new vscode.Range(activeEditor.document.lineAt(startLine - 2).range.start, activeEditor.document.lineAt(startLine - 1).range.start)
+            let rawText = activeEditor.document.getText(range)
+            if (rawText.trim().length != 0) {
+                let regex = new RegExp("!\\[(\\d+_.*)\\]\\(.*\\)")
+                let matchValue = regex.exec(rawText.trim())
+                if (matchValue != null) {
+                    targetFileName = matchValue[1]
+                }
+            }
+        }
 
-            mdplantlibapi.getHTTPPlantumlImage(contentArray, suffix, imageAbsolutePath, status => {
-                let imagePositiion = mdplantlibapi.getConfig("MDPlant.plantuml.image.position", "up")
-                logger.info("status: " + status + ", image pos: " + imagePositiion +  ", path: " + imageAbsolutePath)
-                activeEditor.edit(edit => {
-                    if (imagePositiion == "up") {
+        let suffix = mdplantlibapi.getConfig("MDPlant.plantuml.image.suffix", "svg")
+
+        if (targetFileName == "") {
+            mdplantlibapi.saveImageFile(activeEditor, imageFileRelativePath => {
+                imageFileRelativePath += "." + suffix
+
+                let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
+                let imageAbsolutePath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath
+
+                mdplantlibapi.getHTTPPlantumlImage(contentArray, suffix, imageAbsolutePath, status => {
+                    logger.info("status: " + status + ", path: " + imageAbsolutePath)
+                    activeEditor.edit(edit => {
                         if ((startLine - 2) >= 0) {
                             let range = new vscode.Range(activeEditor.document.lineAt(startLine - 2).range.start, activeEditor.document.lineAt(startLine - 1).range.start)
                             let rawText = activeEditor.document.getText(range)
                             if (rawText.trim().length != 0) {
+                                let regex = new RegExp("!\\[(\\d+_.*)\\]\\(.*\\)")
+                                let matchValue = regex.exec(rawText.trim())
+                                if (matchValue != null) {
+                                    targetFileName = matchValue[1]
+                                }
+
                                 startLine -= 1
                                 edit.delete(range)
                             }
                         }
-                    } else if (imagePositiion == "down") {
-                        if (activeEditor.document.lineCount > endLine + 2) {
-                            let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.end, activeEditor.document.lineAt(endLine + 2).range.end)
-                            let rawText = activeEditor.document.getText(range)
-                            if (rawText.trim().length != 0) {
-                                edit.delete(range)
-                            }
-                        }
-                    }
-                }).then ( value => {
-                    activeEditor.edit(edit => {
-                        if (imagePositiion == "up") {
+                    }).then ( value => {
+                        activeEditor.edit(edit => {
                             let range = new vscode.Range(activeEditor.document.lineAt(startLine - 1).range.start, activeEditor.document.lineAt(startLine - 1).range.end)
                             let rawText = activeEditor.document.getText(range)
                             let spaceString = rawText.match(/^\s*/)
                             edit.replace(range, spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")" + "\n" + rawText)
-                        } else if (imagePositiion == "down") {
-                            let range = new vscode.Range(activeEditor.document.lineAt(endLine + 1).range.start, activeEditor.document.lineAt(endLine + 1).range.end)
-                            let rawText = activeEditor.document.getText(range)
-                            let spaceString = rawText.match(/^\s*/)
-                            edit.replace(range, rawText + "\n" + spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")")
-                        }
-                    }).then(value => {
-                        if (imagePositiion == "up") {
+                        }).then(value => {
                             mdplantlibapi.cursor(activeEditor, startLine - 1)
-                        } else if (imagePositiion == "down") {
-                            mdplantlibapi.cursor(activeEditor, endLine + 2)
-                        }
+                        })
                     })
                 })
             })
-        })
+        } else {
+            let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
+            let imageAbsolutePath = mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/images/" + targetFileName
+
+            mdplantlibapi.getHTTPPlantumlImage(contentArray, suffix, imageAbsolutePath, status => {
+                logger.info("status: " + status + ", path: " + imageAbsolutePath)
+                activeEditor.edit(edit => {
+                    if ((startLine - 2) >= 0) {
+                        let range = new vscode.Range(activeEditor.document.lineAt(startLine - 2).range.start, activeEditor.document.lineAt(startLine - 1).range.start)
+                        let rawText = activeEditor.document.getText(range)
+                        if (rawText.trim().length != 0) {
+                            let regex = new RegExp("!\\[(\\d+_.*)\\]\\(.*\\)")
+                            let matchValue = regex.exec(rawText.trim())
+                            if (matchValue != null) {
+                                targetFileName = matchValue[1]
+                            }
+
+                            startLine -= 1
+                            edit.delete(range)
+                        }
+                    }
+                }).then ( value => {
+                    activeEditor.edit(edit => {
+                        let range = new vscode.Range(activeEditor.document.lineAt(startLine - 1).range.start, activeEditor.document.lineAt(startLine - 1).range.end)
+                        let rawText = activeEditor.document.getText(range)
+                        let spaceString = rawText.match(/^\s*/)
+                        let imageFileRelativePath = "images/" + targetFileName
+                        edit.replace(range, spaceString + "![" + path.basename(imageFileRelativePath) + "](" + imageFileRelativePath + ")" + "\n" + rawText)
+                    }).then(value => {
+                        mdplantlibapi.cursor(activeEditor, startLine - 1)
+                    })
+                })
+            })
+        }
     }
 }
 
@@ -930,6 +964,21 @@ export function activate(context: vscode.ExtensionContext) {
                 }
 
                 return
+            }
+
+            textBlockInfo = mdplantlibapi.parseTextBlock(textBlock.codeBlock, mdplantlibapi.getRootPath(activeEditor), line - textBlock.codeStart)
+            if (textBlockInfo.status) {
+                switch(textBlockInfo.type) {
+                    case mdplantlibapi.projectTextBlockTypeEnum.plantuml:
+                        if (textBlockInfo.content.startsWith("plantuml")) {
+                            doPlantumlLineShortcut(activeEditor, textBlockInfo.content)
+                        } else {
+                            doPlantuml(activeEditor)
+                        }
+                        break
+                    default:
+                        break
+                }
             }
 
             // check table and create menu
