@@ -131,7 +131,7 @@
 				{
 					"command": "extension.mdformatIndex",
 					"group": "1_mdplant@6",
-					"when": "resourceExtname != .md && !explorerResourceIsFolder"
+					"when": "resourceExtname != .md && (!explorerResourceIsFolder || resourceDirname =~ /(images|refers)$/)"
 				}
 			]
 		},
