@@ -1,10 +1,82 @@
 # MDPlant
 
-# docs
+Markdown Tools
 
-NO.  |文件名称|摘要
-:---:|:--|:--
-0004 | [mdplantlib](docs/0004_mdplantlib.md) | mdplantlib调试配置方法
-0003 | [MDPlant_Unit_Test](docs/0003_MDPlant_Unit_Test.md) | 单个MDPlant单元测试说明
-0002 | [save_image](docs/0002_save_image.md) | 保存图片
-0001 | [build_and_install](docs/0001_build_and_install.md) | 编译及安装
+# shortcut
+
+* Windows、Linux：Ctrl + Enter
+* macOS: CMD + Enter
+
+## list
+
+拷贝文件相对路径粘贴后按快捷键
+
+src/0000_Template/docs/refers/0002_green_image.tar.bz2
+
+src/0000_Template/docs/images/0002_green_image.png
+
+## table
+
+`table `字段后跟json、excel、csv文件相对路径，或者表格行列
+
+table src/0000_Template/docs/refers/0000_BasicWebInfo.json
+
+table src/0000_Template/docs/refers/0003_excel.xls
+
+table src/0000_Template/docs/refers/0003_table.csv
+
+table 5x5
+
+table 5*5
+
+table 5 5
+
+## tree
+
+主要用于分析代码流程
+
+```
+* title
+  * program 1
+    * text 1
+  * program 2
+    * text 2
+    * program 3
+      * text 3
+      * program 4
+        * text 4
+    * program 5
+      * text 5
+  * program 6
+    * text 6
+```
+
+## menu
+
+menu标题，直接按快捷键出来
+
+
+
+## docs
+
+docs标题，直接按快捷键后输入`.`后按快捷键，`.`表示当前目录
+
+
+
+## index
+
+index标题，直接按快捷键后输入`.`后按快捷键，`.`表示当前目录
+
+
+
+## paste
+
+将图片复制到粘贴板，然后按快捷键，Ubuntu需要安装xclip
+
+
+
+## copy
+
+`copy `字段后跟相对路径或者绝对路径
+
+copy src/0000_Template/docs/0002_green_image.md

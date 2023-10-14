@@ -6,13 +6,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [1.2.0] - 2023-10-8
+## [1.2.0] - 2023-10-14
 
 ### Added
 - 支持检测代码段
 
 ### Changed
 - 使用代码段处理plantuml图片
+- format index支持对所有未格式化索引的文件自动格式为当前索引
 
 ### Fixed
 - 无
