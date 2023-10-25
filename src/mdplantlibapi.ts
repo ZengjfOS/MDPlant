@@ -541,6 +541,12 @@ export function resortDocument(srcPath: string) {
     return mdplantlib.resortDocument(rootPath, srcPath)
 }
 
+export function resortDocumentTo(srcPath: string, index: number) {
+    let rootPath = getRootPath(undefined)
+
+    return mdplantlib.resortDocumentTo(rootPath, srcPath, index)
+}
+
 export function mergeDocument(rootPath:string, srcPath: string) {
     return mdplantlib.mergeDocument(rootPath, srcPath)
 }

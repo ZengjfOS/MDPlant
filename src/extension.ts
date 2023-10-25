@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import * as mdplantlibapi from "./mdplantlibapi"
+import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
 
 export function doPlantumlLineShortcut(activeEditor: vscode.TextEditor, lineText:string = "")
@@ -423,6 +424,38 @@ export async function doResort(filePath: string) {
     logger.info("doResort: " + filePath)
 
     mdplantlibapi.resortDocument(filePath)
+}
+
+export async function doResortTo(filePath: string) {
+    logger.info("doResort: " + filePath)
+
+    let lastIndex = getLastDocInfo(path.dirname(filePath)).index
+    let regex = new RegExp("^(\\d{0,4})_")
+    let fileName = path.basename(filePath)
+
+    let matchValue = regex.exec(fileName.trim())
+    if (matchValue != null) {
+        await vscode.window.showInputBox(
+        {   // 这个对象中所有参数都是可选参数
+            password:false,                       // 输入内容是否是密码
+            ignoreFocusOut:true,                  // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+            // placeHolder:'input file name：',   // 在输入框内的提示信息
+            value: String(lastIndex).padStart(4,'0'),
+            prompt:'Modify Index',            // 在输入框下方的提示信息
+        }).then(async msg => {
+            if (matchValue != null && msg != undefined && msg.length > 0 && !isNaN(parseFloat(msg))) {
+                logger.info("New File Index: " + matchValue[1] + " -> " + msg)
+
+                if (msg == matchValue[1])
+                    return
+
+                if (parseInt(msg) > lastIndex)
+                    doResort(filePath)
+
+                mdplantlibapi.resortDocumentTo(filePath, parseInt(msg))
+            }
+        })
+    }
 }
 
 export async function doMerge(filePath: string) {
@@ -1052,6 +1085,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     disposable = vscode.commands.registerCommand('extension.mdresort', (uri:vscode.Uri) => {
         doResort(uri.fsPath)
+    })
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('extension.mdresortto', (uri:vscode.Uri) => {
+        doResortTo(uri.fsPath)
     })
     context.subscriptions.push(disposable)
 
