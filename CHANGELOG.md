@@ -6,6 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.1] - 2023-10-26
+
+### Added
+- 支持参考文档快捷生成
+- 支持resort to指定的索引
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [1.2.0] - 2023-10-14
 
 ### Added

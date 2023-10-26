@@ -799,6 +799,41 @@ export async function doIndex(activeEditor: vscode.TextEditor)
     )
 }
 
+export async function doRefers(activeEditor: vscode.TextEditor)
+{
+    logger.info("doRefers")
+
+    let refersDir = path.dirname(activeEditor.document.uri.fsPath) + "/refers"
+    if (fs.existsSync(refersDir)) {
+        let line = activeEditor.selection.active.line
+        let files = fs.readdirSync(refersDir)
+        let needListFiles: string[] = []
+        let indexRegex = new RegExp("^(\\d{4})_(.*)")
+
+        files.forEach((f => {
+            // logger.debug(f)
+            let indexMatchValue = indexRegex.exec(f)
+
+            if ((indexMatchValue != null) && (indexMatchValue[1] == path.basename(activeEditor.document.uri.fsPath).split("_")[0])) {
+                needListFiles.push(f)
+            }
+        }))
+
+        console.log(needListFiles)
+        activeEditor.edit(edit => {
+            let outputString = ""
+            needListFiles.forEach(element => {
+                outputString += "* [" + element + "](refers/" + element + ")\n"
+            });
+
+            let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+            edit.replace(range, outputString)
+        }).then(value => {
+            mdplantlibapi.cursor(activeEditor, line)
+        })
+    }
+}
+
 export async function doTable(activeEditor: vscode.TextEditor)
 {
     var line = activeEditor.selection.active.line
@@ -1046,6 +1081,11 @@ export function activate(context: vscode.ExtensionContext) {
 
                         if (fragments[1].toLowerCase() == "index" || fragments[1].toLowerCase() == "索引") {
                             doIndex(activeEditor)
+                            return
+                        }
+
+                        if (fragments[1].toLowerCase() == "refers" || fragments[1].toLowerCase() == "参考文档") {
+                            doRefers(activeEditor)
                             return
                         }
                     }
