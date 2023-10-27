@@ -6,7 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [1.2.1] - 2023-10-26
+## [1.2.2] - 2023-10-28
 
 ### Added
 - 支持参考文档快捷生成
@@ -17,6 +17,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 - 无
+
+
+## [1.2.1] - 2023-10-26
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复resort to导致resort附件索引错误问题
 
 
 ## [1.2.0] - 2023-10-14

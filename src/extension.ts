@@ -449,8 +449,11 @@ export async function doResortTo(filePath: string) {
                 if (msg == matchValue[1])
                     return
 
-                if (parseInt(msg) > lastIndex)
+                if (parseInt(msg) > lastIndex) {
                     doResort(filePath)
+
+                    return
+                }
 
                 mdplantlibapi.resortDocumentTo(filePath, parseInt(msg))
             }
