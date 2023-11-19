@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.3] - 2023-11-19
+
+### Added
+- 支持从粘贴板路径直接生成文件、图片list
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [1.2.2] - 2023-10-28
 
 ### Added

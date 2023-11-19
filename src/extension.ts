@@ -155,7 +155,7 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
     }
 }
 
-export function doList(activeEditor: vscode.TextEditor)
+export function doList(activeEditor: vscode.TextEditor, clipboardContent = "")
 {
     let line = activeEditor.selection.active.line
     let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
@@ -164,6 +164,10 @@ export function doList(activeEditor: vscode.TextEditor)
     activeEditor.edit(edit => {
         let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
         let lineText = activeEditor.document.getText(range).replace(/\\/g, "/")
+
+        if (clipboardContent != "") {
+            lineText += clipboardContent
+        }
 
         if (lineText.trim().length <= 0)
             return 
@@ -981,7 +985,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(disposable)
 
-    disposable = vscode.commands.registerCommand('extension.mdpaste', () => {
+    disposable = vscode.commands.registerCommand('extension.mdpaste', async () => {
 
         // just use the keybindings do more
         const activeEditor = vscode.window.activeTextEditor
@@ -1096,6 +1100,15 @@ export function activate(context: vscode.ExtensionContext) {
                     break
                 }
             }
+
+            let clipboardContent = (await vscode.env.clipboard.readText()).trim()
+            if (clipboardContent.length > 0 && fs.existsSync(mdplantlibapi.getRootPath(undefined) + "/" + mdplantlibapi.getRelativePath(clipboardContent))) {
+                logger.info("clipboard: " + clipboardContent)
+                doList(activeEditor, mdplantlibapi.getRelativePath(clipboardContent))
+
+                return
+            }
+
 
             let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
             let lineText = activeEditor.document.getText(range)
