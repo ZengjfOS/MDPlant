@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+
+## [1.2.4] - 2023-11-20
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- clipboard路径检查优先级提高，防止与参考文档冲突
+
 ## [1.2.3] - 2023-11-19
 
 ### Added

@@ -1056,6 +1056,14 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             }
 
+            let clipboardContent = (await vscode.env.clipboard.readText()).trim()
+            if (clipboardContent.length > 0 && fs.existsSync(mdplantlibapi.getRootPath(undefined) + "/" + mdplantlibapi.getRelativePath(clipboardContent))) {
+                logger.info("clipboard: " + clipboardContent)
+                doList(activeEditor, mdplantlibapi.getRelativePath(clipboardContent))
+
+                return
+            }
+
             // check table and create menu
             for (var i = (startLine - 1); i >= 0; i--) {
                 let range = new vscode.Range(activeEditor.document.lineAt(i).range.start, activeEditor.document.lineAt(i).range.end)
@@ -1100,15 +1108,6 @@ export function activate(context: vscode.ExtensionContext) {
                     break
                 }
             }
-
-            let clipboardContent = (await vscode.env.clipboard.readText()).trim()
-            if (clipboardContent.length > 0 && fs.existsSync(mdplantlibapi.getRootPath(undefined) + "/" + mdplantlibapi.getRelativePath(clipboardContent))) {
-                logger.info("clipboard: " + clipboardContent)
-                doList(activeEditor, mdplantlibapi.getRelativePath(clipboardContent))
-
-                return
-            }
-
 
             let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
             let lineText = activeEditor.document.getText(range)
