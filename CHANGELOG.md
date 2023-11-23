@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.5] - 2023-11-23
+
+### Added
+- 支持format index to
+
+### Changed
+- 优化format index处理方式
+
+### Fixed
+- 无
 
 ## [1.2.4] - 2023-11-20
 

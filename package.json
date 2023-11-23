@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"engines": {
 		"vscode": "^1.43.0"
 	},
@@ -76,6 +76,10 @@
 			{
 				"command": "extension.mdformatIndex",
 				"title": "MDPlant: Format Index"
+			},
+			{
+				"command": "extension.mdformatIndexTo",
+				"title": "MDPlant: Format Index To..."
 			}
 		],
 		"menus": {
@@ -139,6 +143,11 @@
 				},
 				{
 					"command": "extension.mdformatIndex",
+					"group": "1_mdplant@6",
+					"when": "resourceExtname != .md && (!explorerResourceIsFolder || resourceDirname =~ /(images|refers)$/)"
+				},
+				{
+					"command": "extension.mdformatIndexTo",
 					"group": "1_mdplant@6",
 					"when": "resourceExtname != .md && (!explorerResourceIsFolder || resourceDirname =~ /(images|refers)$/)"
 				}

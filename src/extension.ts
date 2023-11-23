@@ -534,7 +534,7 @@ export async function doSubproject(filePath: string) {
 }
 
 export async function doFormatIndex(filePath: string) {
-    logger.info("doSubproject: " + filePath)
+    logger.info("doFormatIndex: " + filePath)
 
     let regex = new RegExp("^(\\d{0,4})_")
     let fileName = path.basename(filePath)
@@ -560,6 +560,50 @@ export async function doFormatIndex(filePath: string) {
         })
     } else
         mdplantlibapi.formatIndex(filePath)
+}
+
+export async function doFormatIndexTo(filePath: string) {
+    logger.info("doFormatIndexTo: " + filePath)
+
+    let regex = new RegExp("^(\\d{0,4})_")
+    let fileName = path.basename(filePath)
+
+    let matchValue = regex.exec(fileName.trim())
+    if (matchValue != null) {
+        await vscode.window.showInputBox(
+        {   // 这个对象中所有参数都是可选参数
+            password:false,                       // 输入内容是否是密码
+            ignoreFocusOut:true,                  // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+            // placeHolder:'input file name：',   // 在输入框内的提示信息
+            value: matchValue[1],
+            prompt:'Modify File Index',            // 在输入框下方的提示信息
+        }).then(async msg => {
+            if (matchValue != null && msg != undefined && msg.length > 0 && !isNaN(parseFloat(msg))) {
+                logger.info("New File Index: " + matchValue[1] + " -> " + msg)
+
+                if (msg == matchValue[1])
+                    return
+
+                mdplantlibapi.formatIndex(filePath, msg)
+            }
+        })
+    } else {
+        let lastIndex = getLastDocInfo(path.dirname(filePath) + "/..").index
+        await vscode.window.showInputBox(
+        {   // 这个对象中所有参数都是可选参数
+            password:false,                       // 输入内容是否是密码
+            ignoreFocusOut:true,                  // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+            // placeHolder:'input file name：',   // 在输入框内的提示信息
+            value: String(lastIndex).padStart(4,'0'),
+            prompt:'Modify File Index',            // 在输入框下方的提示信息
+        }).then(async msg => {
+            if (msg != undefined && msg.length > 0 && !isNaN(parseFloat(msg))) {
+                logger.info("New File Index: " + msg)
+
+                mdplantlibapi.formatIndex(filePath, msg)
+            }
+        })
+    }
 }
 
 export async function doDir(filePath: string) {
@@ -1160,6 +1204,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     disposable = vscode.commands.registerCommand('extension.mdformatIndex', (uri:vscode.Uri) => {
         doFormatIndex(uri.fsPath)
+    })
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('extension.mdformatIndexTo', (uri:vscode.Uri) => {
+        doFormatIndexTo(uri.fsPath)
     })
     context.subscriptions.push(disposable)
 
