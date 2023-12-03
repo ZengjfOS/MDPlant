@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.6] - 2023-12-3
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- Windoes copy路径错误
+
+
 ## [1.2.5] - 2023-11-23
 
 ### Added
