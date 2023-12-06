@@ -161,6 +161,16 @@
 				"when": "editorTextFocus"
 			}
 		],
+		"views": {
+			"explorer": [
+				{
+					"group": "0_mdplant@0",
+					"type": "webview",
+					"id": "plantumlTools",
+					"name": "PlantUML Tools"
+				}
+			]
+		},
 		"configuration": {
 			"type": "object",
 			"title": "MDPlant",
@@ -201,6 +211,7 @@
 		"@types/mocha": "^7.0.1",
 		"@types/node": "^12.11.7",
 		"@types/vscode": "^1.73.0",
+		"@types/vscode-webview": "^1.57.0",
 		"@typescript-eslint/eslint-plugin": "^2.18.0",
 		"@typescript-eslint/parser": "^2.18.0",
 		"eslint": "^6.8.0",
