@@ -14,7 +14,7 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 	public updateContent(activeEditor: vscode.TextEditor, content: string[]) {
 		let line = activeEditor.selection.active.line
 
-		if (content == null || content == undefined)
+		if (content == null || content == undefined || content.length == 0)
 			return
 
 		activeEditor.edit(edit => {
@@ -27,12 +27,25 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 		})
 	}
 
+	public getLineContent(activeEditor: vscode.TextEditor) {
+		let line = activeEditor.selection.active.line
+        let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+		let lineText = activeEditor.document.getText(range).replace(/\t/g, "    ").trimRight()
+
+		console.log("line text: " + lineText)
+
+		return lineText
+	}
+
 	public doStartuml(activeEditor: vscode.TextEditor) {
-		console.log("doAtoB")
+		console.log("doStartuml")
 
 		let output = [
 			"```plantuml",
 			"@startuml",
+			"'",
+			"' The message is not displayed",
+			"'",
 			"",
 			"title Example Title",
 			"",
@@ -45,87 +58,144 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 		return output
 	}
 
-	public doAtoB(activeEditor: vscode.TextEditor) {
+	public doAtoB(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doAtoB")
 
-		let output = ["A -> B: text"]
+		let output: string[] = []
+
+		if (line.length >= 0) {
+			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
+			let matchValue = regex.exec(line)
+			// console.log(matchValue)
+			if (matchValue != null) {
+				// output.push("A -> B: text")
+				output.push(matchValue[1] + matchValue[2] + " -> " + matchValue[3] + ": " + matchValue[4])
+			}
+		}
 
 		return output
 	}
 
-	public doBtoA(activeEditor: vscode.TextEditor) {
+	public doBtoA(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doBtoA")
 
-		let output = ["A <- B: text"]
+		let output: string[] = []
+
+		if (line.length >= 0) {
+			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
+			let matchValue = regex.exec(line)
+			// console.log(matchValue)
+			if (matchValue != null) {
+				// output.push("A <- B: text")
+				output.push(matchValue[1] + matchValue[2] + " <- " + matchValue[3] + ": " + matchValue[4])
+			}
+		}
 
 		return output
 	}
 
-	public doAdashToB(activeEditor: vscode.TextEditor) {
+	public doAdashToB(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doAdashToB")
 
-		let output = ["A --> B: text"]
+		let output: string[] = []
+
+		if (line.length >= 0) {
+			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
+			let matchValue = regex.exec(line)
+			// console.log(matchValue)
+			if (matchValue != null) {
+				// output.push("A --> B: text")
+				output.push(matchValue[1] + matchValue[2] + " --> " + matchValue[3] + ": " + matchValue[4])
+			}
+		}
 
 		return output
 	}
 
-	public doAtoBAndDashToA(activeEditor: vscode.TextEditor) {
+	public doAtoBAndDashToA(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doAtoBAndDashToA")
 
-		let output = [
-			"A -> B ++: text",
-			"B --> A --:",
-		]
+		let output: string[] = []
+
+		if (line.length >= 0) {
+			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
+			let matchValue = regex.exec(line)
+			// console.log(matchValue)
+			if (matchValue != null) {
+				// output.push("A -> B ++: text")
+				// output.push("A <-- B --:")
+				output.push(matchValue[1] + matchValue[2] + " -> " + matchValue[3] + " ++: " + matchValue[4])
+				output.push(matchValue[1] + matchValue[2] + " <-- " + matchValue[3] + " --:")
+			}
+		}
 
 		return output
 	}
 
-	public doAltWithAtoB(activeEditor: vscode.TextEditor) {
+	public doAltWithAtoB(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doAltWithAtoB")
 
-		let output = [
-			"alt text1",
-			"    A -> B: text",
-			"else text2",
-			"    A -> B: text",
-			"end"
-		]
+		let output: string[] = []
+
+		if (line.length == 0) {
+			output.push("alt text1")
+			output.push("    A -> B: text")
+			output.push("else text2")
+			output.push("    A -> B: text")
+			output.push("end")
+		}
 		
 		return output
 	}
 
-	public doLoopWithAtoB(activeEditor: vscode.TextEditor) {
+	public doLoopWithAtoB(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doLoopWithAtoB")
 
-		let output = [
-			"loop text",
-			"    A -> B: text",
-			"end"
-		]
+		let output: string[] = []
+
+		if (line.length == 0) {
+			output.push("loop text")
+			output.push("    A -> B: text")
+			output.push("end")
+		}
 
 		return output
 	}
 
-	public doNoteRight(activeEditor: vscode.TextEditor) {
+	public doNoteRight(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doNoteRight")
 
-		let output = [
-			"note right: note here"
-		]
+		let output: string[] = []
+
+		if (line.length >= 0) {
+			let regex = new RegExp("(\\s*)([^\\s].*)")
+			let matchValue = regex.exec(line)
+			// console.log(matchValue)
+			if (matchValue != null) {
+				output.push(matchValue[1] + "note right: " + matchValue[2])
+			}
+		}
 
 		return output
 	}
 
-	public doNoteBlock(activeEditor: vscode.TextEditor) {
+	public doNoteBlock(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doNoteBlock")
 
-		let output = [
-			"note right",
-			"",
-			"note here",
-			"",
-			"end note",
-		]
+		let output: string[] = []
+
+		if (line.length >= 0) {
+			let regex = new RegExp("(\\s*)([^\\s].*)")
+			let matchValue = regex.exec(line)
+			// console.log(matchValue)
+			if (matchValue != null) {
+				output.push(matchValue[1] + "note right")
+				output.push("")
+				output.push(matchValue[1] + "" + matchValue[2])
+				output.push("")
+				output.push(matchValue[1] + "end note")
+			}
+		}
 
 		return output
 	}
@@ -148,7 +218,8 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 			for (const [key, value] of Object.entries(idsMaps)) {
 				if (key == id) {
 					
-					this.updateContent(activeEditor, value(activeEditor))
+					let lineContent = this.getLineContent(activeEditor)
+					this.updateContent(activeEditor, value(activeEditor, lineContent))
 
 					break
 				}
