@@ -25,6 +25,7 @@
 		vscode.postMessage({ type: 'functionSelected', value: 'AtoBAndDashToA' });
 	});
 
+	/*
 	document.getElementById('altWithAtoB').addEventListener('click', () => {
 		vscode.postMessage({ type: 'functionSelected', value: 'altWithAtoB' });
 	});
@@ -32,6 +33,7 @@
 	document.getElementById('loopWithAtoB').addEventListener('click', () => {
 		vscode.postMessage({ type: 'functionSelected', value: 'loopWithAtoB' });
 	});
+	*/
 
 	document.getElementById('noteRight').addEventListener('click', () => {
 		vscode.postMessage({ type: 'functionSelected', value: 'noteRight' });

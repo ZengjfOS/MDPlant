@@ -1099,6 +1099,8 @@ export function activate(context: vscode.ExtensionContext) {
                     default:
                         break
                 }
+
+                return
             }
 
             let clipboardContent = (await vscode.env.clipboard.readText()).trim()

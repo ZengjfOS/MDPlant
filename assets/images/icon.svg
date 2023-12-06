@@ -1,12 +1,13 @@
 <svg width="28" height="28" xmlns="http://www.w3.org/2000/svg">
  <g id="Layer_1">
   <title>Layer 1</title>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_1" y="22.47058" x="1.05881" stroke-width="0" stroke="#000" fill="#000000">*</text>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_2" y="29.7647" x="8.35293" stroke-width="0" stroke="#000" fill="#000000">*</text>
-  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" id="svg_3" y="37.05882" x="16.35293" stroke-width="0" stroke="#000" fill="#000000">*</text>
-  <line id="svg_4" y2="16.61941" x2="6.28572" y1="11.38238" x1="6.28572" stroke="#000" fill="none"/>
-  <line id="svg_5" y2="16.15569" x2="6.33534" y1="16.03593" x1="10.28743" stroke="#000" fill="none"/>
-  <line id="svg_6" y2="23.46274" x2="13.76048" y1="19.1497" x1="13.76048" stroke="#000" fill="none"/>
-  <line id="svg_7" y2="22.98203" x2="13.72021" y1="22.98203" x1="17.59282" stroke="#000" fill="none"/>
+  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="20" stroke-width="0" id="svg_1" y="15.83824" x="0.70588" stroke="#000" fill="#000000">*</text>
+  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="20" id="svg_2" y="22.9614" x="8.85294" stroke-width="0" stroke="#000" fill="#000000">*</text>
+  <text xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="20" id="svg_3" y="30.68198" x="17.30882" stroke-width="0" stroke="#000" fill="#000000">*</text>
+  <line stroke="#000" transform="rotate(-1.4688 5.54883 13.4944)" id="svg_4" y2="15.7921" x2="5.54883" y1="11.19663" x1="5.54883" fill="none"/>
+  <line stroke="#000" id="svg_5" y2="15.24081" x2="9.49632" y1="15.24081" x1="5.81987" fill="none"/>
+  <line id="svg_6" y2="23.24493" x2="13.63235" y1="18.36581" x1="13.63235" stroke="#000" fill="none"/>
+  <line id="svg_7" y2="22.90255" x2="13.11374" y1="22.90255" x1="17.98527" stroke="#000" fill="none"/>
  </g>
+
 </svg>

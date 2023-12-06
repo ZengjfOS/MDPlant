@@ -6,6 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.7] - 2023-12-6
+
+### Added
+- 支持PlantUML文本转换功能
+
+### Changed
+- 无
+
+### Fixed
+- 修复PlantUML指令空白行不执行
+- 修复PlantUML指令处理结束
+
+
 ## [1.2.6] - 2023-12-3
 
 ### Added

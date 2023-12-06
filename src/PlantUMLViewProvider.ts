@@ -30,7 +30,7 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 	public getLineContent(activeEditor: vscode.TextEditor) {
 		let line = activeEditor.selection.active.line
         let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-		let lineText = activeEditor.document.getText(range).replace(/\t/g, "    ").trimRight()
+		let lineText = activeEditor.document.getText(range).replace(/\t/g, "    ")
 
 		console.log("line text: " + lineText)
 
@@ -63,9 +63,9 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 		let output: string[] = []
 
-		if (line.length >= 0) {
+		if (line.length > 0) {
 			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
-			let matchValue = regex.exec(line)
+			let matchValue = regex.exec(line.trimRight())
 			// console.log(matchValue)
 			if (matchValue != null) {
 				// output.push("A -> B: text")
@@ -81,9 +81,9 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 		let output: string[] = []
 
-		if (line.length >= 0) {
+		if (line.length > 0) {
 			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
-			let matchValue = regex.exec(line)
+			let matchValue = regex.exec(line.trimRight())
 			// console.log(matchValue)
 			if (matchValue != null) {
 				// output.push("A <- B: text")
@@ -99,9 +99,9 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 		let output: string[] = []
 
-		if (line.length >= 0) {
+		if (line.length > 0) {
 			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
-			let matchValue = regex.exec(line)
+			let matchValue = regex.exec(line.trimRight())
 			// console.log(matchValue)
 			if (matchValue != null) {
 				// output.push("A --> B: text")
@@ -117,9 +117,9 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 		let output: string[] = []
 
-		if (line.length >= 0) {
+		if (line.length > 0) {
 			let regex = new RegExp("(\\s*)([^\\s]+)\\s+([^\\s]+)\\s+(.*)")
-			let matchValue = regex.exec(line)
+			let matchValue = regex.exec(line.trimRight())
 			// console.log(matchValue)
 			if (matchValue != null) {
 				// output.push("A -> B ++: text")
@@ -169,7 +169,7 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 		if (line.length >= 0) {
 			let regex = new RegExp("(\\s*)([^\\s].*)")
-			let matchValue = regex.exec(line)
+			let matchValue = regex.exec(line.trimRight())
 			// console.log(matchValue)
 			if (matchValue != null) {
 				output.push(matchValue[1] + "note right: " + matchValue[2])
@@ -186,13 +186,11 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 		if (line.length >= 0) {
 			let regex = new RegExp("(\\s*)([^\\s].*)")
-			let matchValue = regex.exec(line)
+			let matchValue = regex.exec(line.trimRight())
 			// console.log(matchValue)
 			if (matchValue != null) {
 				output.push(matchValue[1] + "note right")
-				output.push("")
 				output.push(matchValue[1] + "" + matchValue[2])
-				output.push("")
 				output.push(matchValue[1] + "end note")
 			}
 		}
@@ -296,8 +294,10 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 				<button class="add-color-button" id="BtoA">A <- B</button>
 				<button class="add-color-button" id="AdashToB">A --> B</button>
 				<button class="add-color-button" id="AtoBAndDashToA">A -> B --> A</button>
+				<!--
 				<button class="add-color-button" id="altWithAtoB">alt A -> B</button>
 				<button class="add-color-button" id="loopWithAtoB">loop A -> B</button>
+				-->
 				<button class="add-color-button" id="noteRight">note right</button>
 				<button class="add-color-button" id="noteBlock">note block</button>
 
