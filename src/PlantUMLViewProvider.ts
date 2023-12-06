@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as mdplantlibapi from "./mdplantlibapi"
 
 export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
@@ -9,6 +10,151 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
 	) { }
+
+	public updateContent(activeEditor: vscode.TextEditor, content: string[]) {
+		let line = activeEditor.selection.active.line
+
+		if (content == null || content == undefined)
+			return
+
+		activeEditor.edit(edit => {
+			let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+
+			if (content.length > 0)
+				edit.replace(range, content.join("\n"))
+		}).then(value => {
+			mdplantlibapi.cursor(activeEditor, line)
+		})
+	}
+
+	public doStartuml(activeEditor: vscode.TextEditor) {
+		console.log("doAtoB")
+
+		let output = [
+			"```plantuml",
+			"@startuml",
+			"",
+			"title Example Title",
+			"",
+			"",
+			"",
+			"@enduml",
+			"```"
+		]
+
+		return output
+	}
+
+	public doAtoB(activeEditor: vscode.TextEditor) {
+		console.log("doAtoB")
+
+		let output = ["A -> B: text"]
+
+		return output
+	}
+
+	public doBtoA(activeEditor: vscode.TextEditor) {
+		console.log("doBtoA")
+
+		let output = ["A <- B: text"]
+
+		return output
+	}
+
+	public doAdashToB(activeEditor: vscode.TextEditor) {
+		console.log("doAdashToB")
+
+		let output = ["A --> B: text"]
+
+		return output
+	}
+
+	public doAtoBAndDashToA(activeEditor: vscode.TextEditor) {
+		console.log("doAtoBAndDashToA")
+
+		let output = [
+			"A -> B ++: text",
+			"B --> A --:",
+		]
+
+		return output
+	}
+
+	public doAltWithAtoB(activeEditor: vscode.TextEditor) {
+		console.log("doAltWithAtoB")
+
+		let output = [
+			"alt text1",
+			"    A -> B: text",
+			"else text2",
+			"    A -> B: text",
+			"end"
+		]
+		
+		return output
+	}
+
+	public doLoopWithAtoB(activeEditor: vscode.TextEditor) {
+		console.log("doLoopWithAtoB")
+
+		let output = [
+			"loop text",
+			"    A -> B: text",
+			"end"
+		]
+
+		return output
+	}
+
+	public doNoteRight(activeEditor: vscode.TextEditor) {
+		console.log("doNoteRight")
+
+		let output = [
+			"note right: note here"
+		]
+
+		return output
+	}
+
+	public doNoteBlock(activeEditor: vscode.TextEditor) {
+		console.log("doNoteBlock")
+
+		let output = [
+			"note right",
+			"",
+			"note here",
+			"",
+			"end note",
+		]
+
+		return output
+	}
+
+	public doIds(id: string) {
+		let idsMaps = {
+			'startuml': this.doStartuml,
+			'AtoB': this.doAtoB,
+			'BtoA': this.doBtoA,
+			'AdashToB': this.doAdashToB,
+			'AtoBAndDashToA': this.doAtoBAndDashToA,
+			'altWithAtoB': this.doAltWithAtoB,
+			'loopWithAtoB': this.doLoopWithAtoB,
+			'noteRight': this.doNoteRight,
+			'noteBlock': this.doNoteBlock,
+		}
+        const activeEditor = vscode.window.activeTextEditor
+
+        if (activeEditor) {
+			for (const [key, value] of Object.entries(idsMaps)) {
+				if (key == id) {
+					
+					this.updateContent(activeEditor, value(activeEditor))
+
+					break
+				}
+			}
+        }
+	}
 
 	public resolveWebviewView(
 		webviewView: vscode.WebviewView,
@@ -33,6 +179,8 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 				case 'functionSelected':
 					{
 						console.log(data.value)
+
+						this.doIds(data.value)
 						break;
 					}
 			}
@@ -72,12 +220,15 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 				<title>PlantUML Tools</title>
 			</head>
 			<body>
+				<button class="add-color-button" id="startuml">startuml</button>
 				<button class="add-color-button" id="AtoB">A -> B</button>
+				<button class="add-color-button" id="BtoA">A <- B</button>
 				<button class="add-color-button" id="AdashToB">A --> B</button>
 				<button class="add-color-button" id="AtoBAndDashToA">A -> B --> A</button>
 				<button class="add-color-button" id="altWithAtoB">alt A -> B</button>
-				<button class="add-color-button" id="optWithAtoB">opt A -> B</button>
 				<button class="add-color-button" id="loopWithAtoB">loop A -> B</button>
+				<button class="add-color-button" id="noteRight">note right</button>
+				<button class="add-color-button" id="noteBlock">note block</button>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

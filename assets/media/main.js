@@ -4,10 +4,17 @@
 // It cannot access the main VS Code APIs directly.
 (function () {
 	const vscode = acquireVsCodeApi();
-	let ids = ['AtoB', 'AdashToB', 'AtoBAndDashToA', 'altWithAtoB', 'optWithAtoB', 'loopWithAtoB']
+
+	document.getElementById('startuml').addEventListener('click', () => {
+		vscode.postMessage({ type: 'functionSelected', value: 'startuml' });
+	});
 
 	document.getElementById('AtoB').addEventListener('click', () => {
 		vscode.postMessage({ type: 'functionSelected', value: 'AtoB' });
+	});
+
+	document.getElementById('BtoA').addEventListener('click', () => {
+		vscode.postMessage({ type: 'functionSelected', value: 'BtoA' });
 	});
 
 	document.getElementById('AdashToB').addEventListener('click', () => {
@@ -22,12 +29,16 @@
 		vscode.postMessage({ type: 'functionSelected', value: 'altWithAtoB' });
 	});
 
-	document.getElementById('optWithAtoB').addEventListener('click', () => {
-		vscode.postMessage({ type: 'functionSelected', value: 'optWithAtoB' });
-	});
-
 	document.getElementById('loopWithAtoB').addEventListener('click', () => {
 		vscode.postMessage({ type: 'functionSelected', value: 'loopWithAtoB' });
+	});
+
+	document.getElementById('noteRight').addEventListener('click', () => {
+		vscode.postMessage({ type: 'functionSelected', value: 'noteRight' });
+	});
+
+	document.getElementById('noteBlock').addEventListener('click', () => {
+		vscode.postMessage({ type: 'functionSelected', value: 'noteBlock' });
 	});
 
 }());

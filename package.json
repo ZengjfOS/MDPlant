@@ -161,11 +161,19 @@
 				"when": "editorTextFocus"
 			}
 		],
-		"views": {
-			"explorer": [
+		"viewsContainers": {
+			"activitybar": [
 				{
-					"group": "0_mdplant@0",
-					"type": "webview",
+					"id": "mdplant",
+					"title": "MDPlant",
+					"icon": "assets/images/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"mdplant": [
+				{
+					"type":"webview",
 					"id": "plantumlTools",
 					"name": "PlantUML Tools"
 				}
