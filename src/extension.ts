@@ -5,7 +5,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import * as mdplantlibapi from "./mdplantlibapi"
-import * as PlantUMLVP from "./PlantUMLViewProvider"
+import * as SequenceVP from "./SequenceViewProvider"
+import * as GanttVP from "./GanttViewProvider"
 import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
 
@@ -1234,8 +1235,11 @@ export function activate(context: vscode.ExtensionContext) {
         path.basename(mdplantlibapi.getRootPath(undefined)),
     ]);
 
-    const provider = new PlantUMLVP.PlantUMLViewProvider(context.extensionUri);
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider(PlantUMLVP.PlantUMLViewProvider.viewType, provider));
+    const sequenceProvider = new SequenceVP.SequenceViewProvider(context.extensionUri);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(SequenceVP.SequenceViewProvider.viewType, sequenceProvider));
+
+    const ganttProvider = new GanttVP.GanttViewProvider(context.extensionUri);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(GanttVP.GanttViewProvider.viewType, ganttProvider));
 }
 
 // this method is called when your extension is deactivated

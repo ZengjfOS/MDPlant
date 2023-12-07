@@ -9,6 +9,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.2.7] - 2023-12-6
 
 ### Added
+- 支持PlantUML Sequence
+- 支持PlantUML Gantt
+
+### Changed
+- js自动获取button id，减少硬编码
+
+### Fixed
+- 无
+
+## [1.2.7] - 2023-12-6
+
+### Added
 - 支持PlantUML文本转换功能
 
 ### Changed

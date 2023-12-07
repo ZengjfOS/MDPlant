@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import * as mdplantlibapi from "./mdplantlibapi"
 
-export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
+export class SequenceViewProvider implements vscode.WebviewViewProvider {
 
-	public static readonly viewType = 'plantumlTools';
+	public static readonly viewType = 'SequenceDiagram';
 
 	private _view?: vscode.WebviewView;
 
@@ -37,7 +37,7 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 		return lineText
 	}
 
-	public doStartuml(activeEditor: vscode.TextEditor) {
+	public doStartuml(activeEditor: vscode.TextEditor, line: string) {
 		console.log("doStartuml")
 
 		let output = [
@@ -258,7 +258,7 @@ export class PlantUMLViewProvider implements vscode.WebviewViewProvider {
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'assets/media', 'main.js'));
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'assets/media', 'sequence.js'));
 
 		// Do the same for the stylesheet.
 		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'assets/media', 'reset.css'));
