@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.1] - 2023-12-9
+
+### Added
+- 支持PlantUML MindMap
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [1.2.7] - 2023-12-6
 
 ### Added
