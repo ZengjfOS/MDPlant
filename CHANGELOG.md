@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.2] - 2023-12-11
+
+### Added
+- 支持PlantUML帮助链接
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [2.0.1] - 2023-12-9
 
 ### Added
@@ -17,7 +29,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 - 无
 
-## [1.2.7] - 2023-12-6
+## [2.0.0] - 2023-12-6
 
 ### Added
 - 支持PlantUML Sequence

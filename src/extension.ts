@@ -8,6 +8,7 @@ import * as mdplantlibapi from "./mdplantlibapi"
 import * as SequenceVP from "./SequenceViewProvider"
 import * as GanttVP from "./GanttViewProvider"
 import * as MindMapVP from "./MindMapViewProvider"
+import * as WelcomPageVP from "./WelcomePageProvider"
 import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
 
@@ -1235,6 +1236,9 @@ export function activate(context: vscode.ExtensionContext) {
         'drawio',
         path.basename(mdplantlibapi.getRootPath(undefined)),
     ]);
+
+    const welcomPageProvider = new WelcomPageVP.WelcomePageProvider(context.extensionUri);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(WelcomPageVP.WelcomePageProvider.viewType, welcomPageProvider));
 
     const sequenceProvider = new SequenceVP.SequenceViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(SequenceVP.SequenceViewProvider.viewType, sequenceProvider));

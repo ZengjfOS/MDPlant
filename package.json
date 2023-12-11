@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"engines": {
 		"vscode": "^1.73.0"
 	},
@@ -172,6 +172,11 @@
 		},
 		"views": {
 			"mdplant": [
+				{
+					"type": "webview",
+					"id": "WelcomePage",
+					"name": "Welcome Page"
+				},
 				{
 					"type": "webview",
 					"id": "SequenceDiagram",
