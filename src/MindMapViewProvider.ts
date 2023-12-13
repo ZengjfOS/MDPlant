@@ -94,7 +94,7 @@ export class MindMapViewProvider implements vscode.WebviewViewProvider {
 			for (const [key, value] of Object.entries(idsMaps)) {
 				if (key == id) {
 					let line = activeEditor.selection.active.line
-					let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)	// todo: fix最后一行是空行
+					let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
 					let startLine = textBlock.start
 					let textBlockInfo = mdplantlibapi.parseTextBlock(textBlock.textBlock, mdplantlibapi.getRootPath(activeEditor), line - startLine)
 					console.log(textBlockInfo)

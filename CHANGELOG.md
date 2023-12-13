@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.3] - 2023-12-13
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复获取textblock越界
+
+
 ## [2.0.2] - 2023-12-11
 
 ### Added

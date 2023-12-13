@@ -171,11 +171,12 @@ export function getTextBlockV2(editor: vscode.TextEditor, boundary: boolean = tr
             codeEnd = i
 
             if (spaceEnd == -1) {
-                if (contentArray[i + 1].trim().length == 0) {
-                    if (i + 1 >= contentArray.length)
-                        spaceEnd = i
-                    else
-                        spaceEnd = i + 1
+                if (contentArray.length <= (i + 1)) {                   // last line
+                    spaceEnd = i
+                } else if (contentArray[i + 1].trim().length == 0) {    // next space line
+                    spaceEnd = i + 1
+                } else {                                                // ``` line
+                    spaceEnd = i
                 }
             }
 
