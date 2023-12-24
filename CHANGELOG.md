@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.4] - 2023-12-24
+
+### Added
+- 无
+
+### Changed
+- PlantUML Sequence同名文件调用函数不需要写两个文件
+
+### Fixed
+- 无
+
+
 ## [2.0.3] - 2023-12-13
 
 ### Added

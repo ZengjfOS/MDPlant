@@ -70,6 +70,14 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 			if (matchValue != null) {
 				// output.push("A -> B: text")
 				output.push(matchValue[1] + matchValue[2] + " -> " + matchValue[3] + ": " + matchValue[4])
+			} else {
+				regex = new RegExp("(\\s*)([^\\s]+)\\s+(.*)")
+				matchValue = regex.exec(line.trimRight())
+				// console.log(matchValue)
+				if (matchValue != null) {
+					// output.push("A -> B: text")
+					output.push(matchValue[1] + matchValue[2] + " -> " + matchValue[2] + ": " + matchValue[3])
+				}
 			}
 		}
 
@@ -88,6 +96,14 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 			if (matchValue != null) {
 				// output.push("A <- B: text")
 				output.push(matchValue[1] + matchValue[2] + " <- " + matchValue[3] + ": " + matchValue[4])
+			} else {
+				regex = new RegExp("(\\s*)([^\\s]+)\\s+(.*)")
+				matchValue = regex.exec(line.trimRight())
+				// console.log(matchValue)
+				if (matchValue != null) {
+					// output.push("A <- B: text")
+					output.push(matchValue[1] + matchValue[2] + " <- " + matchValue[2] + ": " + matchValue[3])
+				}
 			}
 		}
 
@@ -106,6 +122,14 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 			if (matchValue != null) {
 				// output.push("A --> B: text")
 				output.push(matchValue[1] + matchValue[2] + " --> " + matchValue[3] + ": " + matchValue[4])
+			} else {
+				regex = new RegExp("(\\s*)([^\\s]+)\\s+(.*)")
+				matchValue = regex.exec(line.trimRight())
+				// console.log(matchValue)
+				if (matchValue != null) {
+					// output.push("A --> B: text")
+					output.push(matchValue[1] + matchValue[2] + " --> " + matchValue[2] + ": " + matchValue[3])
+				}
 			}
 		}
 
@@ -126,6 +150,16 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 				// output.push("A <-- B --:")
 				output.push(matchValue[1] + matchValue[2] + " -> " + matchValue[3] + " ++: " + matchValue[4])
 				output.push(matchValue[1] + matchValue[2] + " <-- " + matchValue[3] + " --:")
+			} else {
+				regex = new RegExp("(\\s*)([^\\s]+)\\s+(.*)")
+				matchValue = regex.exec(line.trimRight())
+				// console.log(matchValue)
+				if (matchValue != null) {
+					// output.push("A -> B ++: text")
+					// output.push("A <-- B --:")
+					output.push(matchValue[1] + matchValue[2] + " -> " + matchValue[2] + " ++: " + matchValue[3])
+					output.push("deactivate " + matchValue[2])
+				}
 			}
 		}
 
