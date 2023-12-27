@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.4] - 2023-12-27
+
+### Added
+- 支持处理PlantUML Class图
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [2.0.4] - 2023-12-24
 
 ### Added

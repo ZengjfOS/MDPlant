@@ -9,6 +9,7 @@ import * as SequenceVP from "./SequenceViewProvider"
 import * as GanttVP from "./GanttViewProvider"
 import * as MindMapVP from "./MindMapViewProvider"
 import * as WelcomPageVP from "./WelcomePageProvider"
+import * as ClassVP from "./ClassViewProvider"
 import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
 
@@ -1248,6 +1249,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     const mindmapProvider = new MindMapVP.MindMapViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(MindMapVP.MindMapViewProvider.viewType, mindmapProvider));
+
+    const classProvider = new ClassVP.ClassViewProvider(context.extensionUri);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(ClassVP.ClassViewProvider.viewType, classProvider));
 }
 
 // this method is called when your extension is deactivated
