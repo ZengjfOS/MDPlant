@@ -6,7 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [2.0.4] - 2023-12-27
+## [2.0.6] - 2023-12-29
+
+### Added
+- 支持处理PlantUML Class trim/link功能
+
+### Changed
+- 移除PlantUML MindMap/Gantt图，感觉用途不大，有需要再开放
+
+### Fixed
+- 无
+
+
+## [2.0.5] - 2023-12-27
 
 ### Added
 - 支持处理PlantUML Class图

@@ -1244,11 +1244,13 @@ export function activate(context: vscode.ExtensionContext) {
     const sequenceProvider = new SequenceVP.SequenceViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(SequenceVP.SequenceViewProvider.viewType, sequenceProvider));
 
+    /*
     const ganttProvider = new GanttVP.GanttViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(GanttVP.GanttViewProvider.viewType, ganttProvider));
 
     const mindmapProvider = new MindMapVP.MindMapViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(MindMapVP.MindMapViewProvider.viewType, mindmapProvider));
+    */
 
     const classProvider = new ClassVP.ClassViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(ClassVP.ClassViewProvider.viewType, classProvider));

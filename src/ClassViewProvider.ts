@@ -4,6 +4,7 @@ import * as mdplantlibapi from "./mdplantlibapi"
 export class ClassViewProvider implements vscode.WebviewViewProvider {
 
 	public static readonly viewType = 'ClassDiagram';
+	private linkFrom: string[] = []
 
 	private _view?: vscode.WebviewView;
 
@@ -37,8 +38,19 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 		return lineText
 	}
 
-	public doStartClass(activeEditor: vscode.TextEditor, line: string) {
-		console.log("doStartMindmap")
+	public updateCodeBlockContent(activeEditor: vscode.TextEditor, textBlock: any) {
+		activeEditor.edit(edit => {
+			let range = new vscode.Range(activeEditor.document.lineAt(textBlock.codeStart).range.start, activeEditor.document.lineAt(textBlock.codeEnd).range.end)
+
+			if (textBlock.codeBlock.length > 0)
+				edit.replace(range, textBlock.codeBlock.join("\n"))
+		}).then(value => {
+			mdplantlibapi.cursor(activeEditor, textBlock.cursor)
+		})
+	}
+
+	public doStartStruct(activeEditor: vscode.TextEditor, line: any) {
+		console.log("doStartStruct")
 
 		if (line.length > 0)
 			return []
@@ -67,7 +79,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 		return output
 	}
 
-	public doArrowTo(activeEditor: vscode.TextEditor, line: string) {
+	public doArrowTo(activeEditor: vscode.TextEditor, line: any) {
 		console.log("doArrowTo")
 
 		let output: string[] = []
@@ -91,7 +103,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 		return output
 	}
 
-	public doNoteLeft(activeEditor: vscode.TextEditor, line: string) {
+	public doNoteLeft(activeEditor: vscode.TextEditor, line: any) {
 		console.log("doNoteLeft")
 
 		let output: string[] = []
@@ -110,7 +122,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 		return output
 	}
 
-	public doNoteRight(activeEditor: vscode.TextEditor, line: string) {
+	public doNoteRight(activeEditor: vscode.TextEditor, line: any) {
 		console.log("doNoteRight")
 
 		let output: string[] = []
@@ -129,22 +141,252 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 		return output
 	}
 
-	public doIds(id: string) {
+	public doTrimStruct(activeEditor: vscode.TextEditor, textBlock: any) {
+		console.log("doTrimStruct")
+
+		let codeBlock = []
+		let ifdef = false
+		let codeComments = false
+		let funcBlock = false
+		let funcBlocks = []
+		let i = 1
+
+		codeBlock.push(textBlock.codeBlock[0])
+		for (; i < textBlock.codeBlock.length - 1; i++) {
+			let line = textBlock.codeBlock[i]
+			console.log(line)
+
+			if (line.trim().length == 0)
+				continue
+
+			if ((line.indexOf("#ifdef") != -1) || (line.indexOf("#if defined") != -1)) {
+				ifdef = true
+				continue
+			}
+			if (line.indexOf("#endif") != -1) {
+				ifdef = false
+				continue
+			}
+			if (ifdef)
+				continue
+
+			if (line.indexOf("//") != -1) {
+				let data = line.split("//")[0].trim()
+				if (data.length > 0)
+					codeBlock.push("    " + data.replace(/\s+/g, " "))
+
+				continue
+			}
+
+			if ((line.indexOf("/*") != -1) && (line.indexOf("*/") != -1)) {
+				let data = line.split("/*")[0].trim()
+				if (data.length > 0)
+					codeBlock.push("    " + data.replace(/\s+/g, " "))
+
+				continue
+			}
+
+			if (line.indexOf("/*") != -1) {
+				codeComments = true
+				continue
+			}
+			if (line.indexOf("*/") != -1) {
+				codeComments = false
+				continue
+			}
+			if (codeComments)
+				continue
+
+			if (line.indexOf("ANDROID_KABI_RESERVE") != -1)
+				continue
+
+			if (!funcBlock && (line.indexOf(")(") != -1) && (line.trimRight().substr(-2) != ");")) {
+				funcBlock = true
+				funcBlocks.push(line)
+				continue
+			}
+			if (funcBlock && line.trimRight().substr(-2) == ");") {
+				funcBlocks.push(line)
+				codeBlock.push("    " + funcBlocks.join(" ").trim().replace(/\s+/g, " "))
+
+				funcBlock = false
+				funcBlocks = []
+				continue
+			}
+			if (funcBlock) {
+				funcBlocks.push(line)
+				continue
+			}
+
+			codeBlock.push("    " + line.trim().replace(/\s+/g, " "))
+
+		}
+
+		codeBlock.push(textBlock.codeBlock[i].split(";")[0].trimRight())
+
+		textBlock.codeBlock = codeBlock
+
+		return textBlock
+	}
+
+	public doLinkStruct(activeEditor: vscode.TextEditor, textBlock: any) {
+		console.log("doLinkStruct")
+
+		let lineOffset = textBlock.cursor - textBlock.codeStart
+		let line = textBlock.codeBlock[lineOffset]
+		console.log(line)
+
+		let regexSrc = new RegExp("\\s*(class|struct)\\s*([^\\s]+)\\s+([^\\s]+)?")
+		let regexSnk = new RegExp("\\s*(const\\s*)?(class|struct)\\s*([^\\s]+)\\s+\\*?([^\\s;\\*]+);?")
+		let matchValueSrc = regexSrc.exec(textBlock.codeBlock[0])
+		let matchValueSnk = regexSnk.exec(line.trimRight())
+		console.log(matchValueSrc)
+		console.log(matchValueSnk)
+		if (matchValueSrc != null && matchValueSnk != null) {
+			return matchValueSrc[2] + "::" + matchValueSnk[4] + " --> " + matchValueSnk[3]
+		}
+
+		return ""
+	}
+
+	public doLinkStructProperty(activeEditor: vscode.TextEditor, textBlock: any, status: number = 0) {
+		console.log("doLinkStructProperty")
+
+		let lineOffset = textBlock.cursor - textBlock.codeStart
+		let line = textBlock.codeBlock[lineOffset]
+		console.log(line)
+
+		let regexSrc = new RegExp("\\s*(struct|class)\\s*([^\\s]+)\\s+([^\\s]+)?")
+		let regexSnkFunc = new RegExp("\\s*(.*)\\(\\*([^\\s;\\*]+)\\)\\(.*\\);")
+
+		let matchValueSrc = regexSrc.exec(textBlock.codeBlock[0])
+		let matchValueSnkFunc = regexSnkFunc.exec(line.trimRight())
+		console.log(matchValueSrc)
+		console.log(matchValueSnkFunc)
+
+		if (matchValueSrc != null && matchValueSnkFunc != null) {
+			return [matchValueSrc[2], matchValueSnkFunc[2], undefined]
+		}
+
+		let regexSnk = new RegExp("\\s*(const\\s*)?((struct|class)\\s*)?([^\\s]+)\\s+\\*?([^\\s;\\*\\(\\))]+);?")
+		let matchValueSnk = regexSnk.exec(line.trimRight())
+		console.log(matchValueSnk)
+
+		if (matchValueSrc != null && matchValueSnk != null) {
+			return [matchValueSrc[2], matchValueSnk[5], matchValueSnk[4]]
+		}
+
+		return []
+	}
+
+	public doIds(id: string, status: number) {
 		let idsMaps = {
-			'startClass': this.doStartClass,
-			'arrowTo': this.doArrowTo,
-			'noteLeft': this.doNoteLeft,
-			'noteRight': this.doNoteRight,
+			'startStruct': {
+				"type": "line",
+				"func": this.doStartStruct
+			},
+			'arrowTo': {
+				"type": "line",
+				"func": this.doArrowTo,
+			},
+			'noteLeft': {
+				"type": "line",
+				"func": this.doNoteLeft,
+			},
+			'noteRight': {
+				"type": "line",
+				"func": this.doNoteRight,
+			},
+			'trimStruct': {
+				"type": "block",
+				"func": this.doTrimStruct,
+			},
+			'linkStruct': {
+				"type": "block",
+				"func": this.doLinkStruct,
+			},
+			'linkStructProperty': {
+				"type": "block",
+				"func": this.doLinkStructProperty,
+			},
 		}
 
 		const activeEditor = vscode.window.activeTextEditor
 		if (activeEditor) {
 			for (const [key, value] of Object.entries(idsMaps)) {
 				if (key == id) {
-					let lineContent = this.getLineContent(activeEditor)
-					this.updateContent(activeEditor, value(activeEditor, lineContent))
+					if (value.type == "line") {
+						let lineContent = this.getLineContent(activeEditor)
+						this.updateContent(activeEditor, value.func(activeEditor, lineContent))
 
-					return
+						return
+					} else if (value.type == "block") {
+						if (key == "trimStruct") {
+							let structBlock = mdplantlibapi.getStructBlock(activeEditor)
+							console.log(structBlock)
+
+							if (structBlock.codeStart == -1 || structBlock.codeEnd == -1)
+								return
+
+							value.func(activeEditor, structBlock)
+
+							console.log(structBlock)
+							this.updateCodeBlockContent(activeEditor, structBlock)
+
+							return
+						}
+
+						if (key == "linkStruct") {
+							let structBlock = mdplantlibapi.getStructBlock(activeEditor, false)
+							console.log(structBlock)
+
+							if (structBlock.codeStart == -1 || structBlock.codeEnd == -1)
+								return
+
+							let connectValue = value.func(activeEditor, structBlock)
+							if (connectValue.length > 0) {
+								let line = activeEditor.selection.active.line
+								let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
+								textBlock.codeBlock.splice((textBlock.codeBlock.length - 2), 0, connectValue)
+								this.updateCodeBlockContent(activeEditor, textBlock)
+							}
+
+							return
+						}
+
+						if (key == "linkStructProperty") {
+
+							let structBlock = mdplantlibapi.getStructBlock(activeEditor, false)
+							console.log(structBlock)
+
+							if (structBlock.codeStart == -1 || structBlock.codeEnd == -1) {
+								this.linkFrom = []
+								return
+							}
+
+							if (status == 0) {
+								this.linkFrom = value.func(activeEditor, structBlock, status)
+								console.log(this.linkFrom)
+							} else if (status == 1) {
+								if (this.linkFrom.length == 0)
+									return
+
+								let linkTo = value.func(activeEditor, structBlock, status)
+								console.log(linkTo)
+
+								if ((linkTo.length != 0) && (linkTo[2] == undefined || this.linkFrom[2] == undefined || this.linkFrom[2] == linkTo[0])) {
+									let connectValue = this.linkFrom[0] + "::" + this.linkFrom[1] + " --> " + linkTo[0] + "::" + linkTo[1]
+
+									let line = activeEditor.selection.active.line
+									let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
+									textBlock.codeBlock.splice((textBlock.codeBlock.length - 2), 0, connectValue)
+									this.updateCodeBlockContent(activeEditor, textBlock)
+								}
+							}
+
+							return
+						}
+					}
 				}
 			}
 		}
@@ -174,7 +416,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 					{
 						console.log("function: " + data.value)
 
-						this.doIds(data.value)
+						this.doIds(data.value, data.status)
 						break;
 					}
 			}
@@ -214,8 +456,11 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 				<title>PlantUML Tools</title>
 			</head>
 			<body>
-				<button class="add-color-button" id="startClass">start class</button>
-				<button class="add-color-button" id="arrowTo">arrow to</button>
+				<button class="add-color-button add-color-button-line" id="startStruct">start struct</button>
+				<button class="add-color-button" id="trimStruct">trim struct</button>
+				<button class="add-color-button" id="linkStruct">link struct</button>
+				<button class="add-color-button" id="linkStructProperty">link struct property</button>
+				<button class="add-color-button" id="arrowTo">A --> B</button>
 				<button class="add-color-button" id="noteLeft">note left</button>
 				<button class="add-color-button" id="noteRight">note right</button>
 

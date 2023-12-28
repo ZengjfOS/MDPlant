@@ -182,7 +182,7 @@ export class MindMapViewProvider implements vscode.WebviewViewProvider {
 				<title>PlantUML Tools</title>
 			</head>
 			<body>
-				<button class="add-color-button" id="startmindmap">start mindmap</button>
+				<button class="add-color-button add-color-button-line" id="startmindmap">start mindmap</button>
 				<button class="add-color-button" id="mindmap">MindMap</button>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>

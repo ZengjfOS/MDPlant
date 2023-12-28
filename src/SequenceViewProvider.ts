@@ -323,7 +323,7 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 				<title>PlantUML Tools</title>
 			</head>
 			<body>
-				<button class="add-color-button" id="startuml">startuml</button>
+				<button class="add-color-button add-color-button-line" id="startuml">startuml</button>
 				<button class="add-color-button" id="AtoB">A -> B</button>
 				<button class="add-color-button" id="BtoA">A <- B</button>
 				<button class="add-color-button" id="AdashToB">A --> B</button>

@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "2.0.5",
+	"version": "2.0.6",
 	"engines": {
 		"vscode": "^1.73.0"
 	},
@@ -186,16 +186,6 @@
 					"type": "webview",
 					"id": "ClassDiagram",
 					"name": "Class Diagram"
-				},
-				{
-					"type": "webview",
-					"id": "MindMapDiagram",
-					"name": "MindMap Diagram"
-				},
-				{
-					"type": "webview",
-					"id": "GanttDiagram",
-					"name": "Gantt Diagram"
 				}
 			]
 		},

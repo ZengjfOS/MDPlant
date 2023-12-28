@@ -34,5 +34,13 @@ body {
 }
 
 .add-color-button {
-	display: block;
+	width: 48%;
+	float: left;
+	margin: 1%;
+	height: 50px;
+	font-size: medium;
+}
+
+.add-color-button-line {
+	width: 98%;
 }
