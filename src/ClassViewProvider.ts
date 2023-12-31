@@ -59,18 +59,64 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 			"```plantuml",
 			"@startuml",
 			"",
-			"class Foo {",
-			"    + 1",
-			"    + 2",
-			"}",
-			"	",
-			"class Bar {",
-			"    + 3",
-			"    + 4",
+			"struct platform_device {",
+			"	const char	*name;",
+			"	int		id;",
+			"	bool		id_auto;",
+			"	struct device	dev;",
+			"	u64		platform_dma_mask;",
+			"	struct device_dma_parameters dma_parms;",
+			"	u32		num_resources;",
+			"	struct resource	*resource;",
+			"",
+			"	const struct platform_device_id	*id_entry;",
+			"	/*",
+			"	 * Driver name to force a match.  Do not set directly, because core",
+			"	 * frees it.  Use driver_set_override() to set or clear it.",
+			"	 */",
+			"	const char *driver_override;",
+			"",
+			"	/* MFD cell pointer */",
+			"	struct mfd_cell *mfd_cell;",
+			"",
+			"	/* arch specific additions */",
+			"	struct pdev_archdata	archdata;",
+			"};",
+			"",
+			"struct device {",
+			"	struct kobject kobj;",
+			"	struct device		*parent;",
+			"",
+			"	struct device_private	*p;",
+			"",
+			"	const char		*init_name; /* initial name of the device */",
+			"	const struct device_type *type;",
+			"",
+			"	const struct bus_type	*bus;	/* type of bus device is on */",
+			"	struct device_driver *driver;	/* which driver has allocated this",
+			"					   device */",
+			"	void		*platform_data;	/* Platform specific data, device",
+			"					   core doesn't touch it */",
+			"	void		*driver_data;	/* Driver data, set and get with",
+			"					   dev_set_drvdata/dev_get_drvdata */",
+			"	struct mutex		mutex;	/* mutex to synchronize calls to",
+			"					 * its driver.",
+			"					 */",
+			"",
+			"	struct dev_links_info	links;",
+			"	struct dev_pm_info	power;",
+			"	struct dev_pm_domain	*pm_domain;",
+			"",
+			"#ifdef CONFIG_ENERGY_MODEL",
+			"	struct em_perf_domain	*em_pd;",
+			"#endif",
+			"",
+			"#ifdef CONFIG_PINCTRL",
+			"	struct dev_pin_info	*pins;",
+			"#endif",
 			"}",
 			"",
-			"Foo::1 --> Bar::3 : foo",
-			"Foo::2 --> Bar::4",
+			"",
 			"",
 			"@enduml",
 			"```"
@@ -154,7 +200,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 		codeBlock.push(textBlock.codeBlock[0])
 		for (; i < textBlock.codeBlock.length - 1; i++) {
 			let line = textBlock.codeBlock[i]
-			console.log(line)
+			// console.log(line)
 
 			if (line.trim().length == 0)
 				continue
@@ -374,7 +420,8 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 								let linkTo = value.func(activeEditor, structBlock, status)
 								console.log(linkTo)
 
-								if ((linkTo.length != 0) && (linkTo[2] == undefined || this.linkFrom[2] == undefined || this.linkFrom[2] == linkTo[0])) {
+								// if ((linkTo.length != 0) && (linkTo[2] == undefined || this.linkFrom[2] == undefined || this.linkFrom[2] == linkTo[0])) {
+								if (linkTo.length != 0) {
 									let connectValue = this.linkFrom[0] + "::" + this.linkFrom[1] + " --> " + linkTo[0] + "::" + linkTo[1]
 
 									let line = activeEditor.selection.active.line
@@ -456,13 +503,19 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 				<title>PlantUML Tools</title>
 			</head>
 			<body>
-				<button class="add-color-button add-color-button-line" id="startStruct">start struct</button>
-				<button class="add-color-button" id="trimStruct">trim struct</button>
-				<button class="add-color-button" id="linkStruct">link struct</button>
-				<button class="add-color-button" id="linkStructProperty">link struct property</button>
-				<button class="add-color-button" id="arrowTo">A --> B</button>
-				<button class="add-color-button" id="noteLeft">note left</button>
-				<button class="add-color-button" id="noteRight">note right</button>
+				<fieldset>
+					<legend align="center">struct</legend>
+					<button class="add-color-button" id="startStruct">struct template</button>
+					<button class="add-color-button" id="trimStruct">trim struct</button>
+					<button class="add-color-button" id="linkStruct">link struct</button>
+					<button class="add-color-button" id="linkStructProperty">link struct property</button>
+				</fieldset>
+				<fieldset>
+					<legend align="center">other</legend>
+					<button class="add-color-button" id="noteLeft">note left</button>
+					<button class="add-color-button" id="noteRight">note right</button>
+					<button class="add-color-button" id="arrowTo">A --> B</button>
+				</fieldset>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>

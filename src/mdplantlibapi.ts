@@ -364,6 +364,70 @@ export function getStructBlock(editor: vscode.TextEditor, cursorChange: boolean 
     }
 }
 
+export function getClassBlock(editor: vscode.TextEditor, cursorChange: boolean = true) {
+    let codeBlock: string[] = []
+    var index               = editor.selection.active.line
+    let contentArray        = editor.document.getText().split(/\r?\n/)
+    let codeStart           = -1
+    let codeEnd             = -1
+    let regexStart          = new RegExp("(\\s*)(.+)\\s+class\\s+[^\\s]+\\s+(.+)?\{\\s*")
+    let regexEnd            = new RegExp("^(\\s*)\};?\\s*$")
+	let matchValue          = null
+    let preSpace            = null
+
+    // 从index往上扫描
+    for (let i = index; i >= 0; i--) {
+		matchValue = regexStart.exec(contentArray[i].trimRight())
+		// console.log(matchValue)
+		if (matchValue != null) {
+            codeStart = i
+            preSpace = matchValue[1]
+            break
+        }
+
+		matchValue = regexEnd.exec(contentArray[i].trimRight())
+		if (matchValue != null && matchValue[1] == "") {
+            codeStart = -1
+            preSpace = null
+            break
+        }
+    }
+
+    if (codeStart != -1) {
+        // 从index往下扫描
+        for (let i = (index); i < contentArray.length; i++) {
+            matchValue = regexEnd.exec(contentArray[i].trimRight())
+            // console.log(matchValue)
+            if (matchValue != null && preSpace == matchValue[1]) {
+                codeEnd = i
+                break
+            }
+
+            matchValue = regexStart.exec(contentArray[i].trimRight())
+            // console.log(matchValue)
+            if (matchValue != null) {
+                codeStart = -1
+                codeEnd = -1
+                preSpace = null
+                break
+            }
+        }
+
+        if (codeStart != -1 && codeEnd != -1)
+            codeBlock = contentArray.slice(codeStart, codeEnd + 1)
+    }
+
+    if (cursorChange)
+        index = codeStart
+
+    return {
+        "codeStart" : codeStart,
+        "codeEnd"   : codeEnd,
+        "codeBlock" : codeBlock,
+        "cursor"    : index
+    }
+}
+
 export function getRootPath(editor: vscode.TextEditor | undefined) {
     let output = ""
     let workspaceFolders = vscode.workspace.workspaceFolders

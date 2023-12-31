@@ -6,6 +6,20 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.7] - 2023-12-31
+
+### Added
+- 修改结构体示例
+- 添加class block获取函数，为后续处理class作准备
+- 添加UI group将同类操作分组
+
+### Changed
+- 修正属性连接的struct名限制
+
+### Fixed
+- 无
+
+
 ## [2.0.6] - 2023-12-29
 
 ### Added
