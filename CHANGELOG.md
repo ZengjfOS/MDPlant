@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.8] - 2024-1-12
+
+### Added
+- 选择的文本转成一行HTML List，便于用于Markdown Table中，用`|`或者换行做间隔
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [2.0.7] - 2023-12-31
 
 ### Added

@@ -964,6 +964,55 @@ export async function doTable(activeEditor: vscode.TextEditor)
         }
     )
 }
+export async function doSelectText(activeEditor: vscode.TextEditor)
+{
+    let selection = activeEditor.selection
+    let selectionRange = new vscode.Range(selection.start.line, selection.start.character, selection.end.line, selection.end.character);
+    let selectionText = activeEditor.document.getText(selectionRange)
+    console.log("doSelectText: " + selectionText)
+
+    if (selectionText.length > 0) {
+        if (selectionText.indexOf("</li> <li>") > 0){
+            selectionText = selectionText.replace("<ul><li>", "").replace("</li></ul>", "")
+            selectionText = selectionText.replace("</li> <li>", "\n")
+
+            activeEditor.edit(edit => {
+                edit.replace(selectionRange, selectionText)
+            }).then(value => {
+                mdplantlibapi.cursor(activeEditor, selection.active.line)
+            })
+        } else {
+            selectionText = selectionText.replace(/\r?\n/g, "|").replace(/ ?\| ?/g, "|")
+            let datas = selectionText.split("|")
+            console.log("splited datas: " + datas)
+
+            if (selectionText.indexOf("|") > 0){
+                let listString = "<ul>"
+
+                for (let i = 0; i < datas.length; i++) {
+                    if (i == 0) {
+                        listString += "<li>" + datas[i] + "</li>"
+                    } else {
+                        listString += " <li>" + datas[i] + "</li>"
+                    }
+                }
+
+                listString += "</ul>"
+                // console.log(listString)
+
+                activeEditor.edit(edit => {
+                    edit.replace(selectionRange, listString)
+                }).then(value => {
+                    mdplantlibapi.cursor(activeEditor, selection.active.line)
+                })
+            }
+        }
+
+        return true
+    } else {
+        return false
+    }
+}
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -1039,6 +1088,10 @@ export function activate(context: vscode.ExtensionContext) {
         // just use the keybindings do more
         const activeEditor = vscode.window.activeTextEditor
         if (activeEditor != undefined) {
+
+            if (await doSelectText(activeEditor)) {
+                return
+            }
 
             var line = activeEditor.selection.active.line
             let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
