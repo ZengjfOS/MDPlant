@@ -981,6 +981,12 @@ export async function doSelectText(activeEditor: vscode.TextEditor)
             }).then(value => {
                 mdplantlibapi.cursor(activeEditor, selection.active.line)
             })
+        }else if (selectionText.startsWith("**") && selectionText.endsWith("**")){
+            activeEditor.edit(edit => {
+                edit.replace(selectionRange, selectionText.replace(/^\*\*/g, "").replace(/\*\*$/g, ""))
+            }).then(value => {
+                mdplantlibapi.cursor(activeEditor, selection.active.line)
+            })
         } else {
             selectionText = selectionText.replace(/\r?\n/g, "|").replace(/ ?\| ?/g, "|")
             let datas = selectionText.split("|")
@@ -1002,6 +1008,12 @@ export async function doSelectText(activeEditor: vscode.TextEditor)
 
                 activeEditor.edit(edit => {
                     edit.replace(selectionRange, listString)
+                }).then(value => {
+                    mdplantlibapi.cursor(activeEditor, selection.active.line)
+                })
+            } else {
+                activeEditor.edit(edit => {
+                    edit.replace(selectionRange, "**" + selectionText + "**")
                 }).then(value => {
                     mdplantlibapi.cursor(activeEditor, selection.active.line)
                 })

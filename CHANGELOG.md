@@ -6,6 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.9] - 2024-1-17
+
+### Added
+- 选择的文本转成粗体
+- macOS也支持ctrl+enter快捷键
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [2.0.8] - 2024-1-12
 
 ### Added
