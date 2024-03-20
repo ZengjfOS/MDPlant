@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as mdplantlibapi from "./mdplantlibapi"
+import * as path from 'path'
 
 export class ClassViewProvider implements vscode.WebviewViewProvider {
 
@@ -46,6 +47,16 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 				edit.replace(range, textBlock.codeBlock.join("\n"))
 		}).then(value => {
 			mdplantlibapi.cursor(activeEditor, textBlock.cursor)
+		})
+	}
+
+	public appendContent(activeEditor: vscode.TextEditor, line: any) {
+		console.log("appendContent")
+		activeEditor.edit(edit => {
+			let range = new vscode.Range(activeEditor.document.lineAt(activeEditor.document.lineCount - 1).range.end, activeEditor.document.lineAt(activeEditor.document.lineCount - 1).range.end)
+
+			if (line.length > 0)
+				edit.replace(range, line + "\n")
 		})
 	}
 
@@ -359,6 +370,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 
 		const activeEditor = vscode.window.activeTextEditor
 		if (activeEditor) {
+			let fileExt = path.extname(activeEditor.document.fileName)
 			for (const [key, value] of Object.entries(idsMaps)) {
 				if (key == id) {
 					if (value.type == "line") {
@@ -391,10 +403,14 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 
 							let connectValue = value.func(activeEditor, structBlock)
 							if (connectValue.length > 0) {
-								let line = activeEditor.selection.active.line
-								let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
-								textBlock.codeBlock.splice((textBlock.codeBlock.length - 2), 0, connectValue)
-								this.updateCodeBlockContent(activeEditor, textBlock)
+								if (fileExt == ".plantuml" || fileExt == ".puml") {
+									this.appendContent(activeEditor, connectValue)
+								} else {
+									let line = activeEditor.selection.active.line
+									let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
+									textBlock.codeBlock.splice((textBlock.codeBlock.length - 2), 0, connectValue)
+									this.updateCodeBlockContent(activeEditor, textBlock)
+								}
 							}
 
 							return
@@ -424,10 +440,14 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 								if (linkTo.length != 0) {
 									let connectValue = this.linkFrom[0] + "::" + this.linkFrom[1] + " --> " + linkTo[0] + "::" + linkTo[1]
 
-									let line = activeEditor.selection.active.line
-									let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
-									textBlock.codeBlock.splice((textBlock.codeBlock.length - 2), 0, connectValue)
-									this.updateCodeBlockContent(activeEditor, textBlock)
+									if (fileExt == ".plantuml" || fileExt == ".puml") {
+										this.appendContent(activeEditor, connectValue)
+									} else {
+										let line = activeEditor.selection.active.line
+										let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, true)
+										textBlock.codeBlock.splice((textBlock.codeBlock.length - 2), 0, connectValue)
+										this.updateCodeBlockContent(activeEditor, textBlock)
+									}
 								}
 							}
 
@@ -509,6 +529,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 					<button class="add-color-button" id="trimStruct">trim struct</button>
 					<button class="add-color-button" id="linkStruct">link struct</button>
 					<button class="add-color-button" id="linkStructProperty">link struct property</button>
+					<button class="add-color-button" id="linkStructPropertyCancel">cancel link</button>
 				</fieldset>
 				<fieldset>
 					<legend align="center">other</legend>

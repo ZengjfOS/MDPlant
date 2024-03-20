@@ -7,6 +7,7 @@
 
 	let linkPropStatus = 0
 	let linkPropStatusId = "linkStructProperty"
+	let linkPropCancelId = "linkStructPropertyCancel"
 	let linkPropStatus0Str = "link struct property"
 	let linkPropStatus1Str = "property link to"
 
@@ -17,6 +18,11 @@
 			// console.log(e.srcElement.innerText)
 			// console.log(e.srcElement.id)
 			if (e.srcElement.id != linkPropStatusId) {
+				document.getElementById(linkPropStatusId).innerText = linkPropStatus0Str
+				linkPropStatus = 0
+			}
+
+			if (e.srcElement.id == linkPropCancelId) {
 				document.getElementById(linkPropStatusId).innerText = linkPropStatus0Str
 				linkPropStatus = 0
 			}

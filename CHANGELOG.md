@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.10] - 2024-3-20
+
+### Added
+- 支持plantuml文件使用class diagram
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [2.0.9] - 2024-1-17
 
 ### Added
