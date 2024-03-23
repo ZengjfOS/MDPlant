@@ -213,6 +213,14 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 			let line = textBlock.codeBlock[i]
 			// console.log(line)
 
+			let regexPrefix = new RegExp("^(\\s*).*")
+			let matchValue = regexPrefix.exec(line.trimRight())
+			// console.log(matchValue)
+			let linePrefixSpace = ""
+			if (matchValue != null) {
+				linePrefixSpace = matchValue[1]
+			}
+
 			if (line.trim().length == 0)
 				continue
 
@@ -230,7 +238,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 			if (line.indexOf("//") != -1) {
 				let data = line.split("//")[0].trim()
 				if (data.length > 0)
-					codeBlock.push("    " + data.replace(/\s+/g, " "))
+					codeBlock.push(linePrefixSpace + data.replace(/\s+/g, " "))
 
 				continue
 			}
@@ -238,7 +246,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 			if ((line.indexOf("/*") != -1) && (line.indexOf("*/") != -1)) {
 				let data = line.split("/*")[0].trim()
 				if (data.length > 0)
-					codeBlock.push("    " + data.replace(/\s+/g, " "))
+					codeBlock.push(linePrefixSpace + data.replace(/\s+/g, " "))
 
 				continue
 			}
@@ -264,7 +272,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 			}
 			if (funcBlock && line.trimRight().substr(-2) == ");") {
 				funcBlocks.push(line)
-				codeBlock.push("    " + funcBlocks.join(" ").trim().replace(/\s+/g, " "))
+				codeBlock.push(linePrefixSpace + funcBlocks.join(" ").trim().replace(/\s+/g, " "))
 
 				funcBlock = false
 				funcBlocks = []
@@ -275,8 +283,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 				continue
 			}
 
-			codeBlock.push("    " + line.trim().replace(/\s+/g, " "))
-
+			codeBlock.push(linePrefixSpace + line.trim().replace(/\s+/g, " "))
 		}
 
 		codeBlock.push(textBlock.codeBlock[i].split(";")[0].trimRight())

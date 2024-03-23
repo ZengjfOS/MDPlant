@@ -310,9 +310,9 @@ export function getStructBlock(editor: vscode.TextEditor, cursorChange: boolean 
     let contentArray        = editor.document.getText().split(/\r?\n/)
     let codeStart           = -1
     let codeEnd             = -1
-    let regexStart          = new RegExp("(\\s*)(struct|class)\\s+[^\\s]+\\s+\{\\s*")
-    let regexEnd            = new RegExp("(\\s*)\};?\\s*")
-	let matchValue          = null
+    let regexStart          = new RegExp("^(struct|class)\\s+[^\\s]+\\s+\{\\s*")
+    let regexEnd            = new RegExp("^\};?\\s*")
+    let matchValue          = null
 
     // 从index往上扫描
     for (let i = index; i >= 0; i--) {

@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.11] - 2024-3-23
+
+### Added
+- 无
+
+### Changed
+- 保持trim缩进的字符，而不是替换为空格
+
+### Fixed
+- 检查结构体移除缩进检查，防止出现结构体套结构体导致trim功能失败
+
 ## [2.0.10] - 2024-3-20
 
 ### Added
