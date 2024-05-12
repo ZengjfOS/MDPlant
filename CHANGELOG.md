@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.12] - 2024-5-12
+
+### Added
+- 支持快捷键将行内代码转为终端命令，支持`adb shell`添加前缀
+- 状态栏提供`cmd prefix`查看当前命令前缀，目前只有`None`、`adb shell`两种
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [2.0.11] - 2024-3-23
 
 ### Added

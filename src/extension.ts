@@ -12,6 +12,8 @@ import * as WelcomPageVP from "./WelcomePageProvider"
 import * as ClassVP from "./ClassViewProvider"
 import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
+let adbPrefixFlag = false
+let terminalStatusBarItem: vscode.StatusBarItem;
 
 export function doPlantumlLineShortcut(activeEditor: vscode.TextEditor, lineText:string = "")
 {
@@ -1026,6 +1028,51 @@ export async function doSelectText(activeEditor: vscode.TextEditor)
     }
 }
 
+export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal: vscode.Terminal) {
+    // console.log(activeTerminal.name)
+    logger.info("doTerminal")
+
+    var line = activeEditor.selection.active.line
+    let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+    let rawText = activeEditor.document.getText(range).trim()
+    let inLineCodeRE = new RegExp("\\`(.*)\\`", "g")
+    let adbPrefix = "adb shell "
+    let cmd = ""
+
+    let matchValue = inLineCodeRE.exec(rawText)
+    // logger.info(matchValue)
+    if (matchValue) {
+        if (matchValue[1].trim() == "adb shell") {
+            adbPrefixFlag = !adbPrefixFlag
+            logger.info("adb prefix flag: " + adbPrefixFlag)
+
+            if (adbPrefixFlag)
+                updateStatusBarItem("adb shell")
+            else
+                updateStatusBarItem("None")
+
+            return true
+        }
+
+        if (adbPrefixFlag)
+            cmd = adbPrefix + matchValue[1]
+        else
+            cmd = matchValue[1]
+
+        logger.info(cmd)
+        activeTerminal.sendText(cmd, true)
+
+        return true
+    }
+
+    return false
+}
+
+function updateStatusBarItem(mode: string): void {
+    terminalStatusBarItem.text = "cmd prefix: " + mode;
+    terminalStatusBarItem.show();
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -1099,6 +1146,13 @@ export function activate(context: vscode.ExtensionContext) {
 
         // just use the keybindings do more
         const activeEditor = vscode.window.activeTextEditor
+        const activeTerminal = vscode.window.activeTerminal
+
+        if (activeEditor != undefined && activeTerminal != undefined) {
+            if (await doTerminal(activeEditor, activeTerminal))
+                return
+        }
+
         if (activeEditor != undefined) {
 
             if (await doSelectText(activeEditor)) {
@@ -1319,6 +1373,17 @@ export function activate(context: vscode.ExtensionContext) {
 
     const classProvider = new ClassVP.ClassViewProvider(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(ClassVP.ClassViewProvider.viewType, classProvider));
+
+    // create a new status bar item that we can now manage
+    const mdTerminal = 'extension.mdterminal';
+    terminalStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    terminalStatusBarItem.command = mdTerminal;
+    context.subscriptions.push(terminalStatusBarItem);
+    updateStatusBarItem("None")
+
+    context.subscriptions.push(vscode.commands.registerCommand(mdTerminal, () => {
+		vscode.window.showInformationMessage("None、adb shell");
+	}));
 }
 
 // this method is called when your extension is deactivated
