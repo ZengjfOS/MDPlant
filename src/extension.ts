@@ -1028,13 +1028,26 @@ export async function doSelectText(activeEditor: vscode.TextEditor)
     }
 }
 
-export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal: vscode.Terminal) {
+export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal: vscode.Terminal, statusBar = "") {
     // console.log(activeTerminal.name)
     logger.info("doTerminal")
 
-    var line = activeEditor.selection.active.line
-    let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-    let rawText = activeEditor.document.getText(range).trim()
+    if (statusBar == "none") {
+        adbPrefixFlag = false
+        updateStatusBarItem("none")
+
+        return
+    }
+
+    let rawText = ""
+    if (statusBar.length == 0) {
+        var line = activeEditor.selection.active.line
+        let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+        rawText = activeEditor.document.getText(range).trim()
+    } else {
+        rawText = "`" + statusBar + "`"
+    }
+
     let inLineCodeRE = new RegExp("\\`(.*)\\`", "g")
     let adbPrefix = "adb shell "
     let cmd = ""
@@ -1049,7 +1062,7 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
             if (adbPrefixFlag)
                 updateStatusBarItem("adb shell")
             else
-                updateStatusBarItem("None")
+                updateStatusBarItem("none")
 
             return true
         }
@@ -1379,10 +1392,19 @@ export function activate(context: vscode.ExtensionContext) {
     terminalStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     terminalStatusBarItem.command = mdTerminal;
     context.subscriptions.push(terminalStatusBarItem);
-    updateStatusBarItem("None")
+    updateStatusBarItem("none")
 
-    context.subscriptions.push(vscode.commands.registerCommand(mdTerminal, () => {
-		vscode.window.showInformationMessage("None、adb shell");
+    context.subscriptions.push(vscode.commands.registerCommand(mdTerminal, async () => {
+        const result = await vscode.window.showQuickPick(['none', 'adb shell'], {
+            placeHolder: 'none, adb shell',
+        });
+
+        const activeEditor = vscode.window.activeTextEditor
+        const activeTerminal = vscode.window.activeTerminal
+
+        if (activeEditor != undefined && activeTerminal != undefined) {
+            await doTerminal(activeEditor, activeTerminal, result)
+        }
 	}));
 }
 

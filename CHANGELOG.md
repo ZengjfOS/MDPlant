@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.13] - 2024-5-13
+
+### Added
+- 点击状态栏选项后通过快速选择选择命令前缀
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [2.0.12] - 2024-5-12
 
 ### Added
