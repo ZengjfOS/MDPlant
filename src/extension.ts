@@ -1399,11 +1399,13 @@ export function activate(context: vscode.ExtensionContext) {
             placeHolder: 'none, adb shell',
         });
 
-        const activeEditor = vscode.window.activeTextEditor
-        const activeTerminal = vscode.window.activeTerminal
+        if (result != undefined && result.length != 0) {
+            const activeEditor = vscode.window.activeTextEditor
+            const activeTerminal = vscode.window.activeTerminal
 
-        if (activeEditor != undefined && activeTerminal != undefined) {
-            await doTerminal(activeEditor, activeTerminal, result)
+            if (activeEditor != undefined && activeTerminal != undefined) {
+                await doTerminal(activeEditor, activeTerminal, result)
+            }
         }
 	}));
 }

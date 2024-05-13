@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.14] - 2024-5-14
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复esc不选择导致的错误执行
+
 ## [2.0.13] - 2024-5-13
 
 ### Added
