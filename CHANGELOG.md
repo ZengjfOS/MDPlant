@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.16] - 2024-5-14
+
+### Added
+- terminal命令支持相对路径补全
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [2.0.15] - 2024-5-14
 
 ### Added

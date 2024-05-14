@@ -1047,6 +1047,10 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
         else
             cmd = matchValue[1]
 
+        if (cmd.includes(" refers/")) {
+            cmd = cmd.replace(" refers/", " " + mdplantlibapi.getRelativeDir(activeEditor) + "/" + "refers/")
+        }
+
         logger.info(cmd)
         activeTerminal.sendText(cmd, true)
 
