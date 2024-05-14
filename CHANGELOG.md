@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.15] - 2024-5-14
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 优化`adb shell`前缀逻辑，避免和`adb shell`命令冲突
+
 ## [2.0.14] - 2024-5-14
 
 ### Added

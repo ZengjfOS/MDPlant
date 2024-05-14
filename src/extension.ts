@@ -12,7 +12,8 @@ import * as WelcomPageVP from "./WelcomePageProvider"
 import * as ClassVP from "./ClassViewProvider"
 import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
-let adbPrefixFlag = false
+let terminalPrefixs = ["none", "adb shell"]
+let terminalPrefix = "none"
 let terminalStatusBarItem: vscode.StatusBarItem;
 
 export function doPlantumlLineShortcut(activeEditor: vscode.TextEditor, lineText:string = "")
@@ -1028,47 +1029,21 @@ export async function doSelectText(activeEditor: vscode.TextEditor)
     }
 }
 
-export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal: vscode.Terminal, statusBar = "") {
+export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal: vscode.Terminal) {
     // console.log(activeTerminal.name)
     logger.info("doTerminal")
 
-    if (statusBar == "none") {
-        adbPrefixFlag = false
-        updateStatusBarItem("none")
-
-        return
-    }
-
-    let rawText = ""
-    if (statusBar.length == 0) {
-        var line = activeEditor.selection.active.line
-        let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-        rawText = activeEditor.document.getText(range).trim()
-    } else {
-        rawText = "`" + statusBar + "`"
-    }
-
+    var line = activeEditor.selection.active.line
+    let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
+    let rawText = activeEditor.document.getText(range).trim()
     let inLineCodeRE = new RegExp("\\`(.*)\\`", "g")
-    let adbPrefix = "adb shell "
     let cmd = ""
 
     let matchValue = inLineCodeRE.exec(rawText)
     // logger.info(matchValue)
     if (matchValue) {
-        if (matchValue[1].trim() == "adb shell") {
-            adbPrefixFlag = !adbPrefixFlag
-            logger.info("adb prefix flag: " + adbPrefixFlag)
-
-            if (adbPrefixFlag)
-                updateStatusBarItem("adb shell")
-            else
-                updateStatusBarItem("none")
-
-            return true
-        }
-
-        if (adbPrefixFlag)
-            cmd = adbPrefix + matchValue[1]
+        if (terminalPrefix != "none")
+            cmd = terminalPrefix + " " + matchValue[1]
         else
             cmd = matchValue[1]
 
@@ -1395,17 +1370,10 @@ export function activate(context: vscode.ExtensionContext) {
     updateStatusBarItem("none")
 
     context.subscriptions.push(vscode.commands.registerCommand(mdTerminal, async () => {
-        const result = await vscode.window.showQuickPick(['none', 'adb shell'], {
-            placeHolder: 'none, adb shell',
-        });
-
+        const result = await vscode.window.showQuickPick(terminalPrefixs);
         if (result != undefined && result.length != 0) {
-            const activeEditor = vscode.window.activeTextEditor
-            const activeTerminal = vscode.window.activeTerminal
-
-            if (activeEditor != undefined && activeTerminal != undefined) {
-                await doTerminal(activeEditor, activeTerminal, result)
-            }
+            terminalPrefix = result
+            updateStatusBarItem(terminalPrefix)
         }
 	}));
 }
