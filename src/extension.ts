@@ -186,9 +186,11 @@ export function doList(activeEditor: vscode.TextEditor, clipboardContent = "")
         if (lineText.trim().startsWith(currentFileDir)) {
             lineText = lineText.replace(currentFileDir + "/", "")
         } else {
-            if (fs.existsSync(mdplantlibapi.getWorkspaceFolder(activeEditor) + "/" + lineText)) {
-                if (!lineText.startsWith("/"))
-                    lineText = "/" + lineText
+            if (fs.existsSync(mdplantlibapi.getWorkspaceFolder(activeEditor) + "/" + lineText.trim())) {
+                if (!lineText.trim().startsWith("/")) {
+                    let spaceString = lineText.match(/^\s*/)
+                    lineText = spaceString + "/" + lineText.trim()
+                }
             }
         }
 
@@ -1037,11 +1039,46 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
     let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
     let rawText = activeEditor.document.getText(range).trim()
     let inLineCodeRE = new RegExp("\\`(.*)\\`", "g")
+    let pathRE = new RegExp(/.*(\\\d{4}_).*/, "g")
     let cmd = ""
+    let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
 
     let matchValue = inLineCodeRE.exec(rawText)
     // logger.info(matchValue)
     if (matchValue) {
+
+        if (matchValue[1].replace(/\\/g, "/").includes(currentFileDir)) {
+            let output = rawText.replace(/\\/g, "/")
+            let outputList = output.split(" ")
+
+            for (let i = 0; i < outputList.length; i++) {
+                if (outputList[i].includes(currentFileDir))
+                    outputList[i] = outputList[i].split(currentFileDir + "/").join("")
+            }
+
+            output = outputList.join(" ")
+            logger.info("relative cmd: " + output)
+
+            activeEditor.edit(edit => {
+                edit.replace(range, output)
+            })
+
+            return true
+        }
+
+        let matchValuePath = pathRE.exec(rawText)
+        // logger.info(matchValuePath)
+        if (matchValuePath) {
+            let output = rawText.replace(/\\/g, "/")
+            logger.info("path to linux: " + output)
+
+            activeEditor.edit(edit => {
+                edit.replace(range, output)
+            })
+
+            return true
+        }
+
         if (terminalPrefix != "none")
             cmd = terminalPrefix + " " + matchValue[1]
         else
@@ -1049,7 +1086,7 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
 
         if (cmd.includes(" refers/")) {
             // cmd = cmd.replace(" refers/", " " + mdplantlibapi.getRelativeDir(activeEditor) + "/" + "refers/")
-            cmd = cmd.replace(/ refers\//g, " " + mdplantlibapi.getRelativeDir(activeEditor) + "/" + "refers/")
+            cmd = cmd.replace(/ refers\//g, " " + currentFileDir + "/refers/")
         }
 
         logger.info(cmd)
