@@ -1042,16 +1042,24 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
     let pathRE = new RegExp(/.*(\\\d{4}_).*/, "g")
     let cmd = ""
     let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
+    let rootPath = mdplantlibapi.getRootPath(activeEditor).replace(/\\/g, "/")
+    let rootPathUp = rootPath[0].toUpperCase() + rootPath.substring(1)
 
     let matchValue = inLineCodeRE.exec(rawText)
     // logger.info(matchValue)
     if (matchValue) {
-
-        if (matchValue[1].replace(/\\/g, "/").includes(currentFileDir)) {
+        let cmdData = matchValue[1].replace(/\\/g, "/")
+        if (cmdData.includes(currentFileDir) || cmdData.includes(rootPath) || cmdData.includes(rootPathUp)) {
             let output = rawText.replace(/\\/g, "/")
             let outputList = output.split(" ")
 
             for (let i = 0; i < outputList.length; i++) {
+                if (outputList[i].includes(rootPath))
+                    outputList[i] = outputList[i].split(rootPath + "/").join("")
+
+                if (outputList[i].includes(rootPathUp))
+                    outputList[i] = outputList[i].split(rootPathUp + "/").join("")
+
                 if (outputList[i].includes(currentFileDir))
                     outputList[i] = outputList[i].split(currentFileDir + "/").join("")
             }
