@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.17] - 2024-5-27
+
+### Added
+- terminal命令支持路径裁剪
+
+### Changed
+- 无
+
+### Fixed
+- 修复缩进导致相对路径失效
+
+
 ## [2.0.16] - 2024-5-14
 
 ### Added
