@@ -1037,7 +1037,7 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
 
     var line = activeEditor.selection.active.line
     let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
-    let rawText = activeEditor.document.getText(range).trim()
+    let rawText = activeEditor.document.getText(range)
     let inLineCodeRE = new RegExp("\\`(.*)\\`", "g")
     let pathRE = new RegExp(/.*(\\\d{4}_).*/, "g")
     let cmd = ""
@@ -1095,6 +1095,10 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
         if (cmd.includes(" refers/")) {
             // cmd = cmd.replace(" refers/", " " + mdplantlibapi.getRelativeDir(activeEditor) + "/" + "refers/")
             cmd = cmd.replace(/ refers\//g, " " + currentFileDir + "/refers/")
+        } else if (cmd.startsWith("refers/")) {
+            cmd = cmd.replace(/refers\//g, currentFileDir + "/refers/")
+        } else if (cmd.startsWith("/")) {
+            cmd = cmd.substring(1)
         }
 
         logger.info(cmd)

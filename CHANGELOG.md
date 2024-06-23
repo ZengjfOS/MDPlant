@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.18] - 2024-6-24
+
+### Added
+- terminal命令支持相对路径shell文件执行
+
+### Changed
+- 无
+
+### Fixed
+- terminal相对路径处理保持缩进
+
+
 ## [2.0.17] - 2024-5-27
 
 ### Added
