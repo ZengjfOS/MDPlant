@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.19] - 2024-7-3
+
+### Added
+- 格式化文件索引时替换点号为下划线
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
 ## [2.0.18] - 2024-6-24
 
 ### Added
