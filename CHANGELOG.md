@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.20] - 2024-7-8
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 替换文件路径反斜杠避免参数反斜杠被替换
+
+
 ## [2.0.19] - 2024-7-3
 
 ### Added

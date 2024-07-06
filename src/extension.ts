@@ -1050,21 +1050,20 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
     if (matchValue) {
         let cmdData = matchValue[1].replace(/\\/g, "/")
         if (cmdData.includes(currentFileDir) || cmdData.includes(rootPath) || cmdData.includes(rootPathUp)) {
-            let output = rawText.replace(/\\/g, "/")
-            let outputList = output.split(" ")
-
+            let outputList = rawText.split(" ")
             for (let i = 0; i < outputList.length; i++) {
-                if (outputList[i].includes(rootPath))
-                    outputList[i] = outputList[i].split(rootPath + "/").join("")
+                let currentData = outputList[i].replace(/\\/g, "/")
+                if (currentData.includes(rootPath))
+                    outputList[i] = currentData.split(rootPath + "/").join("")
 
-                if (outputList[i].includes(rootPathUp))
-                    outputList[i] = outputList[i].split(rootPathUp + "/").join("")
+                if (currentData.includes(rootPathUp))
+                    outputList[i] = currentData.split(rootPathUp + "/").join("")
 
-                if (outputList[i].includes(currentFileDir))
-                    outputList[i] = outputList[i].split(currentFileDir + "/").join("")
+                if (currentData.includes(currentFileDir))
+                    outputList[i] = currentData.split(currentFileDir + "/").join("")
             }
 
-            output = outputList.join(" ")
+            let output = outputList.join(" ")
             logger.info("relative cmd: " + output)
 
             activeEditor.edit(edit => {
@@ -1077,7 +1076,13 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
         let matchValuePath = pathRE.exec(rawText)
         // logger.info(matchValuePath)
         if (matchValuePath) {
-            let output = rawText.replace(/\\/g, "/")
+            let outputList = rawText.split(" ")
+            for (let i = 0; i < outputList.length; i++) {
+                if (outputList[i].includes("refers/"))
+                    outputList[i] = outputList[i].replace(/\\/g, "/")
+            }
+
+            let output = outputList.join(" ")
             logger.info("path to linux: " + output)
 
             activeEditor.edit(edit => {
