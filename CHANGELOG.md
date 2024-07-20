@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.21] - 2024-7-20
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- menu多次执行导致行紊乱
+
+
 ## [2.0.20] - 2024-7-8
 
 ### Added

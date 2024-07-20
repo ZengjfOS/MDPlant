@@ -243,6 +243,7 @@ export function doMenu(activeEditor: vscode.TextEditor)
     let textBlock = mdplantlibapi.getTextBlock(activeEditor, line)
     let startLine = textBlock.start
     let endLine = textBlock.end
+    let curseLine = startLine
 
     activeEditor.edit(edit => {
         let range = new vscode.Range(activeEditor.document.lineAt(startLine).range.start, activeEditor.document.lineAt(endLine).range.end)
@@ -252,11 +253,17 @@ export function doMenu(activeEditor: vscode.TextEditor)
             let docs = activeEditor.document.getText().split(/\r?\n/)
             let menus:string[] = mdplantlibapi.doMenu(docs)
 
+            if (startLine != endLine) {
+                menus = ([""].concat(menus))
+                menus.push("")
+
+                curseLine += 1
+            }
             edit.insert(new vscode.Position(startLine, 0), menus.join("\n"))
 
             logger.info("doMenu:  start: " + startLine + ", end: " + endLine)
         }).then( value => {
-            mdplantlibapi.cursor(activeEditor, startLine)
+            mdplantlibapi.cursor(activeEditor, curseLine)
         })
     })
 }
