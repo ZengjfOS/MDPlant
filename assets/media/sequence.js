@@ -16,9 +16,11 @@
 	 * "noteRight"
 	 * "noteBlock"
 	 */
+	/*
 	let ids = [
 		"startuml",
 		"AtoB",
+		"AtoBPlus",
 		"BtoA",
 		"AdashToB",
 		"AtoBAndDashToA",
@@ -33,6 +35,14 @@
 			// console.log(e.srcElement)
 			// console.log(e.srcElement.innerText)
 			// console.log(e.srcElement.id)
+			vscode.postMessage({ type: 'functionSelected', value: e.srcElement.id });
+		});
+	}
+	*/
+
+	buttons = document.getElementsByClassName("add-color-button")
+	for (i = 0; i < buttons.length; i++) {
+		buttons[i].addEventListener('click', (e) => {
 			vscode.postMessage({ type: 'functionSelected', value: e.srcElement.id });
 		});
 	}

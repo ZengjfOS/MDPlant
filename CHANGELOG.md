@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.22] - 2024-8-24
+
+### Added
+- 支持sequence更多功能及完善
+
+### Changed
+- 无
+
+### Fixed
+- 修复http文件名导致的list功能异常
+
+
 ## [2.0.21] - 2024-7-20
 
 ### Added
