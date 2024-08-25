@@ -151,8 +151,8 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 		return output
 	}
 
-	public doAdashToB(activeEditor: vscode.TextEditor, line: string) {
-		console.log("doAdashToB")
+	public doBDashToA(activeEditor: vscode.TextEditor, line: string) {
+		console.log("doBDashToA")
 
 		let output: string[] = []
 
@@ -162,14 +162,14 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 			// console.log(matchValue)
 			if (matchValue != null) {
 				// output.push("A --> B: text")
-				output.push(matchValue[1] + matchValue[2] + " --> " + matchValue[3] + ": " + matchValue[4])
+				output.push(matchValue[1] + matchValue[2] + " <-- " + matchValue[3] + ": " + matchValue[4])
 			} else {
 				regex = new RegExp("(\\s*)([^\\s]+)\\s+(.*)")
 				matchValue = regex.exec(line.trimRight())
 				// console.log(matchValue)
 				if (matchValue != null) {
 					// output.push("A --> B: text")
-					output.push(matchValue[1] + matchValue[2] + " --> " + matchValue[2] + ": " + matchValue[3])
+					output.push(matchValue[1] + matchValue[2] + " <-- " + matchValue[2] + ": " + matchValue[3])
 				}
 			}
 		}
@@ -279,7 +279,7 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 			'AtoB': this.doAtoB,
 			'AtoBPlus': this.doAtoBPlus,
 			'BtoA': this.doBtoA,
-			'AdashToB': this.doAdashToB,
+			'BdashToA': this.doBDashToA,
 			'AtoBAndDashToA': this.doAtoBAndDashToA,
 			'altWithAtoB': this.doAltWithAtoB,
 			'loopWithAtoB': this.doLoopWithAtoB,
@@ -368,9 +368,9 @@ export class SequenceViewProvider implements vscode.WebviewViewProvider {
 					<legend align="center">sequence</legend>
 					<button class="add-color-button add-color-button-line" id="startuml">sequence template</button>
 					<button class="add-color-button" id="AtoB">A -> B</button>
-					<button class="add-color-button" id="AtoBPlus">A ->+ B</button>
 					<button class="add-color-button" id="BtoA">A <- B</button>
-					<button class="add-color-button" id="AdashToB">A --> B</button>
+					<button class="add-color-button" id="AtoBPlus">A ->+ B</button>
+					<button class="add-color-button" id="BdashToA">A <-- B</button>
 					<button class="add-color-button" id="AtoBAndDashToA">A -> B --> A</button>
 					<!--
 					<button class="add-color-button" id="altWithAtoB">alt A -> B</button>

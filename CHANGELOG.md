@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.23] - 2024-8-25
+
+### Added
+- 无
+
+### Changed
+- 调整sequence工具顺序
+
+### Fixed
+- 无
+
+
 ## [2.0.22] - 2024-8-24
 
 ### Added
