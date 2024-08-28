@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.24] - 2024-8-28
+
+### Added
+- 无
+
+### Changed
+- 优化plantuml功能描述
+- 添加mindmap
+
+### Fixed
+- 无
+
 ## [2.0.23] - 2024-8-25
 
 ### Added

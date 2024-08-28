@@ -69,8 +69,8 @@ export class WelcomePageProvider implements vscode.WebviewViewProvider {
 					<ul>
 						<li><a href="https://plantuml.com/zh/sequence-diagram">序列图(Sequence Diagram)</a></li>
 						<!-- <li><a href="https://plantuml.com/zh/gantt-diagram">甘特图(Gantt Chart)</a></li> -->
-						<!-- <li><a href="https://plantuml.com/zh/mindmap-diagram">MindMap 图表</a></li> -->
-						<li><a href="https://plantuml.com/zh/class-diagram">类图</a></li>
+						<li><a href="https://plantuml.com/zh/mindmap-diagram">思维导图(MindMap Diagram)</a></li>
+						<li><a href="https://plantuml.com/zh/class-diagram">类图(Class Diagram)</a></li>
 					</ul>
 				</div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>

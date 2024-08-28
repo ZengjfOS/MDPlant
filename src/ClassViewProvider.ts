@@ -532,7 +532,7 @@ export class ClassViewProvider implements vscode.WebviewViewProvider {
 			<body>
 				<fieldset>
 					<legend align="center">struct</legend>
-					<button class="add-color-button" id="startStruct">struct template</button>
+					<button class="add-color-button add-color-button-line" id="startStruct">struct template</button>
 					<button class="add-color-button" id="trimStruct">trim struct</button>
 					<button class="add-color-button" id="linkStruct">link struct</button>
 					<button class="add-color-button" id="linkStructProperty">link struct property</button>
