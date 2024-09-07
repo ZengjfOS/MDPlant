@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.25] - 2024-9-7
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复index功能无空行问题
+
 ## [2.0.24] - 2024-8-28
 
 ### Added

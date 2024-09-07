@@ -855,6 +855,9 @@ export async function doIndex(activeEditor: vscode.TextEditor)
                     activeEditor.edit(edit => {
                         let outputString = mdplantlibapi.generateIndexTable(mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir, msg, "")
 
+                        if (startLine != endLine)
+                            outputString = "\n" + outputString + "\n"
+
                         edit.insert(new vscode.Position(startLine, 0), outputString)
                     }).then(value => {
                         mdplantlibapi.cursor(activeEditor, startLine)
