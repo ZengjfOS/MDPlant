@@ -223,6 +223,11 @@
 					"type": "string",
 					"default": "png",
 					"description": "paste image suffix"
+				},
+				"MDPlant.terminal.type": {
+					"type": "string",
+					"default": "none",
+					"description": "cmd with split terminal"
 				}
 			}
 		}
@@ -254,6 +259,6 @@
 		"url": "https://github.com/ZengjfOS/MDPlant"
 	},
 	"dependencies": {
-		"mdplantlib": "^0.1.23"
+		"mdplantlib": "file:../MDPlantLib"
 	}
 }

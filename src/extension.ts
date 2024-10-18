@@ -12,8 +12,8 @@ import * as WelcomPageVP from "./WelcomePageProvider"
 import * as ClassVP from "./ClassViewProvider"
 import { getLastDocInfo } from 'mdplantlib/lib/project'
 const logger = new mdplantlibapi.Loggger("mdplant", true)
-let terminalPrefixs = ["none", "adb shell"]
-let terminalPrefix = "none"
+let terminalTypes = ["none", "split"]
+let terminalType = "none"
 let terminalStatusBarItem: vscode.StatusBarItem;
 
 export function doPlantumlLineShortcut(activeEditor: vscode.TextEditor, lineText:string = "")
@@ -1043,7 +1043,37 @@ export async function doSelectText(activeEditor: vscode.TextEditor)
 
 export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal: vscode.Terminal) {
     // console.log(activeTerminal.name)
-    logger.info("doTerminal")
+    logger.info("doTerminal: " + terminalType)
+
+    var workTerminal = undefined
+    var outTerminal = undefined
+    if (terminalType == "split") {
+        for(const t of vscode.window.terminals) {
+            if (t.name == "MDPlant") {
+                logger.info("found terminal: " + t.name)
+                workTerminal = t
+            }
+
+            if (t.name == "MDPlantOut") {
+                logger.info("found terminal: " + t.name)
+                outTerminal = t
+            }
+        }
+
+        if (workTerminal == undefined) {
+            workTerminal = vscode.window.createTerminal("MDPlant")
+        }
+
+        if (outTerminal == undefined) {
+            outTerminal = vscode.window.createTerminal("MDPlantOut")
+
+            var outDir = mdplantlibapi.getRootPath(vscode.window.activeTextEditor) + "/out"
+            if(!fs.existsSync(outDir))
+                fs.mkdirSync(outDir)
+
+            outTerminal.sendText("cd out")
+        }
+    }
 
     var line = activeEditor.selection.active.line
     let range = new vscode.Range(activeEditor.document.lineAt(line).range.start, activeEditor.document.lineAt(line).range.end)
@@ -1102,10 +1132,7 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
             return true
         }
 
-        if (terminalPrefix != "none")
-            cmd = terminalPrefix + " " + matchValue[1]
-        else
-            cmd = matchValue[1]
+        cmd = matchValue[1]
 
         if (cmd.includes(" refers/")) {
             // cmd = cmd.replace(" refers/", " " + mdplantlibapi.getRelativeDir(activeEditor) + "/" + "refers/")
@@ -1117,7 +1144,16 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
         }
 
         logger.info(cmd)
-        activeTerminal.sendText(cmd, true)
+        if (terminalType == "split") {
+            if(((cmd.search("adb push") != -1) && (cmd.search("refers/") != -1))
+                || (cmd.startsWith("src/") && (cmd.search("/refers/") != -1))
+                    )
+                workTerminal?.sendText(cmd, true)
+            else
+                outTerminal?.sendText(cmd, true)
+        } else {
+            activeTerminal.sendText(cmd, true)
+        }
 
         return true
     }
@@ -1126,7 +1162,7 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
 }
 
 function updateStatusBarItem(mode: string): void {
-    terminalStatusBarItem.text = "cmd prefix: " + mode;
+    terminalStatusBarItem.text = "terminal type: " + mode;
     terminalStatusBarItem.show();
 }
 
@@ -1436,13 +1472,15 @@ export function activate(context: vscode.ExtensionContext) {
     terminalStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     terminalStatusBarItem.command = mdTerminal;
     context.subscriptions.push(terminalStatusBarItem);
-    updateStatusBarItem("none")
+    terminalType = mdplantlibapi.getConfig("MDPlant.terminal.type", "none")
+    updateStatusBarItem(terminalType)
 
     context.subscriptions.push(vscode.commands.registerCommand(mdTerminal, async () => {
-        const result = await vscode.window.showQuickPick(terminalPrefixs);
+        const result = await vscode.window.showQuickPick(terminalTypes);
         if (result != undefined && result.length != 0) {
-            terminalPrefix = result
-            updateStatusBarItem(terminalPrefix)
+            terminalType = result
+            updateStatusBarItem(terminalType)
+            mdplantlibapi.setConfig("MDPlant.terminal.type", terminalType)
         }
 	}));
 }

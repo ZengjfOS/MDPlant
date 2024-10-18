@@ -586,6 +586,10 @@ export function getConfig(name: string, defaultValue: any) {
     return vscode.workspace.getConfiguration().get(name) || defaultValue
 }
 
+export function setConfig(name: string, value: any) {
+    return vscode.workspace.getConfiguration().update(name, value)
+}
+
 export function getHTTPPlantumlImage(contentArray: string[], suffix: string, filePath: string, callback: (status: boolean) => void) {
     let plantumlServer :string = getConfig('MDPlant.plantuml.server', "http://www.plantuml.com/plantuml")
     mdplantlib.getHTTPPlantumlImage(contentArray.join("\n"), plantumlServer, suffix, filePath, callback)

@@ -6,6 +6,29 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.27] - 2024-10-20
+
+### Added
+- 无
+
+### Changed
+- 修改README.md
+
+### Fixed
+- 无
+
+
+## [2.0.26] - 2024-10-18
+
+### Added
+- 在split模式下，专门添加两个终端，一个用于执行push文件，一个用于执行命令
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
 ## [2.0.25] - 2024-9-7
 
 ### Added
