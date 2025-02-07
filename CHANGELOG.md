@@ -6,6 +6,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.28] - 2025-2-7
+
+### Added
+- 加入文档作者信息
+
+### Changed
+- 无
+
+### Fixed
+- 无
+
+
+
 ## [2.0.27] - 2024-10-20
 
 ### Added

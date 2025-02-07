@@ -540,8 +540,8 @@ export function convertToSubProject(srcPath: string, subProjectDir: string) {
     return mdplantlib.convertToSubProject(srcPath, subProjectDir)
 }
 
-export function newSubProjectWorkFile(outputFile: string) {
-    return mdplantlib.newSubProjectWorkFile(outputFile)
+export function newSubProjectWorkFile(outputFile: string, author: string) {
+    return mdplantlib.newSubProjectWorkFile(outputFile, author)
 }
 
 export function cursor(editor: vscode.TextEditor, cursor: number) {

@@ -4,7 +4,7 @@
 	"displayName": "MDPlant",
 	"description": "markdown文档编写工具",
 	"icon": "assets/images/icon.png",
-	"version": "2.0.27",
+	"version": "2.0.28",
 	"engines": {
 		"vscode": "^1.73.0"
 	},
@@ -228,6 +228,11 @@
 					"type": "string",
 					"default": "none",
 					"description": "cmd with split terminal"
+				},
+				"MDPlant.file.author": {
+					"type": "string",
+					"default": "Unknown",
+					"description": "file author name"
 				}
 			}
 		}
