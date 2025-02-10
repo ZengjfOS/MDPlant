@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.29] - 2025-2-7
+
+### Added
+- 无
+
+### Changed
+- 无
+
+### Fixed
+- 修复author info表格无法渲然问题
+
+
 ## [2.0.28] - 2025-2-7
 
 ### Added
