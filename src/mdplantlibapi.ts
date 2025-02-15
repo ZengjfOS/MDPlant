@@ -1,12 +1,44 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs'
+import * as child_process from 'child_process'
 import * as mdplantlib from 'mdplantlib'
 
 export let projectPathTypeEnum      = mdplantlib.projectPathTypeEnum
 export let projectTextBlockTypeEnum = mdplantlib.projectTextBlockTypeEnum
 export let Loggger                  = mdplantlib.Logger
 const logger                        = new Loggger("mdplantlib", true)
+
+/**
+ * 获取Git配置信息
+ */
+export function getGitConfig(){
+    let configSrcs = ["--global", "--local"]
+    let gitConfigDict: { [key: string]: string } = {};
+    let rootPath = getRootPath(undefined)
+    logger.debug(`getGitConfig: ${rootPath}`)
+    configSrcs.forEach(configSrc => {
+        try {
+            let command = ""
+            if (configSrc == "--global") {
+                command = `git config ${configSrc} --list`;
+            } else {
+                command = `git config --list -f ${rootPath}/.git/config`;
+            }
+
+            const output = child_process.execSync(command).toString().trim();
+            const configLines = output.split('\n');
+            configLines.forEach(line => {
+                const [key, value] = line.split('=');
+                gitConfigDict[key] = value;
+            });
+        } catch (error) {
+            // 忽略非Git仓库的错误
+            logger.debug(`Error getting Git config ${configSrc}: ${error}`);
+        }
+    });
+    return gitConfigDict;
+}
 
 /**
  * 
@@ -540,8 +572,8 @@ export function convertToSubProject(srcPath: string, subProjectDir: string) {
     return mdplantlib.convertToSubProject(srcPath, subProjectDir)
 }
 
-export function newSubProjectWorkFile(outputFile: string, author: string) {
-    return mdplantlib.newSubProjectWorkFile(outputFile, author)
+export function newSubProjectWorkFile(outputFile: string, info: { [key: string]: string }) {
+    return mdplantlib.newSubProjectWorkFile(outputFile, info)
 }
 
 export function cursor(editor: vscode.TextEditor, cursor: number) {

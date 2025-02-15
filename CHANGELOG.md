@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.0.30] - 2025-2-15
+
+### Added
+- 无
+
+### Changed
+- 从git config获取文件创建者信息
+
+### Fixed
+- 无
+
 ## [2.0.29] - 2025-2-7
 
 ### Added

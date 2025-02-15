@@ -737,8 +737,7 @@ export async function doDir(filePath: string) {
                         if (msg.indexOf(".md") == -1)
                             msg += ".md"
 
-                        let author = mdplantlibapi.getConfig("MDPlant.file.author", "")
-                        mdplantlibapi.newSubProjectWorkFile(docsPath + "/" + msg, author)
+                        mdplantlibapi.newSubProjectWorkFile(docsPath + "/" + msg, mdplantlibapi.getGitConfig())
 
                         await vscode.workspace.openTextDocument(docsPath + "/" + msg).then( async doc => {
                             await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
@@ -801,8 +800,7 @@ export async function doDir(filePath: string) {
                             if (msg.indexOf(".md") == -1)
                                 msg += ".md"
 
-                            let author = mdplantlibapi.getConfig("MDPlant.file.author", "")
-                            mdplantlibapi.newSubProjectWorkFile(docsPath + "/" + msg, author)
+                            mdplantlibapi.newSubProjectWorkFile(docsPath + "/" + msg, mdplantlibapi.getGitConfig())
 
                             await vscode.workspace.openTextDocument(docsPath + "/" + msg).then( async doc => {
                                 await vscode.window.showTextDocument(doc, { preview: false }).then(async editor => {
