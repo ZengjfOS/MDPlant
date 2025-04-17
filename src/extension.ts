@@ -25,7 +25,7 @@ export function doPlantumlLineShortcut(activeEditor: vscode.TextEditor, lineText
     let contentArray: string[] = textBlock.textBlock
     let plantumlRE = new RegExp("\\s*(plantuml[\\s:]*([\\w\\/]*\\.(puml|plantuml|iuml|pu)?))", "g")
     logger.info(textBlock)
-    logger.info("doPlantuml")
+    logger.info("doPlantumlLineShortcut")
 
     if (lineText.trim().startsWith("plantuml")) {
         let matchValue = plantumlRE.exec(lineText)
@@ -60,7 +60,7 @@ export function doPlantumlLineShortcut(activeEditor: vscode.TextEditor, lineText
     }
 }
 
-export function doPlantuml(activeEditor: vscode.TextEditor)
+export async function doPlantuml(activeEditor: vscode.TextEditor)
 {
     var line = activeEditor.selection.active.line
     let textBlock = mdplantlibapi.getTextBlock(activeEditor, line, false)
@@ -72,6 +72,38 @@ export function doPlantuml(activeEditor: vscode.TextEditor)
     if (contentArray.length > 1) {
         if (contentArray[0].trim().startsWith("* ")) {
             contentArray =  mdplantlibapi.convert2SequenceDiagram(contentArray, startLine)
+
+            let currentEditorFile = activeEditor.document.uri.fsPath
+            let editFileName = path.basename(currentEditorFile)
+            let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
+
+            const indexRE = new RegExp("^\\d{1,4}_.*", "g")
+            let filePrefix = ""
+            if (indexRE.test(editFileName)) {
+                filePrefix = editFileName.split("_")[0] + "_"
+            }
+
+            await vscode.window.showInputBox(
+            {    // 这个对象中所有参数都是可选参数
+                password: false,                           // 输入内容是否是密码
+                ignoreFocusOut: true,                      // 默认false，设置为true时鼠标点击别的地方输入框不会消失
+                // placeHolder: 'input file name: ',       // 在输入框内的提示信息
+                value: filePrefix,
+                prompt:'save file name',        // 在输入框下方的提示信息
+            }).then(msg => {
+                if (msg != undefined && msg.length > 0) {
+                    let imageFileRelativePath = ""
+                    if (fs.existsSync(mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/refers")) {
+                        imageFileRelativePath = "refers/" + msg + ".puml"
+                    } else {
+                        imageFileRelativePath = msg
+                    }
+
+                    fs.writeFileSync(mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath, contentArray.join("\n"))
+                }
+            })
+
+            return
         }
 
         let targetFileName = ""
@@ -1084,6 +1116,9 @@ export async function doTerminal(activeEditor: vscode.TextEditor, activeTerminal
     let currentFileDir = mdplantlibapi.getRelativeDir(activeEditor)
     let rootPath = mdplantlibapi.getRootPath(activeEditor).replace(/\\/g, "/")
     let rootPathUp = rootPath[0].toUpperCase() + rootPath.substring(1)
+
+    if (rawText.trimLeft().startsWith("```"))
+        return false
 
     let matchValue = inLineCodeRE.exec(rawText)
     // logger.info(matchValue)

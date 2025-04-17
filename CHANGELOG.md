@@ -6,6 +6,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-4-17
+
+### Added
+- 无
+
+### Changed
+- 优化list转plantuml时序图
+
+### Fixed
+- 无
+
+
 ## [2.0.30] - 2025-2-15
 
 ### Added
