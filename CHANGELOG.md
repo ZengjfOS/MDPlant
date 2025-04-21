@@ -6,6 +6,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [2.1.1] - 2025-4-23
+
+### Added
+- 无
+
+### Changed
+- 支持list转plantuml时序图注释
+
+### Fixed
+- 无refers目录保存plantuml时添加.puml后缀
+
 ## [2.1.0] - 2025-4-17
 
 ### Added

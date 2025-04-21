@@ -96,7 +96,7 @@ export async function doPlantuml(activeEditor: vscode.TextEditor)
                     if (fs.existsSync(mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/refers")) {
                         imageFileRelativePath = "refers/" + msg + ".puml"
                     } else {
-                        imageFileRelativePath = msg
+                        imageFileRelativePath = msg + ".puml"
                     }
 
                     fs.writeFileSync(mdplantlibapi.getRootPath(activeEditor) + "/" + currentFileDir + "/" + imageFileRelativePath, contentArray.join("\n"))
